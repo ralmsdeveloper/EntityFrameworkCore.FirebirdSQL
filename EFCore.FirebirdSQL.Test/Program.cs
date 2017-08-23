@@ -18,7 +18,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             cx.Database.EnsureDeleted();
             Console.WriteLine("Inserindo registros...");
             cx.Database.EnsureCreated();
-            for (int i = 1; i <= 500; i++)
+            for (int i = 1; i <= 10; i++)
             {
                 cx.Blog.Add(new Blog
                 {
@@ -40,7 +40,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             Random rnd = new Random();
             for (int i = 1; i < 20; i++)
             {
-                var id = rnd.Next(1, 2000);
+                var id = rnd.Next(1, 20);
                 var registro = cx.Blog.Find(id);
                 if (registro != null)
                 {

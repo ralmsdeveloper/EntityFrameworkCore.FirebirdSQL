@@ -33,10 +33,10 @@ namespace EFCore.FirebirdSqlSQL.Test
 
             optionsBuilder.UseFirebirdSql(connectionString);
 
-            base.OnConfiguring(optionsBuilder);
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new TraceLoggerProvider());
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+             //if used Log
+            //LoggerFactory loggerFactory = new LoggerFactory();
+            //loggerFactory.AddProvider(new TraceLoggerProvider());
+            //optionsBuilder.UseLoggerFactory(loggerFactory);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
@@ -67,19 +67,7 @@ namespace EFCore.FirebirdSqlSQL.Test
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
     }
-
-    //public partial class Blog
-    //{
-    //    [Key]
-    //    public int Id { get; set; }
-    //    public int Access { get; set; }
-    //    [StringLength(20)]
-    //    public string Description { get; set; }
-    //    [StringLength(500)]
-    //    public string Observations { get; set; }
-    //    public DateTime Date { get; set; }
-
-    //} 
+     
     
 }
 

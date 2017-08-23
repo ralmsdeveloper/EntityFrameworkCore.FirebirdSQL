@@ -58,8 +58,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
 
         public virtual void Validate(IDbContextOptions options)
         {
-            if (_relationalOptions.ConnectionString == null && _relationalOptions.Connection == null)
-                throw new InvalidOperationException(RelationalStrings.NoConnectionOrConnectionString);
+           //Removed Add Future!
         }
 
         public virtual FbConnectionSettings ConnectionSettings => _lazyConnectionSettings.Value;

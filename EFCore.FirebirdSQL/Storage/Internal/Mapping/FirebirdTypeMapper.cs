@@ -161,7 +161,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             if (_disallowedMappings.Contains(storeType))
             {
-                throw new ArgumentException("UnqualifiedDataType" + storeType);
+                throw new ArgumentException("Daty Type Invalid!" + storeType);
             }
         }
 
