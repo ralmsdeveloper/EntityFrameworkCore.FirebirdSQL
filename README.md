@@ -11,6 +11,7 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
     {
         
         public DbSet<Blog> Blog { get; set; }
+        public DbSet<Post> Posts { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
 
@@ -28,9 +29,13 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
             "MinPoolSize=1;" +
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
-            "ServerType=0"; 
-            
-             optionsBuilder.UseFirebirdSql(connectionString);
+            "ServerType=0";
+
+            optionsBuilder.UseFirebirdSql(connectionString); 
+             //if used Log
+            //LoggerFactory loggerFactory = new LoggerFactory();
+            //loggerFactory.AddProvider(new TraceLoggerProvider());
+            //optionsBuilder.UseLoggerFactory(loggerFactory);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
@@ -38,25 +43,28 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
             //Fluent Api
             modelo.Entity<Blog>(entity =>
             {
-                entity.HasIndex(e => e.Id)
+                entity.HasIndex(e => e.BlogId)
                     .HasName("Id")
                     .IsUnique();
             });
         }
     }
 
-
-    public partial class Blog
+    public class Blog
     {
-        [Key]
-        public int Id { get; set; }
-        public int Access { get; set; }
-        [StringLength(20)]
-        public string Description { get; set; }
-        [StringLength(500)]
-        public string Observations { get; set; }
-        public DateTime Date { get; set; }
+        public int BlogId { get; set; }
+        public string Url { get; set; } 
+        public List<Post> Posts { get; set; }
+    }
 
-    } 
+    public class Post
+    {
+        public int PostId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+
+        public int BlogId { get; set; }
+        public Blog Blog { get; set; }
+    }
     
 ```
