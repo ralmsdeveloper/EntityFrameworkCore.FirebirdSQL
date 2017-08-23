@@ -4,6 +4,9 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
 
 ## Example of use
+
+ ```csharp
+ 
  cx.Blog.Add(new Blog
  {
      Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
@@ -21,7 +24,7 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
  cx.SaveChanges();
  
   
- ```csharp
+
  public class Context : DbContext
     {
         
