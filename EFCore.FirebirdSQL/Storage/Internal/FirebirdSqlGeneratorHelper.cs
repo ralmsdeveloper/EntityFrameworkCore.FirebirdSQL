@@ -88,9 +88,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         // Returns:
         //     A valid name based on the candidate name.
         public override string GenerateParameterName(string name)
-        {
-            return "@" + name;
-        }
+        =>   $"@{name}";
+        
 
         //
         // Summary:
@@ -103,11 +102,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         //   name:
         //     The candidate name for the parameter.
         public override void GenerateParameterName(StringBuilder builder, string name)
-        {
-            builder.Append("@").Append(name);
-        }
+       => builder.Append("@").Append(name);
 
-        public static object  GenerateValue(ColumnModification column)
+    
+
+        public static object GenerateValue(ColumnModification column)
         {
             object value = null;
             if (column.Property.ClrType == typeof(string))
@@ -137,9 +136,19 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             return value;
         }
 
-        public  static  void GenerateValue(StringBuilder builder,ColumnModification column)
-        { 
-           builder.Append(GenerateValue(column));
+        public static void GenerateValue(StringBuilder builder, ColumnModification column)
+        {
+            builder.Append(GenerateValue(column));
         }
+
+
+
+
+        public static object GetTypeColumnToString(ColumnModification column)
+        {
+            return "VARCHAR(100)";
+        }
+
+
     }
 }

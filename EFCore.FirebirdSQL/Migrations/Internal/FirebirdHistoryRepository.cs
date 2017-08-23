@@ -46,8 +46,8 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
         protected override void ConfigureTable([NotNull] EntityTypeBuilder<HistoryRow> history)
         {
             base.ConfigureTable(history);
-            history.Property(h => h.MigrationId).HasColumnType("varchar(95)");
-            history.Property(h => h.ProductVersion).HasColumnType("varchar(32)").IsRequired();
+            history.Property(h => h.MigrationId).HasColumnType("VARCHAR(95)");
+            history.Property(h => h.ProductVersion).HasColumnType("VARCHAR(32)").IsRequired();
         }
 
         protected override string ExistsSql

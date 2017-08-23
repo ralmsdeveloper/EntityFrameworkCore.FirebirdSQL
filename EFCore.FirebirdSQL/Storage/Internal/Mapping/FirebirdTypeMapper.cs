@@ -41,33 +41,31 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly FirebirdSqlBoolTypeMapping _bit     = new FirebirdSqlBoolTypeMapping();
 
         // integers 
-	    private readonly ShortTypeMapping _smallint         = new ShortTypeMapping("smallint", DbType.Int16); 
-        private readonly IntTypeMapping _int                = new IntTypeMapping("integer", DbType.Int32); 
-	    private readonly LongTypeMapping _bigint            = new LongTypeMapping("int64", DbType.Int64); 
-
+	    private readonly ShortTypeMapping _smallint         = new ShortTypeMapping("SMALLINT", DbType.Int16); 
+        private readonly IntTypeMapping _int                = new IntTypeMapping("INTEGER", DbType.Int32); 
+	    private readonly LongTypeMapping _bigint            = new LongTypeMapping("BIGINT", DbType.Int64);  
 	    // decimals
-	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("decimal", DbType.Decimal);
-	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("double", DbType.Double);
-        private readonly FloatTypeMapping _float            = new FloatTypeMapping("float");
-        private readonly DecimalTypeMapping _money            = new DecimalTypeMapping("decimal(18, 4)");
-
+	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("DECIMAL", DbType.Decimal);
+	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
+        private readonly FloatTypeMapping _float            = new FloatTypeMapping("FLOAT");
+        private readonly DecimalTypeMapping _money            = new DecimalTypeMapping("DECIMAL(18, 4)"); 
         // binary
-        private readonly RelationalTypeMapping _binary           = new FirebirdSqlByteArrayTypeMapping("char", DbType.Binary, 8000);
-        private readonly RelationalTypeMapping _varbinary        = new FirebirdSqlByteArrayTypeMapping("char", DbType.Binary,8000);
+        private readonly RelationalTypeMapping _binary           = new FirebirdSqlByteArrayTypeMapping("CHAR", DbType.Binary, 8000);
+        private readonly RelationalTypeMapping _varbinary        = new FirebirdSqlByteArrayTypeMapping("CHAR", DbType.Binary,8000);
  
 	    // string
-        private readonly FirebirdSqlStringTypeMapping _char       = new FirebirdSqlStringTypeMapping("char", FbDbType.VarChar);
-        private readonly FirebirdSqlStringTypeMapping _varchar    = new FirebirdSqlStringTypeMapping("varchar", FbDbType.VarChar);
-        private readonly FirebirdSqlStringTypeMapping _text = new FirebirdSqlStringTypeMapping("blob sub_type text", FbDbType.Text);
+        private readonly FirebirdSqlStringTypeMapping _char     = new FirebirdSqlStringTypeMapping("CHAR", FbDbType.VarChar);
+        private readonly FirebirdSqlStringTypeMapping _varchar  = new FirebirdSqlStringTypeMapping("VARCHAR", FbDbType.VarChar);
+        private readonly FirebirdSqlStringTypeMapping _text     = new FirebirdSqlStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
        
 
 
         // DateTime
-        private readonly FirebirdSqlDateTimeTypeMapping _dateTime  = new FirebirdSqlDateTimeTypeMapping("timestamp", DbType.DateTime);
-        private readonly TimeSpanTypeMapping _date                 = new TimeSpanTypeMapping("date", DbType.Date); 
+        private readonly FirebirdSqlDateTimeTypeMapping _dateTime  = new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
+        private readonly TimeSpanTypeMapping _date                 = new TimeSpanTypeMapping("DATE", DbType.Date); 
 
         // guid
-	    private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("char(38)", DbType.Guid);
+	    private readonly GuidTypeMapping _uniqueidentifier   = new GuidTypeMapping("CHAR(38)", DbType.Guid);
 
         readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
         readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
@@ -80,29 +78,29 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
                 {
                     // boolean
-                    { "bit", _bit },
+                    { "BIT", _bit },
                     // integers 
-                    { "smallint", _smallint },
-                    { "integer", _int },
-                    { "int64", _bigint },  
+                    { "SMALLINT", _smallint },
+                    { "INTEGER", _int },
+                    { "BIGINT", _bigint },  
                     // decimals
-                    { "decimal", _decimal },
-                    { "double", _double },
-                    { "float", _float },
-                     { "decimal(18, 4)", _money },
+                    { "DECIMAL", _decimal },
+                    { "DOUBLE PRECICION", _double },
+                    { "FLOAT", _float },
+                     { "DECIMAL(18, 4)", _money },
                     // binary
-                    { "binary", _binary },
-                    { "varbinary", _varbinary } , 
+                    { "BINARY", _binary },
+                    { "VARBINARY", _varbinary } , 
                     // string
-                    { "char", _char },
-                    { "varchar", _varchar }, 
-                    { "blob sub_type text", _text },  
+                    { "CHAR", _char },
+                    { "VARCHAR", _varchar }, 
+                    { "BLOB SUB_TYPE TEXT", _text },  
                     // DateTime
-                    { "timestamp", _dateTime },
-                    { "date", _date },  
+                    { "TIMESTAMP", _dateTime },
+                    { "DATE", _date },  
 
                     // guid
-                    { "char(36)", _uniqueidentifier }
+                    { "CHAR(36)", _uniqueidentifier }
                 };
 
             _clrTypeMappings
@@ -132,10 +130,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             _disallowedMappings
                 = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 {
-                    "binary",
-                    "char",
-                    "varbinary",
-                    "varchar" 
+                    "BINARY",
+                    "CHAR",
+                    "VARBINARY",
+                    "VARCHAR" 
                 }; 
 
             StringMapper = new FirebirdSqlStringRelationalTypeMapper();

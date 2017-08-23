@@ -11,28 +11,42 @@ namespace EFCore.FirebirdSqlSQL.Test
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("*** INITIALIZING ****");
-            var cx = new Context();
-
-            Console.WriteLine("Deletando banco...");
+            Console.WriteLine("# Wait... ");
+            var cx = new Context(); 
+            Console.WriteLine("# Deleting database...");
             cx.Database.EnsureDeleted();
-            Console.WriteLine("Inserindo registros...");
-            cx.Database.EnsureCreated();
+            cx.Database.EnsureCreated();  
+
+            cx.Blog.Add(new Blog
+            {
+                Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
+            }); 
+            Console.WriteLine($"Registro Inserido: {cx.SaveChanges()}.");
+
+
+            var RangeBlog = new List<Blog>
+            {
+                new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  },
+                new Blog{ Url="https://github.com/ralmsdeveloper/"  },
+                new Blog{ Url="https://blog.ralms.net"  },
+                new Blog{ Url="https://ralms.net"  } 
+            };
+            cx.Blog.AddRange(RangeBlog);
+            Console.WriteLine($"Registros Inseridos Range: {cx.SaveChanges()}.");
+
             for (int i = 1; i <= 10; i++)
             {
                 cx.Blog.Add(new Blog
                 {
                      Url= "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  
                 });
-            }
-            
-            Console.WriteLine($"Registros Inseridos {cx.SaveChanges()}...");
-            Console.WriteLine($"--------------------------------------------------------");
+            } 
+            Console.WriteLine($"Registros Inseridos For: {cx.SaveChanges()}");
+             
 
             var dados = cx.Blog.OrderByDescending(p => p.BlogId).Take(10).ToList();
             foreach (var item in dados)
                 Console.WriteLine(item.BlogId + "\t\t" + item.Url);
-
 
             Console.WriteLine($"--------------------------------------------------------");
             Console.WriteLine($"Atualizando registro  ");
@@ -54,12 +68,12 @@ namespace EFCore.FirebirdSqlSQL.Test
             Console.WriteLine($"--------------------------------------------------------");
             Console.WriteLine($"Exluindo registros  ");
             Console.WriteLine($"--------------------------------------------------------");
-           
+
             for (int i = 1; i < 5; i++)
             {
-          
+
                 var registro = cx.Blog.Find(1);
-                if(registro != null)
+                if (registro != null)
                     cx.Blog.Remove(registro);
 
                 registro = cx.Blog.Find(2);

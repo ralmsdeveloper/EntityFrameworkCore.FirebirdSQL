@@ -62,8 +62,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
         public virtual ModificationCommandBatch Create()
         {
-            var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault();
-
+            var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault(); 
             return new FirebirdSqlModificationCommandBatch(
                 _commandBuilderFactory,
                 _sqlGenerationHelper,

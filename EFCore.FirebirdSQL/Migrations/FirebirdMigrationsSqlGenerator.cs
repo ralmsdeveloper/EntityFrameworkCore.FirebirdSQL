@@ -94,7 +94,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
             //https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
-            var type = operation.ColumnType;
+            var type = operation.ColumnType.ToUpper();
             if (operation.ColumnType == null)
             {
                 var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
@@ -117,9 +117,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                   
 
-                case "char":
-                case "varchar":
-                case "blob sub_type text":  
+                case "CHAR":
+                case "VARCHAR":
+                case "BLOB SUB_TYPE TEXT":  
                 default:
                     alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
 
@@ -349,7 +349,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 	        var match = TypeRe.Match(type ?? "-");
 	        if (match.Success)
 	        {
-		        matchType = match.Groups[1].Value.ToLower();
+		        matchType = match.Groups[1].Value.ToUpper();
 		        if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
 			        matchLen = match.Groups[2].Value;
 	        }
@@ -360,16 +360,12 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                 switch (matchType)
                 {
-                    case "integer":
-                    case "int64": 
-                    case "int": 
+                    case "INTEGER":
+                    case "BIGINT":  
                         Identity = true;
                         break;
-                    case "datetime":
-                        if (!_options.ConnectionSettings.ServerVersion.SupportsDateTime6)
-                            throw new InvalidOperationException("not implemented");
-                        goto case "timestamp";
-                    case "timestamp":
+                    case "DATETIME": 
+                    case "TIMESTAMP":
                         defaultValueSql = $"CURRENT_DATE";
                         break;
                 }

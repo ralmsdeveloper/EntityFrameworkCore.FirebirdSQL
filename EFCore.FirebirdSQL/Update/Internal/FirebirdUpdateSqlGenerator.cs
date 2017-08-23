@@ -27,9 +27,9 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities; 
+using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
@@ -57,57 +57,44 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         {
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
-
             var name = modificationCommands[0].TableName;
             var schema = modificationCommands[0].Schema;
             var operations = modificationCommands[0].ColumnModifications;
             var writeOperations = operations.Where(o => o.IsWrite).ToArray();
             var readOperations = operations.Where(o => o.IsRead).ToArray();
-             
-             
+            commandStringBuilder.Clear();
+            commandStringBuilder.Append("EXECUTE BLOCK ");
+            if (writeOperations.Any())
+            {
+                commandStringBuilder.AppendLine("(");
+                var commaAppend = string.Empty;
+                for (var i = 0; i < modificationCommands.Count; i++)
+                { 
+                    foreach (var column in modificationCommands[i].ColumnModifications.Where(o => o.IsWrite))
+                    {
+                        commandStringBuilder.Append(commaAppend); 
+                        commandStringBuilder.AppendLine($"{column.ParameterName}  {FirebirdSqlSqlGenerationHelper.GetTypeColumnToString(column)}=?");
+                        commaAppend = ",";
+                    } 
+                }
+                commandStringBuilder.AppendLine(")");
+            }
+            commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
                 AppendValues(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
-
                 if (readOperations.Length > 0)
                     AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
 
             }
             commandStringBuilder.AppendLine("END;");
+            commandStringBuilder.Replace("@p", ":p"); 
             return ResultSetMapping.NotLastInResultSet;
         }
-
-        protected new void AppendValues(
-            [NotNull] StringBuilder commandStringBuilder,
-            [NotNull] IReadOnlyList<ColumnModification> operations)
-        {
-            Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-            Check.NotNull(operations, nameof(operations));
-
-            if (operations.Count > 0)
-            {
-                commandStringBuilder
-                    .Append("(")
-                    .AppendJoin(
-                        operations,
-                        SqlGenerationHelper,
-                        (sb, o, helper) =>
-                        {
-                            if (o.IsWrite)
-                            {
-                                FirebirdSqlSqlGenerationHelper.GenerateValue(sb, o);
-                            }
-                            else
-                            {
-                                sb.Append("DEFAULT VALUES");
-                            }
-                        })
-                    .Append(")");
-            }
-        }
-
+       
+        
         public override ResultSetMapping AppendUpdateOperation(
             StringBuilder commandStringBuilder,
             ModificationCommand command,
@@ -133,13 +120,16 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
-            var schema = modificationCommands[0].Schema; 
-            commandStringBuilder.AppendLine($"regAffeted=0;");
+            var schema = modificationCommands[0].Schema;
+
+            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN")
+                                .AppendLine($"regAffeted=0;");
+
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray(); 
+                var readOperations = operations.Where(o => o.IsRead).ToArray();
                 commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
                 .AppendJoinUpadate(
                     writeOperations,
@@ -167,13 +157,16 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
             var schema = modificationCommands[0].Schema;
-            commandStringBuilder.AppendLine($"regAffeted=0;");
+
+            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN")
+                                .AppendLine($"regAffeted=0;");
+
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
                 var readOperations = operations.Where(o => o.IsRead).ToArray();
-                commandStringBuilder.Append($"DELETE FROM {SqlGenerationHelper.DelimitIdentifier(name)} "); 
+                commandStringBuilder.Append($"DELETE FROM {SqlGenerationHelper.DelimitIdentifier(name)} ");
                 commandStringBuilder.AppendLine($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}; ");
                 AppendUpdateOutputClause(commandStringBuilder);
             }
@@ -219,9 +212,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         public override void AppendBatchHeader(StringBuilder commandStringBuilder)
         {
             //Insert FirebirdSqlSQL Fast(Insert/Update)
-            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN");
+            // commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN");
         }
-         
+
         protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
         {
             // Not Implemented!

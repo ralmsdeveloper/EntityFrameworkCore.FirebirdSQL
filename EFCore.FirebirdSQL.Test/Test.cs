@@ -32,11 +32,11 @@ namespace EFCore.FirebirdSqlSQL.Test
             "Packet Size=8192;" +
             "ServerType=0";
 
-            optionsBuilder.UseFirebirdSql(connectionString); 
-             //if used Log
-            //LoggerFactory loggerFactory = new LoggerFactory();
-            //loggerFactory.AddProvider(new TraceLoggerProvider());
-            //optionsBuilder.UseLoggerFactory(loggerFactory);
+            optionsBuilder.UseFirebirdSql(connectionString);
+            //if used Log
+            LoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.AddProvider(new TraceLoggerProvider());
+            optionsBuilder.UseLoggerFactory(loggerFactory);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
@@ -54,6 +54,7 @@ namespace EFCore.FirebirdSqlSQL.Test
     public class Blog
     {
         public int BlogId { get; set; }
+        [StringLength(100)]
         public string Url { get; set; } 
         public List<Post> Posts { get; set; }
     }

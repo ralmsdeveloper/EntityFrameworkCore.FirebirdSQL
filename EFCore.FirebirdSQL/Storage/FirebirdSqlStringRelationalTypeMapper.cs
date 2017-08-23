@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Storage
     {
 
         static readonly RelationalTypeMapping UnboundedStringMapping
-               = new FirebirdSqlTypeMapping("blob sub_type text", typeof(string), FirebirdSql.Data.FirebirdClient.FbDbType.Text);
+               = new FirebirdSqlTypeMapping("BLOB SUB_TYPE TEXT", typeof(string), FirebirdSql.Data.FirebirdClient.FbDbType.Text);
 
         readonly ConcurrentDictionary<int, RelationalTypeMapping> _boundedStringMappings
             = new ConcurrentDictionary<int, RelationalTypeMapping>();
@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Storage
         {
             return maxLength.HasValue
                 ? _boundedStringMappings.GetOrAdd(maxLength.Value,
-                      ml => new FirebirdSqlTypeMapping($"varchar({maxLength})", typeof(string))
+                      ml => new FirebirdSqlTypeMapping($"VARCHAR({maxLength})", typeof(string))
                   )
                 : UnboundedStringMapping;
         }

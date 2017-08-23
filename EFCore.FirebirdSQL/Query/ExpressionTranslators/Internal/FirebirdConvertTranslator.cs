@@ -39,13 +39,13 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
     {
         private static readonly Dictionary<string, string> _typeMapping = new Dictionary<string, string>
         {
-            [nameof(Convert.ToByte)] = "smallint",
-            [nameof(Convert.ToDecimal)] = "numeric(18, 2)",
-            [nameof(Convert.ToDouble)] = "float",
-            [nameof(Convert.ToInt16)] = "smallint",
-            [nameof(Convert.ToInt32)] = "integer",
-            [nameof(Convert.ToInt64)] = "int64",
-            [nameof(Convert.ToString)] = "varchar(4000)"
+            [nameof(Convert.ToByte)] = "SMALLINT",
+            [nameof(Convert.ToDecimal)] = "NUMERIC(18, 2)",
+            [nameof(Convert.ToDouble)] = "FLOAT",
+            [nameof(Convert.ToInt16)] = "SMALLINT",
+            [nameof(Convert.ToInt32)] = "INTEGER",
+            [nameof(Convert.ToInt64)] = "BIGINT",
+            [nameof(Convert.ToString)] = "VARCHAR(4000)"
         };
 
         private static readonly List<Type> _supportedTypes = new List<Type>
