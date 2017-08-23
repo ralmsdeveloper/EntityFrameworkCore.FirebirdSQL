@@ -119,8 +119,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
                 case "char":
                 case "varchar":
-                case "blob sub_type text": 
-                case "text":   
+                case "blob sub_type text":  
                 default:
                     alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
 

@@ -22,19 +22,16 @@ namespace EFCore.FirebirdSqlSQL.Test
             {
                 cx.Blog.Add(new Blog
                 {
-                    Description = $"Blog {i}",
-                    Observations = $"Test Add Blog {i}",
-                    Date = DateTime.Now
-
+                     Url= "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  
                 });
             }
             
             Console.WriteLine($"Registros Inseridos {cx.SaveChanges()}...");
             Console.WriteLine($"--------------------------------------------------------");
-             
-            var dados = cx.Blog.OrderByDescending(p => p.Id).OrderByDescending(p=>p.Date).Take(10).ToList();
-            foreach(var item in dados) 
-                Console.WriteLine(item.Id + "\t\t" + item.Description + "\t\t" + item.Observations + "\t\t" + item.Date);
+
+            var dados = cx.Blog.OrderByDescending(p => p.BlogId).Take(10).ToList();
+            foreach (var item in dados)
+                Console.WriteLine(item.BlogId + "\t\t" + item.Url);
 
 
             Console.WriteLine($"--------------------------------------------------------");
@@ -43,14 +40,14 @@ namespace EFCore.FirebirdSqlSQL.Test
             Random rnd = new Random();
             for (int i = 1; i < 20; i++)
             {
-                var id = rnd.Next(1, 2000) ;
+                var id = rnd.Next(1, 2000);
                 var registro = cx.Blog.Find(id);
                 if (registro != null)
                 {
                     cx.Attach(registro);
-                    registro.Description = $"REGISTRO  {id}";
-                } 
-            } 
+                    registro.Url = "www.ralms.net";
+                }
+            }
             Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}"); 
 
             Console.ReadKey();

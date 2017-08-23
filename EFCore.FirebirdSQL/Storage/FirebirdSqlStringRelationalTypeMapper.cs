@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Storage
     {
 
         static readonly RelationalTypeMapping UnboundedStringMapping
-               = new FirebirdSqlTypeMapping("text", typeof(string), FirebirdSql.Data.FirebirdClient.FbDbType.Text);
+               = new FirebirdSqlTypeMapping("blob sub_type text", typeof(string), FirebirdSql.Data.FirebirdClient.FbDbType.Text);
 
         readonly ConcurrentDictionary<int, RelationalTypeMapping> _boundedStringMappings
             = new ConcurrentDictionary<int, RelationalTypeMapping>();

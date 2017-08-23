@@ -135,8 +135,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     "binary",
                     "char",
                     "varbinary",
-                    "varchar",
-                    "blob sub_type text"
+                    "varchar" 
                 }; 
 
             StringMapper = new FirebirdSqlStringRelationalTypeMapper();
