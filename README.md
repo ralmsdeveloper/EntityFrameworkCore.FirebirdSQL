@@ -28,14 +28,7 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
             "MinPoolSize=1;" +
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
-            "ServerType=0";
-
-            optionsBuilder.UseFirebirdSql(connectionString);
-
-            base.OnConfiguring(optionsBuilder);
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new TraceLoggerProvider());
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+            "ServerType=0"; 
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
