@@ -1,8 +1,8 @@
 # EntityFrameworkCore.FirebirdSQL
-FirebirdSQL database provider for Entity Framework Core.
+FirebirdSQL Database Provider for Entity Framework Core.
 =====================
 
-FirebirdSQL Access Provider Using EntityFrameworkCore
+[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
 
 ## Example of use
 
