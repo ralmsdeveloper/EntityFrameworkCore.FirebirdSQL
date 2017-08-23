@@ -29,6 +29,8 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
             "ServerType=0"; 
+            
+             optionsBuilder.UseFirebirdSql(connectionString);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
