@@ -1,10 +1,26 @@
-##EntityFrameworkCore.FirebirdSql for Firebird Server
+EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
 
 ## Example of use
-
+ cx.Blog.Add(new Blog
+ {
+     Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
+ });
+ cx.SaveChanges();
+            
+ var RangeBlog = new List<Blog>
+ {
+      new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  },
+      new Blog{ Url="https://github.com/ralmsdeveloper/"  },
+      new Blog{ Url="https://blog.ralms.net"  },
+      new Blog{ Url="https://ralms.net"  } 
+ };
+ cx.Blog.AddRange(RangeBlog);
+ cx.SaveChanges();
+ 
+  
  ```csharp
  public class Context : DbContext
     {
