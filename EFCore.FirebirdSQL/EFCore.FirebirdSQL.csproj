@@ -12,7 +12,7 @@
     <Company>Rafael Almeida</Company>
     <Authors>Rafael Almeida</Authors>
     <Version>2.0.0</Version>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM;SQLite</PackageTags>
     <Description>FirebirdSQL database provider for Entity Framework Core.</Description>

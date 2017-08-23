@@ -12,6 +12,7 @@ namespace EFCore.FirebirdSqlSQL.Test
     {
         
         public DbSet<Blog> Blog { get; set; }
+        public DbSet<Post> Posts { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
 
@@ -31,8 +32,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             "Packet Size=8192;" +
             "ServerType=0";
 
-            optionsBuilder.UseFirebirdSql(connectionString);
-
+            optionsBuilder.UseFirebirdSql(connectionString); 
              //if used Log
             //LoggerFactory loggerFactory = new LoggerFactory();
             //loggerFactory.AddProvider(new TraceLoggerProvider());

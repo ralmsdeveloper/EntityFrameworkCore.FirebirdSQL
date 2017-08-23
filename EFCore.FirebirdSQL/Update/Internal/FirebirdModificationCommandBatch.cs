@@ -38,14 +38,16 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
     public class FirebirdSqlModificationCommandBatch : AffectedCountModificationCommandBatch
     {
-        const int DefaultNetworkPacketSizeBytes = 4096;
-        const int MaxScriptLength = 65536 * DefaultNetworkPacketSizeBytes / 2;
-        const int MaxParameterCount = 2100;
-        const int MaxRowCount = 256;
-        int CountParameter = 1; 
-        readonly int _maxBatchSize;
-        readonly List<ModificationCommand> _bulkInsertCommands = new List<ModificationCommand>();
-        readonly List<ModificationCommand> _bulkUpdateCommands = new List<ModificationCommand>();
+        internal const int DefaultNetworkPacketSizeBytes = 4096;
+        internal const int MaxScriptLength = 65536 * DefaultNetworkPacketSizeBytes / 2;
+        internal const int MaxParameterCount = 2100;
+        internal const int MaxRowCount = 256;
+        internal int CountParameter = 1;
+        internal readonly int _maxBatchSize;
+        internal readonly List<ModificationCommand> _BlockInsertCommands = new List<ModificationCommand>();
+        internal readonly List<ModificationCommand> _BlockUpdateCommands = new List<ModificationCommand>();
+        internal readonly List<ModificationCommand> _BlockDeleteCommands = new List<ModificationCommand>();
+
         int _commandsLeftToLengthCheck = 50; 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -129,8 +131,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         protected override void ResetCommandText()
         {
             base.ResetCommandText();
-            _bulkInsertCommands.Clear();
-            _bulkUpdateCommands.Clear();
+            _BlockInsertCommands.Clear();
+            _BlockUpdateCommands.Clear();
+            _BlockDeleteCommands.Clear();
         }
 
         /// <summary>
@@ -138,44 +141,59 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         protected override string GetCommandText()
-            => base.GetCommandText() + GetBulkInsertCommandText(ModificationCommands.Count) + GetBulkUpdateCommandText(ModificationCommands.Count);
+            => base.GetCommandText() 
+            + GetBlockInsertCommandText(ModificationCommands.Count) 
+            + GetBlockUpdateCommandText(ModificationCommands.Count)
+            + GetBlockDeleteCommandText(ModificationCommands.Count);
 
-        private string GetBulkUpdateCommandText(int lastIndex)
+        private string GetBlockDeleteCommandText(int lastIndex)
         {
-            if (_bulkUpdateCommands.Count == 0) 
+            if (_BlockDeleteCommands.Count == 0)
                 return string.Empty;
-            
+
 
             var stringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBulkUpdateOperation(stringBuilder, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
-            for (var i = lastIndex - _bulkUpdateCommands.Count; i < lastIndex; i++)
-                CommandResultSet[i] = resultSetMapping; 
+            var resultSetMapping = UpdateSqlGenerator.AppendBlockDeleteOperation(stringBuilder, _BlockDeleteCommands, lastIndex - _BlockDeleteCommands.Count);
+            for (var i = lastIndex - _BlockDeleteCommands.Count; i < lastIndex; i++)
+                CommandResultSet[i] = resultSetMapping;
 
-            if (resultSetMapping != ResultSetMapping.NoResultSet) 
+            if (resultSetMapping != ResultSetMapping.NoResultSet)
                 CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-         
-            if (CommandResultSet.Count == lastIndex)
-                stringBuilder.AppendLine("END;");
 
             return stringBuilder.ToString();
         }
 
-        private string GetBulkInsertCommandText(int lastIndex)
+        private string GetBlockUpdateCommandText(int lastIndex)
         {
-            if (_bulkInsertCommands.Count == 0) 
+            if (_BlockUpdateCommands.Count == 0) 
+                return string.Empty;
+            
+
+            var stringBuilder = new StringBuilder();
+            var resultSetMapping = UpdateSqlGenerator.AppendBlockUpdateOperation(stringBuilder, _BlockUpdateCommands, lastIndex - _BlockUpdateCommands.Count);
+            for (var i = lastIndex - _BlockUpdateCommands.Count; i < lastIndex; i++)
+                CommandResultSet[i] = resultSetMapping; 
+
+            if (resultSetMapping != ResultSetMapping.NoResultSet) 
+                CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+          
+            return stringBuilder.ToString();
+        }
+
+        private string GetBlockInsertCommandText(int lastIndex)
+        {
+            if (_BlockInsertCommands.Count == 0) 
                 return string.Empty;
        
             var stringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBulkInsertOperation(stringBuilder, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
-            for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
+            var resultSetMapping = UpdateSqlGenerator.AppendBlockInsertOperation(stringBuilder, _BlockInsertCommands, lastIndex - _BlockInsertCommands.Count);
+            for (var i = lastIndex - _BlockInsertCommands.Count; i < lastIndex; i++)
                 CommandResultSet[i] = resultSetMapping;
             
 
             if (resultSetMapping != ResultSetMapping.NoResultSet) 
                 CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
          
-            if (CommandResultSet.Count == lastIndex)
-                stringBuilder.AppendLine("END;");
             
             return stringBuilder.ToString();
         }
@@ -190,33 +208,53 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
             if (newModificationCommand.EntityState == EntityState.Added)
             {
-                if (_bulkInsertCommands.Count > 0
-                    && !CanBeInsertedInSameStatement(_bulkInsertCommands[0], newModificationCommand))
+                if (_BlockInsertCommands.Count > 0
+                    && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
                 {
-                    CachedCommandText.Append(GetBulkInsertCommandText(commandPosition));
-                    _bulkInsertCommands.Clear();
+                    CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
+                    _BlockInsertCommands.Clear();
                 }
-                _bulkInsertCommands.Add(newModificationCommand); 
+                _BlockInsertCommands.Add(newModificationCommand); 
                 LastCachedCommandIndex = commandPosition;
             }
             else if (newModificationCommand.EntityState == EntityState.Modified)
             {
-                if (_bulkUpdateCommands.Count > 0
-                    && !CanBeUpdateInSameStatement(_bulkUpdateCommands[0], newModificationCommand))
+                if (_BlockUpdateCommands.Count > 0
+                    && !CanBeUpdateInSameStatement(_BlockUpdateCommands[0], newModificationCommand))
                 {
-                    CachedCommandText.Append(GetBulkUpdateCommandText(commandPosition));
-                    _bulkUpdateCommands.Clear();
+                    CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
+                    _BlockUpdateCommands.Clear();
                 }
-                _bulkUpdateCommands.Add(newModificationCommand); 
+                _BlockUpdateCommands.Add(newModificationCommand); 
+                LastCachedCommandIndex = commandPosition;
+            }
+            else if (newModificationCommand.EntityState == EntityState.Deleted)
+            {
+                if (_BlockDeleteCommands.Count > 0
+                    && !CanBeDeleteInSameStatement(_BlockDeleteCommands[0], newModificationCommand))
+                {
+                    CachedCommandText.Append(GetBlockDeleteCommandText(commandPosition));
+                    _BlockDeleteCommands.Clear();
+                }
+                _BlockDeleteCommands.Add(newModificationCommand);
                 LastCachedCommandIndex = commandPosition;
             }
             else
             {
-                CachedCommandText.Append(GetBulkInsertCommandText(commandPosition));
-                _bulkInsertCommands.Clear(); 
+                CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
+                _BlockInsertCommands.Clear(); 
                 base.UpdateCachedCommandText(commandPosition);
             }
         }
+
+        private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
+  => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
+     && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
+     && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
+         secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+     && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
+         secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+
 
         private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
     => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)

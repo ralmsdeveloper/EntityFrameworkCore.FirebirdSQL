@@ -31,15 +31,20 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public interface IFirebirdSqlUpdateSqlGenerator : IUpdateSqlGenerator
     {
-        ResultSetMapping AppendBulkInsertOperation(
+        ResultSetMapping AppendBlockInsertOperation(
             [NotNull] StringBuilder commandStringBuilder,
             [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
 
-        ResultSetMapping AppendBulkUpdateOperation(
+        ResultSetMapping AppendBlockUpdateOperation(
             [NotNull] StringBuilder commandStringBuilder,
             [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
+
+        ResultSetMapping AppendBlockDeleteOperation(
+          [NotNull] StringBuilder commandStringBuilder,
+          [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
+          int commandPosition);
     }
    
 }

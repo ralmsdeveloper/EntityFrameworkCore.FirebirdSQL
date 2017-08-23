@@ -48,7 +48,27 @@ namespace EFCore.FirebirdSqlSQL.Test
                     registro.Url = "www.ralms.net";
                 }
             }
-            Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}"); 
+            Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}");
+
+
+            Console.WriteLine($"--------------------------------------------------------");
+            Console.WriteLine($"Exluindo registros  ");
+            Console.WriteLine($"--------------------------------------------------------");
+           
+            for (int i = 1; i < 5; i++)
+            {
+          
+                var registro = cx.Blog.Find(1);
+                if(registro != null)
+                    cx.Blog.Remove(registro);
+
+                registro = cx.Blog.Find(2);
+                if (registro != null)
+                    cx.Blog.Remove(registro);
+
+            }
+            Console.WriteLine($"Registros Excluidos... {cx.SaveChanges()}");
+
 
             Console.ReadKey();
         }

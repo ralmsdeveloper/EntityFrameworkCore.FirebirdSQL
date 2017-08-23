@@ -47,35 +47,36 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
            ModificationCommand command,
            int commandPosition)
         {
-            Check.NotNull(command, nameof(command)); 
-            return AppendBulkInsertOperation(commandStringBuilder, new[] { command }, commandPosition);
+            Check.NotNull(command, nameof(command));
+            return AppendBlockInsertOperation(commandStringBuilder, new[] { command }, commandPosition);
         }
 
 
-        public ResultSetMapping AppendBulkInsertOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
+        public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-            Check.NotEmpty(modificationCommands, nameof(modificationCommands)); 
+            Check.NotEmpty(modificationCommands, nameof(modificationCommands));
 
             var name = modificationCommands[0].TableName;
             var schema = modificationCommands[0].Schema;
             var operations = modificationCommands[0].ColumnModifications;
             var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-            var readOperations = operations.Where(o => o.IsRead).ToArray(); 
-
+            var readOperations = operations.Where(o => o.IsRead).ToArray();
+             
+             
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
                 AppendValues(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
-                 
+
                 if (readOperations.Length > 0)
                     AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
-                
-            }   
 
-            return ResultSetMapping.NotLastInResultSet; 
+            }
+            commandStringBuilder.AppendLine("END;");
+            return ResultSetMapping.NotLastInResultSet;
         }
 
         protected new void AppendValues(
@@ -95,64 +96,103 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         (sb, o, helper) =>
                         {
                             if (o.IsWrite)
-                            { 
-                                FirebirdSqlSqlGenerationHelper.GenerateValue(sb, o); 
+                            {
+                                FirebirdSqlSqlGenerationHelper.GenerateValue(sb, o);
                             }
                             else
                             {
-                                sb.Append("DEFAULT");
+                                sb.Append("DEFAULT VALUES");
                             }
                         })
                     .Append(")");
             }
         }
- 
+
         public override ResultSetMapping AppendUpdateOperation(
             StringBuilder commandStringBuilder,
             ModificationCommand command,
             int commandPosition)
         {
-            return AppendBulkUpdateOperation(commandStringBuilder, new[] { command }, commandPosition); 
-            
+            return AppendBlockUpdateOperation(commandStringBuilder, new[] { command }, commandPosition);
+
+        }
+
+        public override ResultSetMapping AppendDeleteOperation(
+           StringBuilder commandStringBuilder,
+           ModificationCommand command,
+           int commandPosition)
+        {
+            return AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
+
         }
 
 
-        public ResultSetMapping AppendBulkUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
+        public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-            Check.NotEmpty(modificationCommands, nameof(modificationCommands)); 
+            Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
             var schema = modificationCommands[0].Schema; 
-            commandStringBuilder.AppendLine($"reg=0;");
+            commandStringBuilder.AppendLine($"regAffeted=0;");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray();
-
-                commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ") 
+                var readOperations = operations.Where(o => o.IsRead).ToArray(); 
+                commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
                 .AppendJoinUpadate(
                     writeOperations,
                     SqlGenerationHelper,
                     (sb, o, helper) =>
                     {
-                        if (o.IsWrite) 
+                        if (o.IsWrite)
                             sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}={FirebirdSqlSqlGenerationHelper.GenerateValue(o)}");
-                            
 
-                    });  
+
+                    });
                 commandStringBuilder.AppendLine($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}; ");
-                AppendUpdateOutputClause(commandStringBuilder);  
+                AppendUpdateOutputClause(commandStringBuilder);
             }
-            commandStringBuilder.AppendLine("SUSPEND;"); 
+            commandStringBuilder.AppendLine("SUSPEND;");
+            commandStringBuilder.AppendLine("END;");
             return ResultSetMapping.NotLastInResultSet;
         }
 
+
+        public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
+           int commandPosition)
+        {
+            Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
+            Check.NotEmpty(modificationCommands, nameof(modificationCommands));
+            var name = modificationCommands[0].TableName;
+            var schema = modificationCommands[0].Schema;
+            commandStringBuilder.AppendLine($"regAffeted=0;");
+            for (var i = 0; i < modificationCommands.Count; i++)
+            {
+                var operations = modificationCommands[i].ColumnModifications;
+                var writeOperations = operations.Where(o => o.IsWrite).ToArray();
+                var readOperations = operations.Where(o => o.IsRead).ToArray();
+                commandStringBuilder.Append($"DELETE FROM {SqlGenerationHelper.DelimitIdentifier(name)} "); 
+                commandStringBuilder.AppendLine($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}; ");
+                AppendUpdateOutputClause(commandStringBuilder);
+            }
+            commandStringBuilder.AppendLine("SUSPEND;");
+            commandStringBuilder.AppendLine("END;");
+            return ResultSetMapping.NotLastInResultSet;
+        }
+
+
         private void AppendUpdateOutputClause(StringBuilder commandStringBuilder)
-         =>  commandStringBuilder.AppendLine("reg=reg+ROW_COUNT; ");
-             
- 
+        {
+            //Increment of updates 
+            commandStringBuilder
+                    .AppendLine("IF (ROW_COUNT > 0) THEN")
+                    .AppendLine("   regAffeted=regAffeted+1;");
+
+        }
+
+
         private void AppendInsertOutputClause(
             StringBuilder commandStringBuilder,
             string name,
@@ -163,25 +203,25 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
                 commandStringBuilder
-                    .AppendLine($" RETURNING { SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName) } INTO :reg;")
-                    .AppendLine("SUSPEND;");
-            } 
+                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :regAffeted;")
+                    .AppendLine("IF (ROW_COUNT > 0) THEN")
+                    .AppendLine("   SUSPEND;");
+            }
         }
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name,
             string schema, int commandPosition)
-        { 
+        {
             // Not Implemented!
             return ResultSetMapping.LastInResultSet;
         }
 
         public override void AppendBatchHeader(StringBuilder commandStringBuilder)
-        =>
+        {
             //Insert FirebirdSqlSQL Fast(Insert/Update)
-            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (reg INT) AS BEGIN");
-        
+            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN");
+        }
          
-
         protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
         {
             // Not Implemented!
