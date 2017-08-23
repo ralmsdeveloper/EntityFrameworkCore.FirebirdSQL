@@ -3,7 +3,7 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
 
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
 
-## Example of use
+## Example of use DBContext
 
  ```csharp
  //DataContext
@@ -44,11 +44,12 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
     }
- }    
- 
-  
-  
- //Sample Use
+ }     
+```
+
+## Example of use add
+```csharp
+//Sample Use
  var cx = new BlogContext();  
  
  //one
@@ -68,5 +69,32 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
  };
  cx.Blog.AddRange(RangeBlog);
  cx.SaveChanges();
- 
+```
+
+## Example of use update
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Find(1);
+ cx.Attach(registro);
+ blog.Url = "www.ralms.net";
+ cx.SaveChanges(); 
+```
+
+## Example of use delete
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Find(1);
+ cx.Delete(blog); 
+ cx.SaveChanges(); 
+```
+## Example of use where
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Where(p => p.BlogId == 1).ToList(); 
 ```
