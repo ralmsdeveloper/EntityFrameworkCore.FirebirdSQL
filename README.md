@@ -2,6 +2,8 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
+ 
+[![Nuget count](http://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSQL.svg)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSQL/)
 
 ## Example of use DBContext
 
