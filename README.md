@@ -1,42 +1,23 @@
-# EntityFrameworkCore.FirebirdSQL
-FirebirdSQL database provider for Entity Framework Core.
+EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 
-FirebirdSQL Access Provider Using EntityFrameworkCore
+[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
+ 
+[![Nuget count](http://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSQL.svg)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSQL/)
 
-## Example of use
+## Example of use DBContext
 
  ```csharp
- public class Context : DbContext
-    {
+ //DataContext
+ public class BlogContext : DbContext
+ {
         
         public DbSet<Blog> Blog { get; set; }
         public DbSet<Post> Posts { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
-
-            string connectionString =
-            "User=SYSDBA;" +
-            "Password=masterkey;" +
-            $"Database={AppContext.BaseDirectory}Rafael.fdb;" +
-            "DataSource=localhost;" +
-            "Port=2017;" +
-            "Dialect=3;" +
-            "Charset=NONE;" +
-            "Role=;" +
-            "Connection lifetime=15;" +
-            "Pooling=true;" +
-            "MinPoolSize=1;" +
-            "MaxPoolSize=50;" +
-            "Packet Size=8192;" +
-            "ServerType=0";
-
-            optionsBuilder.UseFirebirdSql(connectionString); 
-             //if used Log
-            //LoggerFactory loggerFactory = new LoggerFactory();
-            //loggerFactory.AddProvider(new TraceLoggerProvider());
-            //optionsBuilder.UseLoggerFactory(loggerFactory);
-
+            string connectionString = "...";
+            optionsBuilder.UseFirebirdSql(connectionString);   
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {
@@ -56,7 +37,6 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
         public string Url { get; set; } 
         public List<Post> Posts { get; set; }
     }
-
     public class Post
     {
         public int PostId { get; set; }
@@ -66,5 +46,57 @@ FirebirdSQL Access Provider Using EntityFrameworkCore
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
     }
-}    
+ }     
+```
+
+## Example of use add
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+ 
+ //one
+ cx.Blog.Add(new Blog
+ {
+     Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
+ });
+ cx.SaveChanges();
+ 
+ //Range
+ var RangeBlog = new List<Blog>
+ {
+      new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  },
+      new Blog{ Url="https://github.com/ralmsdeveloper/"  },
+      new Blog{ Url="https://blog.ralms.net"  },
+      new Blog{ Url="https://ralms.net"  } 
+ };
+ cx.Blog.AddRange(RangeBlog);
+ cx.SaveChanges();
+```
+
+## Example of use update
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Find(1);
+ cx.Attach(registro);
+ blog.Url = "www.ralms.net";
+ cx.SaveChanges(); 
+```
+
+## Example of use delete
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Find(1);
+ cx.Delete(blog); 
+ cx.SaveChanges(); 
+```
+## Example of use where
+```csharp
+//Sample Use
+ var cx = new BlogContext();  
+  
+ var blog = cx.Blog.Where(p => p.BlogId == 1).ToList(); 
 ```
