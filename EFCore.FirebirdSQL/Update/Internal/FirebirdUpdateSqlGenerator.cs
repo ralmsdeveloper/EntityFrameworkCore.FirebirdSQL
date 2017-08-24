@@ -153,6 +153,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
                 var readOperations = operations.Where(o => o.IsRead).ToArray();
+                var condicoes = operations.Where(o => o.IsCondition).ToArray();
                 commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
                 .AppendJoinUpadate(
                     writeOperations,
@@ -161,8 +162,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     {
                         if (o.IsWrite)
                             sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} "); 
-                    }); 
-                commandStringBuilder.Append($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}");
+                    });
+
+                AppendWhereClauseCustoom(commandStringBuilder, condicoes);
                 commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator); 
                 AppendUpdateOutputClause(commandStringBuilder);
             }
@@ -171,6 +173,24 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             return ResultSetMapping.NotLastInResultSet;
         }
 
+        private void AppendWhereClauseCustoom(StringBuilder commandStringBuilder, ColumnModification[] col)
+        {
+            if (col.Any())
+            {
+                commandStringBuilder.Append(" WHERE ");
+                var And = string.Empty;
+                foreach (var item in col)
+                {
+                    commandStringBuilder
+                        .Append(And)
+                        .Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
+                        .Append("=")
+                        .Append(item.Value);
+                }
+            }
+        
+
+        }
 
         public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
            int commandPosition)
