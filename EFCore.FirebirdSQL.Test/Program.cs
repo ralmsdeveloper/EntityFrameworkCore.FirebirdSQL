@@ -46,7 +46,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             cx.Products.AddRange(RangeProduct);
             Console.WriteLine($"Registros Inseridos Range: {cx.SaveChanges()}.");
 
-            for (int i = 1; i <= 10; i++)
+            for (int i = 1; i <= 100; i++)
             {
                 cx.Products.Add(new Product
                 {
@@ -55,8 +55,8 @@ namespace EFCore.FirebirdSqlSQL.Test
                     Update = DateTime.Now,
                     Locked = false
                 });
-            }
-            Console.WriteLine($"Registros Inseridos For: {cx.SaveChanges()}"); 
+            } 
+            Console.WriteLine($"Registros Inseridos For: {cx.SaveChangesAsync().Result}"); 
 
             var dados = cx.Products.OrderByDescending(p => p.Id).Take(10).ToList();
             foreach (var item in dados)

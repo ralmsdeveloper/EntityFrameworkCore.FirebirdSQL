@@ -37,11 +37,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 { 
 
     public class FirebirdSqlModificationCommandBatch : AffectedCountModificationCommandBatch
-    {
-        internal const int DefaultNetworkPacketSizeBytes = 4096;
-        internal const int MaxScriptLength = 65536 * DefaultNetworkPacketSizeBytes / 2;
-        internal const int MaxParameterCount = 2100;
-        internal const int MaxRowCount = 256;
+    { 
+        internal const int MaxParameterCount = 1500;
+        internal const int MaxRowCount = 300;
         internal int CountParameter = 1;
         internal readonly int _maxBatchSize;
         internal readonly List<ModificationCommand> _BlockInsertCommands = new List<ModificationCommand>();

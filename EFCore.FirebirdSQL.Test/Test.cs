@@ -19,7 +19,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             "User=SYSDBA;" +
             "Password=masterkey;" +
             $"Database={System.IO.Directory.GetCurrentDirectory()}\\Rafael.fdb;" +
-            "DataSource=localhost;" +
+            "DataSource=127.0.0.1;" +
             "Port=2017;" +
             "Dialect=3;" +
             "Charset=NONE;" +
@@ -54,18 +54,22 @@ namespace EFCore.FirebirdSqlSQL.Test
          
         public int Id { get; set; }
 
-        [StringLength(100)]
-        public string Name { get; set; }
+        [StringLength(100)] 
+        public string Name { get; set; }//VARCHAR(100)
 
-        public DateTime Update { get; set; } 
+        public DateTime Update { get; set; } //DATETIME 
+       
+        public decimal Price { get; set; } //DECIMAL(18,2)
 
-        public string Description { get; set; } 
-        
-        public decimal Price { get; set; }
+        public double Quant { get; set; } //DOUBLE PRECISION 
 
-        public Boolean Locked { get; set; }
+        public Boolean Locked { get; set; } //BOOLEAN
+
+        public string Description { get; set; } //BLOB SUB_TYPE TEXT
+
+
     }
-     
-    
+
+
 }
 

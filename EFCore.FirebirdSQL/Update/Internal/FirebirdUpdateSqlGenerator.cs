@@ -81,7 +81,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 }
                 commandStringBuilder.AppendLine(")");
             }
-            commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN");
+            commandStringBuilder.AppendLine("RETURNS (Row_Affected INT) AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var modified = modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList();
@@ -163,8 +163,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 }
                 commandStringBuilder.AppendLine();
                 commandStringBuilder.Append(") ");
-                commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN")
-                                   .AppendLine("regAffeted=0;");
+                commandStringBuilder.AppendLine("RETURNS (Row_Affected INT) AS BEGIN")
+                                   .AppendLine("Row_Affected=0;");
             }
 
 
@@ -220,8 +220,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             var name = modificationCommands[0].TableName;
             var schema = modificationCommands[0].Schema;
 
-            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN")
-                                .AppendLine($"regAffeted=0;");
+            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (Row_Affected INT) AS BEGIN")
+                                .AppendLine($"Row_Affected=0;");
 
             for (var i = 0; i < modificationCommands.Count; i++)
             {
@@ -243,7 +243,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             //Increment of updates 
             commandStringBuilder
                     .AppendLine("IF (ROW_COUNT > 0) THEN")
-                    .AppendLine("   regAffeted=regAffeted+1;");
+                    .AppendLine("   Row_Affected=Row_Affected+ROW_COUNT;");
 
         }
 
@@ -258,7 +258,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
                 commandStringBuilder
-                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :regAffeted;")
+                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :Row_Affected;")
                     .AppendLine("IF (ROW_COUNT > 0) THEN")
                     .AppendLine("   SUSPEND;");
             }

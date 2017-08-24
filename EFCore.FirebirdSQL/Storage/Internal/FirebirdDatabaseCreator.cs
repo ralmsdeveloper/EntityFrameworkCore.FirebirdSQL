@@ -42,7 +42,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     {
         private readonly IFirebirdSqlRelationalConnection _connection;
 	    private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
-
+        
 
 	    /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -53,14 +53,14 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             [NotNull] IFirebirdSqlRelationalConnection connection,
             [NotNull] IRawSqlCommandBuilder rawSqlCommandBuilder)
             : base(dependencies)
-        {
+        { 
             _connection = connection;
             _rawSqlCommandBuilder = rawSqlCommandBuilder;
         }
 
         public virtual TimeSpan RetryDelay { get; set; } = TimeSpan.FromMilliseconds(500);
 
-        public virtual TimeSpan RetryTimeout { get; set; } = TimeSpan.FromMinutes(1);
+        public virtual TimeSpan RetryTimeout { get; set; } = TimeSpan.FromMinutes(2);
 
 	    public override void Create()
         {
@@ -166,7 +166,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
          
         private bool RetryOnExistsFailure(FbException exception)
         {
-            if (exception.ErrorCode == 1049)
+            if (exception.ErrorCode == 335544721)
             {
                 ClearPool();
                 return true;
