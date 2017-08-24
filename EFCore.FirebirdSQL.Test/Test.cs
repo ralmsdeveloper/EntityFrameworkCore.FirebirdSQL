@@ -18,7 +18,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             string connectionString =
             "User=SYSDBA;" +
             "Password=masterkey;" +
-            $"Database={AppContext.BaseDirectory}Rafael.fdb;" +
+            $"Database={System.IO.Directory.GetCurrentDirectory()}\\Rafael.fdb;" +
             "DataSource=localhost;" +
             "Port=2017;" +
             "Dialect=3;" +

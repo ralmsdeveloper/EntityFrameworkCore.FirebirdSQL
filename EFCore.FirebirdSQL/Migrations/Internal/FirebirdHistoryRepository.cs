@@ -57,10 +57,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
                 var builder = new StringBuilder();
                 builder.Append("select 1 from rdb$relations where rdb$view_blr is null ")
                        .Append("And (rdb$system_flag is null or rdb$system_flag = 0) ")
-                       .Append("And RDB$RELATION_NAME='")
-                       .Append(TableName)
-                       .Append("';");
-
+                       .Append($"And RDB$RELATION_NAME='{TableName}';");  
                 return builder.ToString();
             }
         }

@@ -299,7 +299,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
 
             if (createTableSyntax == null)
-                throw new InvalidOperationException($"Could not find SHOW CREATE TABLE syntax for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
+                throw new InvalidOperationException($"Not Implemented: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
 
             var columnDefinitionRe = new Regex($"^\\s*?{operation.Name}?\\s(.*)?$", RegexOptions.Multiline);
             var match = columnDefinitionRe.Match(createTableSyntax);
