@@ -140,15 +140,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             builder.Append(GenerateValue(column));
         }
-
-
-
-
-        public static object GetTypeColumnToString(ColumnModification column)
-        {
-            return "VARCHAR(100)";
-        }
-
-
+         
     }
 }

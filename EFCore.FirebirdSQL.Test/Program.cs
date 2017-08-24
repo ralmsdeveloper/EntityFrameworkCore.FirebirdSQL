@@ -12,60 +12,71 @@ namespace EFCore.FirebirdSqlSQL.Test
         static void Main(string[] args)
         {
             Console.WriteLine("# Wait... ");
-            var cx = new Context(); 
+            var cx = new Context();
             Console.WriteLine("# Deleting database...");
             cx.Database.EnsureDeleted();
             cx.Database.EnsureCreated();
 
-            cx.Blog.Add(new Blog
+            cx.Products.Add(new Product
             {
-                Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
+                Description = "Description Sample",
+                Name = "Product Sample Name",
+                Update = DateTime.Now,
+                Locked = false
             });
             Console.WriteLine($"Registro Inserido: {cx.SaveChanges()}.");
 
 
-            var RangeBlog = new List<Blog>
+            var RangeProduct = new List<Product>
             {
-                new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  },
-                new Blog{ Url="https://github.com/ralmsdeveloper/"  },
-                new Blog{ Url="https://blog.ralms.net"  },
-                new Blog{ Url="https://ralms.net"  } 
+                new Product {
+                                Description = "Description Sample",
+                                Name = "Product Sample Name",
+                                Update = DateTime.Now,
+                                Locked = false
+                            },
+                new Product {
+                                Description = "Description Sample",
+                                Name = "Product Sample Name",
+                                Update = DateTime.Now,
+                                Locked = true
+                            }
+
             };
-            cx.Blog.AddRange(RangeBlog);
+            cx.Products.AddRange(RangeProduct);
             Console.WriteLine($"Registros Inseridos Range: {cx.SaveChanges()}.");
 
-            for (int i = 1; i <= 20; i++)
+            for (int i = 1; i <= 10; i++)
             {
-                cx.Blog.Add(new Blog
+                cx.Products.Add(new Product
                 {
-                    Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL",
-                    Autor = $"Ralms {i}"
+                    Description = $"Description Sample {i}",
+                    Name = $"Product Sample Name {i}",
+                    Update = DateTime.Now,
+                    Locked = false
                 });
             }
-            Console.WriteLine($"Registros Inseridos For: {cx.SaveChanges()}");
+            Console.WriteLine($"Registros Inseridos For: {cx.SaveChanges()}"); 
 
-
-            var dados = cx.Blog.OrderByDescending(p => p.BlogId).Take(10).ToList();
+            var dados = cx.Products.OrderByDescending(p => p.Id).Take(10).ToList();
             foreach (var item in dados)
-                Console.WriteLine(item.BlogId + "\t\t" + item.Url);
+                Console.WriteLine(item.Id + "\t\t" + item.Name);
 
             Console.WriteLine($"--------------------------------------------------------");
             Console.WriteLine($"Atualizando registro  ");
             Console.WriteLine($"--------------------------------------------------------");
             Random rnd = new Random();
-            for (int i = 1; i < 30; i++)
-            {
-                var id = rnd.Next(1, 30);
-                var registro = cx.Blog.Find(id);
+            for (int i = 1; i < 10; i++)
+            { 
+                var registro = cx.Products.Find(1);
                 if (registro != null)
                 {
                     cx.Attach(registro);
-                    registro.Url = "www.ralms.net";
-                    registro.Autor = $"Ralms {id}";
+                    registro.Name = $"Product Alter {registro.Id}";
+                    registro.Price =i*2.33m;
                 }
             }
             Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}");
-
 
             Console.WriteLine($"--------------------------------------------------------");
             Console.WriteLine($"Exluindo registros  ");
@@ -74,13 +85,13 @@ namespace EFCore.FirebirdSqlSQL.Test
             for (int i = 1; i < 5; i++)
             {
 
-                var registro = cx.Blog.Find(1);
+                var registro = cx.Products.Find(1);
                 if (registro != null)
-                    cx.Blog.Remove(registro);
+                    cx.Products.Remove(registro);
 
-                registro = cx.Blog.Find(2);
+                registro = cx.Products.Find(2);
                 if (registro != null)
-                    cx.Blog.Remove(registro);
+                    cx.Products.Remove(registro);
 
             }
             Console.WriteLine($"Registros Excluidos... {cx.SaveChanges()}");

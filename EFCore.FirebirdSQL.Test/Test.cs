@@ -11,8 +11,7 @@ namespace EFCore.FirebirdSqlSQL.Test
     public class Context : DbContext
     {
         
-        public DbSet<Blog> Blog { get; set; }
-        public DbSet<Post> Posts { get; set; }
+        public DbSet<Product> Products { get; set; } 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
 
@@ -34,43 +33,37 @@ namespace EFCore.FirebirdSqlSQL.Test
 
             optionsBuilder.UseFirebirdSql(connectionString);
             //if used Log
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new TraceLoggerProvider());
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+            //LoggerFactory loggerFactory = new LoggerFactory();
+            //loggerFactory.AddProvider(new TraceLoggerProvider());
+            //optionsBuilder.UseLoggerFactory(loggerFactory);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {
             //Fluent Api
-            modelo.Entity<Blog>(entity =>
+            modelo.Entity<Product>(entity =>
             {
-                entity.HasIndex(e => e.BlogId)
-                    .HasName("Id")
-                    .IsUnique();
+                entity.HasIndex(e => e.Id)
+                    .HasName("Id");
             });
         }
     }
 
-    public class Blog
+    public class Product
     {
-        public int BlogId { get; set; }
+         
+        public int Id { get; set; }
+
         [StringLength(100)]
-        public string Url { get; set; }
+        public string Name { get; set; }
 
-        [StringLength(50)]
-        public string Autor { get; set; }
+        public DateTime Update { get; set; } 
 
-        public List<Post> Posts { get; set; }
-    }
+        public string Description { get; set; } 
+        
+        public decimal Price { get; set; }
 
-    public class Post
-    {
-        public int PostId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-
-        public int BlogId { get; set; }
-        public Blog Blog { get; set; }
+        public Boolean Locked { get; set; }
     }
      
     

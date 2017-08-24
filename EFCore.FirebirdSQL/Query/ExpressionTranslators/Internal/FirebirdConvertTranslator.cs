@@ -40,7 +40,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
         private static readonly Dictionary<string, string> _typeMapping = new Dictionary<string, string>
         {
             [nameof(Convert.ToByte)] = "SMALLINT",
-            [nameof(Convert.ToDecimal)] = "NUMERIC(18, 2)",
+            [nameof(Convert.ToDecimal)] = "DECIMAL(18, 2)",
             [nameof(Convert.ToDouble)] = "FLOAT",
             [nameof(Convert.ToInt16)] = "SMALLINT",
             [nameof(Convert.ToInt32)] = "INTEGER",

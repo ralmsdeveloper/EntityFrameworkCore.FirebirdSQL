@@ -45,7 +45,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly IntTypeMapping _int                = new IntTypeMapping("INTEGER", DbType.Int32); 
 	    private readonly LongTypeMapping _bigint            = new LongTypeMapping("BIGINT", DbType.Int64);  
 	    // decimals
-	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("DECIMAL", DbType.Decimal);
+	    private readonly DecimalTypeMapping _decimal        = new DecimalTypeMapping("DECIMAL(18, 2)", DbType.Decimal);
 	    private readonly DoubleTypeMapping _double          = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
         private readonly FloatTypeMapping _float            = new FloatTypeMapping("FLOAT");
         private readonly DecimalTypeMapping _money            = new DecimalTypeMapping("DECIMAL(18, 4)"); 
@@ -84,7 +84,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "INTEGER", _int },
                     { "BIGINT", _bigint },  
                     // decimals
-                    { "DECIMAL", _decimal },
+                    { "DECIMAL(18, 2)", _decimal },
                     { "DOUBLE PRECICION", _double },
                     { "FLOAT", _float },
                      { "DECIMAL(18, 4)", _money },

@@ -1,4 +1,4 @@
-/*                 
+﻿/*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
  *     Permission to use, copy, modify, and distribute this software and its
@@ -22,25 +22,13 @@
  *                  All Rights Reserved.
  */
 
-using System.Data;
-using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Update;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Microsoft.EntityFrameworkCore.Storage
+namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
-    /// <summary>
-    ///     <para>
-    ///         Represents the mapping between a .NET <see cref="bool" /> type and a database type.
-    ///     </para>
-    ///     <para>
-    ///         This type is typically used by database providers (and other extensions). It is generally
-    ///         not used in application code.
-    ///     </para>
-    /// </summary>
-    public class FirebirdSqlBoolTypeMapping : BoolTypeMapping
-    {
-        public FirebirdSqlBoolTypeMapping() : base("BOOLEAN", System.Data.DbType.Boolean) { }
-
-        protected override string GenerateNonNullSqlLiteral(object value)
-            => (bool)value ? "TRUE" : "FALSE";
-    }
+   public  class FirebirdSqlHelper 
+    { }
 }

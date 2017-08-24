@@ -30,17 +30,19 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public class FirebirdSqlUpdateSqlGenerator : UpdateSqlGenerator, IFirebirdSqlUpdateSqlGenerator
     {
+        private readonly IRelationalTypeMapper _typeMapperRelational;
         public FirebirdSqlUpdateSqlGenerator(
-            [NotNull] UpdateSqlGeneratorDependencies dependencies)
+            [NotNull] UpdateSqlGeneratorDependencies dependencies,
+            [NotNull] IRelationalTypeMapper typeMapper)
             : base(dependencies)
-        {
-        }
-
+       => _typeMapperRelational = typeMapper;
 
         public override ResultSetMapping AppendInsertOperation(
            StringBuilder commandStringBuilder,
@@ -69,47 +71,65 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 commandStringBuilder.AppendLine("(");
                 var commaAppend = string.Empty;
                 for (var i = 0; i < modificationCommands.Count; i++)
-                { 
+                {
                     foreach (var column in modificationCommands[i].ColumnModifications.Where(o => o.IsWrite))
                     {
-                        commandStringBuilder.Append(commaAppend); 
-                        commandStringBuilder.AppendLine($"{column.ParameterName}  {FirebirdSqlSqlGenerationHelper.GetTypeColumnToString(column)}=?");
+                        commandStringBuilder.Append(commaAppend);
+                        commandStringBuilder.AppendLine($"{column.ParameterName}  {GetDataType(column.Property)}=@{column.ParameterName}");
                         commaAppend = ",";
-                    } 
+                    }
                 }
                 commandStringBuilder.AppendLine(")");
             }
             commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
-                
+                var modified = modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList();
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
-                AppendValuesHeader(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
-                AppendValues(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
+                AppendValuesHeader(commandStringBuilder, modified);
+                AppendValuesInsert(commandStringBuilder, modified);
+
                 if (readOperations.Length > 0)
                     AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
 
             }
-            commandStringBuilder.AppendLine("END;");
-            commandStringBuilder.Replace("@p", ":p"); 
+            commandStringBuilder.AppendLine("END;"); 
             return ResultSetMapping.NotLastInResultSet;
         }
-       
-        
+
+        private void AppendValuesInsert(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations)
+        {
+            if (operations.Count > 0)
+            {
+                commandStringBuilder
+                    .Append("(")
+                    .AppendJoin(
+                        operations,
+                        SqlGenerationHelper,
+                        (sb, o, helper) =>
+                        {
+                            if (o.IsWrite) 
+                                sb.Append(":").Append(o.ParameterName);
+                           
+                        })
+                    .Append(")");
+            }
+        } 
+
         public override ResultSetMapping AppendUpdateOperation(
             StringBuilder commandStringBuilder,
             ModificationCommand command,
             int commandPosition)
         => AppendBlockUpdateOperation(commandStringBuilder, new[] { command }, commandPosition);
-         
+
 
         public override ResultSetMapping AppendDeleteOperation(
            StringBuilder commandStringBuilder,
            ModificationCommand command,
            int commandPosition)
-        =>  AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
+        => AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
 
-        
+
 
 
         public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
@@ -118,7 +138,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
-            var schema = modificationCommands[0].Schema;  
+            var schema = modificationCommands[0].Schema;
             commandStringBuilder.Clear();
             commandStringBuilder.Append("EXECUTE BLOCK ");
             if (modificationCommands.Any())
@@ -135,7 +155,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         commandStringBuilder.Append(separator);
                         commandStringBuilder.Append(param.ParameterName.Replace("@", string.Empty));
                         commandStringBuilder.Append(" ");
-                        commandStringBuilder.Append(" VARCHAR(100) ");
+                        commandStringBuilder.Append($"{GetDataType(param.Property)}");
                         commandStringBuilder.Append(" = ");
                         commandStringBuilder.Append("@" + param.ParameterName);
                         separator = ", ";
@@ -146,7 +166,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN")
                                    .AppendLine("regAffeted=0;");
             }
-            
+
 
             for (var i = 0; i < modificationCommands.Count; i++)
             {
@@ -161,15 +181,15 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     (sb, o, helper) =>
                     {
                         if (o.IsWrite)
-                            sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} "); 
+                            sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
                     });
 
                 AppendWhereClauseCustoom(commandStringBuilder, condicoes);
-                commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator); 
+                commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
                 AppendUpdateOutputClause(commandStringBuilder);
             }
             commandStringBuilder.AppendLine("SUSPEND;");
-            commandStringBuilder.AppendLine("END;"); 
+            commandStringBuilder.AppendLine("END;");
             return ResultSetMapping.NotLastInResultSet;
         }
 
@@ -188,7 +208,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         .Append(item.Value);
                 }
             }
-        
+
 
         }
 
@@ -264,6 +284,32 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
         {
             // Not Implemented!
+        }
+
+        private string GetDataType(IProperty property)
+        {
+            var typeName = property.FirebirdSql().ColumnType;
+            if (typeName == null)
+            {
+                var propertyDefault = property.FindPrincipal();
+                typeName = propertyDefault?.FirebirdSql().ColumnType;
+                if (typeName == null)
+                {
+                    if (property.ClrType == typeof(string))
+                        typeName = _typeMapperRelational.StringMapper?.FindMapping(
+                            property.IsUnicode() ?? propertyDefault?.IsUnicode() ?? true,
+                            keyOrIndex: false,
+                            maxLength: null).StoreType;
+                    else if (property.ClrType == typeof(byte[]))
+                        typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(rowVersion: false, keyOrIndex: false, size: null).StoreType;
+                    else
+                        typeName = _typeMapperRelational.FindMapping(property.ClrType).StoreType;
+                }
+            }
+            if (property.ClrType == typeof(byte[]) && typeName != null)
+                return property.IsNullable ? "varbinary(8)" : "binary(8)";
+
+            return typeName;
         }
 
     }
