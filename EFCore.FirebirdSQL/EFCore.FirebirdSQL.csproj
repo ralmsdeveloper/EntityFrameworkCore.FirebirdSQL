@@ -11,7 +11,7 @@
     <Copyright>Copyright © Rafael Almeida</Copyright>
     <Company>Rafael Almeida</Company>
     <Authors>Rafael Almeida</Authors>
-    <Version>2.0.0-preview2</Version>
+    <Version>2.0.1-preview2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM;</PackageTags>
@@ -19,6 +19,8 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>EntityFrameworkCore.FirebirdSQL</PackageId>
     <Product>EntityFrameworkCore.FirebirdSQL</Product>
+    <PackageProjectUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</PackageProjectUrl>
+    <PackageIconUrl>https://firebirdsql.org/img/site/fb.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

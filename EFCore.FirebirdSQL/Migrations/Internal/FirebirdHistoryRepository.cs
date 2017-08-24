@@ -55,15 +55,11 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
             get
             {
                 var builder = new StringBuilder();
-
-                builder.Append("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE ");
-                
-                builder
-                    .Append("TABLE_SCHEMA='")
-                    .Append(SqlGenerationHelper.EscapeLiteral(TableSchema ?? Dependencies.Connection.DbConnection.Database))
-                    .Append("' AND TABLE_NAME='")
-                    .Append(SqlGenerationHelper.EscapeLiteral(TableName))
-                    .Append("';");
+                builder.Append("select 1 from rdb$relations where rdb$view_blr is null ")
+                       .Append("And (rdb$system_flag is null or rdb$system_flag = 0) ")
+                       .Append("And RDB$RELATION_NAME='")
+                       .Append(TableName)
+                       .Append("';");
 
                 return builder.ToString();
             }
