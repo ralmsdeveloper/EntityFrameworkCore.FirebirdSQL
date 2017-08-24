@@ -55,7 +55,11 @@ namespace EFCore.FirebirdSqlSQL.Test
     {
         public int BlogId { get; set; }
         [StringLength(100)]
-        public string Url { get; set; } 
+        public string Url { get; set; }
+
+        [StringLength(50)]
+        public string Autor { get; set; }
+
         public List<Post> Posts { get; set; }
     }
 

@@ -82,6 +82,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
+                
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
                 AppendValues(commandStringBuilder, modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList());
@@ -99,19 +100,16 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             StringBuilder commandStringBuilder,
             ModificationCommand command,
             int commandPosition)
-        {
-            return AppendBlockUpdateOperation(commandStringBuilder, new[] { command }, commandPosition);
-
-        }
+        => AppendBlockUpdateOperation(commandStringBuilder, new[] { command }, commandPosition);
+         
 
         public override ResultSetMapping AppendDeleteOperation(
            StringBuilder commandStringBuilder,
            ModificationCommand command,
            int commandPosition)
-        {
-            return AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
+        =>  AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
 
-        }
+        
 
 
         public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
@@ -120,10 +118,35 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
-            var schema = modificationCommands[0].Schema;
-
-            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN")
-                                .AppendLine($"regAffeted=0;");
+            var schema = modificationCommands[0].Schema;  
+            commandStringBuilder.Clear();
+            commandStringBuilder.Append("EXECUTE BLOCK ");
+            if (modificationCommands.Any())
+            {
+                commandStringBuilder.AppendLine("(");
+                var separator = string.Empty;
+                for (var i = 0; i < modificationCommands.Count; i++)
+                {
+                    var operations = modificationCommands[i].ColumnModifications;
+                    var writeOperations = operations.Where(o => o.IsWrite).ToArray();
+                    var readOperations = operations.Where(o => o.IsRead).ToArray();
+                    foreach (var param in writeOperations)
+                    {
+                        commandStringBuilder.Append(separator);
+                        commandStringBuilder.Append(param.ParameterName.Replace("@", string.Empty));
+                        commandStringBuilder.Append(" ");
+                        commandStringBuilder.Append(" VARCHAR(100) ");
+                        commandStringBuilder.Append(" = ");
+                        commandStringBuilder.Append("@" + param.ParameterName);
+                        separator = ", ";
+                    }
+                }
+                commandStringBuilder.AppendLine();
+                commandStringBuilder.Append(") ");
+                commandStringBuilder.AppendLine("RETURNS (regAffeted INT) AS BEGIN")
+                                   .AppendLine("regAffeted=0;");
+            }
+            
 
             for (var i = 0; i < modificationCommands.Count; i++)
             {
@@ -137,15 +160,14 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     (sb, o, helper) =>
                     {
                         if (o.IsWrite)
-                            sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}={FirebirdSqlSqlGenerationHelper.GenerateValue(o)}");
-
-
-                    });
-                commandStringBuilder.AppendLine($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}; ");
+                            sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} "); 
+                    }); 
+                commandStringBuilder.Append($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}");
+                commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator); 
                 AppendUpdateOutputClause(commandStringBuilder);
             }
             commandStringBuilder.AppendLine("SUSPEND;");
-            commandStringBuilder.AppendLine("END;");
+            commandStringBuilder.AppendLine("END;"); 
             return ResultSetMapping.NotLastInResultSet;
         }
 
@@ -211,8 +233,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
         public override void AppendBatchHeader(StringBuilder commandStringBuilder)
         {
-            //Insert FirebirdSqlSQL Fast(Insert/Update)
-            // commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (regAffeted INT) AS BEGIN");
+            //Insert FirebirdSqlSQL Fast(Insert/Update) 
         }
 
         protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)

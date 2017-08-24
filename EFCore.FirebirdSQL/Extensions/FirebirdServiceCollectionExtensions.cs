@@ -51,9 +51,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddEntityFrameworkFirebirdSql([NotNull] this IServiceCollection serviceCollection)
         {
-            Check.NotNull(serviceCollection, nameof(serviceCollection));
+            Check.NotNull(serviceCollection, nameof(serviceCollection)); 
 
             var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
+                .TryAdd<IRelationalCommandBuilderFactory, FirebirdSqlCommandBuilderFactory>()
                 .TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>() 
                 .TryAdd<ISqlGenerationHelper, FirebirdSqlSqlGenerationHelper>()
                 .TryAdd<IRelationalTypeMapper, FirebirdSqlTypeMapper>() 
@@ -62,7 +63,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAdd<IUpdateSqlGenerator>(p => p.GetService<IFirebirdSqlUpdateSqlGenerator>())
                 .TryAdd<IModificationCommandBatchFactory, FirebirdSqlModificationCommandBatchFactory>()
                 .TryAdd<IValueGeneratorSelector, FirebirdSqlValueGeneratorSelector>()
-                .TryAdd<IRelationalConnection>(p => p.GetService<IFirebirdSqlRelationalConnection>()) 
+                .TryAdd<IRelationalConnection>(p => p.GetService<IFirebirdSqlRelationalConnection>())
+     
                 .TryAdd<IMigrationsSqlGenerator, FirebirdSqlMigrationsSqlGenerator>()
                .TryAdd<IBatchExecutor, FirebirdSqlBatchExecutor>()
                 .TryAdd<IBatchExecutor, BatchExecutor>()

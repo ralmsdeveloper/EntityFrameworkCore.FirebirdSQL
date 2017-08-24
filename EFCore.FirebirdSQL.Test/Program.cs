@@ -15,12 +15,12 @@ namespace EFCore.FirebirdSqlSQL.Test
             var cx = new Context(); 
             Console.WriteLine("# Deleting database...");
             cx.Database.EnsureDeleted();
-            cx.Database.EnsureCreated();  
+            cx.Database.EnsureCreated();
 
             cx.Blog.Add(new Blog
             {
                 Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
-            }); 
+            });
             Console.WriteLine($"Registro Inserido: {cx.SaveChanges()}.");
 
 
@@ -34,15 +34,16 @@ namespace EFCore.FirebirdSqlSQL.Test
             cx.Blog.AddRange(RangeBlog);
             Console.WriteLine($"Registros Inseridos Range: {cx.SaveChanges()}.");
 
-            for (int i = 1; i <= 10; i++)
+            for (int i = 1; i <= 20; i++)
             {
                 cx.Blog.Add(new Blog
                 {
-                     Url= "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  
+                    Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL",
+                    Autor = $"Ralms {i}"
                 });
-            } 
+            }
             Console.WriteLine($"Registros Inseridos For: {cx.SaveChanges()}");
-             
+
 
             var dados = cx.Blog.OrderByDescending(p => p.BlogId).Take(10).ToList();
             foreach (var item in dados)
@@ -52,14 +53,15 @@ namespace EFCore.FirebirdSqlSQL.Test
             Console.WriteLine($"Atualizando registro  ");
             Console.WriteLine($"--------------------------------------------------------");
             Random rnd = new Random();
-            for (int i = 1; i < 20; i++)
+            for (int i = 1; i < 30; i++)
             {
-                var id = rnd.Next(1, 20);
+                var id = rnd.Next(1, 30);
                 var registro = cx.Blog.Find(id);
                 if (registro != null)
                 {
                     cx.Attach(registro);
                     registro.Url = "www.ralms.net";
+                    registro.Autor = $"Ralms {id}";
                 }
             }
             Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}");
