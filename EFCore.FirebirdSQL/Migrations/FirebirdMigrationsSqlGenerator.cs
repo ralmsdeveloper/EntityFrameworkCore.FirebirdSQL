@@ -61,8 +61,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
 
-            var createDatabaseOperation = operation as FirebirdSqlCreateDatabaseOperation;
-            if (createDatabaseOperation != null)
+            if (operation is FirebirdSqlCreateDatabaseOperation createDatabaseOperation)
             {
                 Generate(createDatabaseOperation, model, builder);
                 builder.EndCommand();
@@ -89,6 +88,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             EndStatement(builder);
         }
 
+
+      
+
         protected override void Generate(AlterColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
@@ -98,53 +100,45 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             if (operation.ColumnType == null)
             {
                 var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
+        
                 type = property != null
                     ? Dependencies.TypeMapper.GetMapping(property).StoreType
                     : Dependencies.TypeMapper.GetMapping(operation.ClrType).StoreType;
             }
-
-            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
-            var alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
-
-            // TYPE
-            builder.Append(alterBase)
-                .Append(" ")
-                .Append(type)
-                .Append(operation.IsNullable ? " NULL" : " NOT NULL")
-                .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-
+            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema); 
+            builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
+            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+ 
+            builder.Append(" TYPE ")
+                   .Append(type)
+                   .Append(operation.IsNullable ? " " : " NOT NULL")
+                   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);  
             switch (type)
-            {
-                  
-
+            { 
                 case "CHAR":
                 case "VARCHAR":
                 case "BLOB SUB_TYPE TEXT":  
                 default:
-                    alterBase = $"ALTER TABLE {identifier} ALTER COLUMN {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
-
-                    builder.Append(alterBase);
-
-                    if (operation.DefaultValue != null)
+                    if (operation.DefaultValue != null || !string.IsNullOrWhiteSpace(operation.DefaultValueSql))
                     {
-                        var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
-                        builder.Append(" DEFAULT ")
-                            .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
-                            .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                    {
-                        builder.Append(" DEFAULT ")
-                            .Append(operation.DefaultValueSql)
-                            .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                    }
-                    else
-                    {
-                        builder.Append(" DROP DEFAULT;");
-                    }
+                        builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
+                        builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+                        if (operation.DefaultValue != null)
+                        {
+                            var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
+                            builder.Append(" DEFAULT ")
+                                .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+                                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                        }
+                        else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
+                        {
+                            builder.Append(" DEFAULT ")
+                                .Append(operation.DefaultValueSql)
+                                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                        }  
+                    } 
                     break;
-            }
-
+            } 
             EndStatement(builder);
         }
 

@@ -9,6 +9,7 @@ namespace EFCore.FirebirdSqlSQL.Test
 {
     class Program
     {
+       
         static void Main(string[] args)
         {
             Console.WriteLine("# Wait... ");
@@ -46,7 +47,9 @@ namespace EFCore.FirebirdSqlSQL.Test
             cx.Products.AddRange(RangeProduct);
             Console.WriteLine($"Registros Inseridos Range: {cx.SaveChanges()}.");
 
-            for (int i = 1; i <= 100; i++)
+            Console.WriteLine($"Data Inicio: {DateTime.Now}");
+
+            for (int i = 1; i <= 10; i++)
             {
                 cx.Products.Add(new Product
                 {
@@ -55,8 +58,8 @@ namespace EFCore.FirebirdSqlSQL.Test
                     Update = DateTime.Now,
                     Locked = false
                 });
-            } 
-            Console.WriteLine($"Registros Inseridos For: {cx.SaveChangesAsync().Result}"); 
+            }
+            Console.WriteLine($"Registros Inseridos For: {cx.SaveChangesAsync().Result}");
 
             var dados = cx.Products.OrderByDescending(p => p.Id).Take(10).ToList();
             foreach (var item in dados)
@@ -67,13 +70,13 @@ namespace EFCore.FirebirdSqlSQL.Test
             Console.WriteLine($"--------------------------------------------------------");
             Random rnd = new Random();
             for (int i = 1; i < 10; i++)
-            { 
+            {
                 var registro = cx.Products.Find(1);
                 if (registro != null)
                 {
                     cx.Attach(registro);
                     registro.Name = $"Product Alter {registro.Id}";
-                    registro.Price =i*2.33m;
+                    registro.Price = i * 2.33m;
                 }
             }
             Console.WriteLine($"Registros Atualizados... {cx.SaveChanges()}");
@@ -95,7 +98,6 @@ namespace EFCore.FirebirdSqlSQL.Test
 
             }
             Console.WriteLine($"Registros Excluidos... {cx.SaveChanges()}");
-
 
             Console.ReadKey();
         }

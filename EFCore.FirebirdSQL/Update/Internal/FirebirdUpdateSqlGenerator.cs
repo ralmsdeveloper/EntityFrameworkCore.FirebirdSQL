@@ -155,9 +155,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         commandStringBuilder.Append(separator);
                         commandStringBuilder.Append(param.ParameterName.Replace("@", string.Empty));
                         commandStringBuilder.Append(" ");
-                        commandStringBuilder.Append($"{GetDataType(param.Property)}");
-                        commandStringBuilder.Append(" = ");
-                        commandStringBuilder.Append("@" + param.ParameterName);
+                        commandStringBuilder.Append($" {GetDataType(param.Property)}");
+                        commandStringBuilder.Append($" = @{param.ParameterName}");
                         separator = ", ";
                     }
                 }

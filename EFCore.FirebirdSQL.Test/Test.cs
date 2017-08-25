@@ -15,12 +15,16 @@ namespace EFCore.FirebirdSqlSQL.Test
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
 
+           
             string connectionString =
             "User=SYSDBA;" +
             "Password=masterkey;" +
             $"Database={System.IO.Directory.GetCurrentDirectory()}\\Rafael.fdb;" +
             "DataSource=127.0.0.1;" +
-            "Port=2017;" +
+            "Port=2017;"+
+            //$@"Database=D:\Firebird\Rafael.fdb;" +
+            //"DataSource=192.168.0.167;" +
+            //"Port=1310;" +
             "Dialect=3;" +
             "Charset=NONE;" +
             "Role=;" +
@@ -54,8 +58,8 @@ namespace EFCore.FirebirdSqlSQL.Test
          
         public int Id { get; set; }
 
-        [StringLength(100)] 
-        public string Name { get; set; }//VARCHAR(100)
+        [StringLength(150)] 
+        public string Name { get; set; }//VARCHAR(150) 
 
         public DateTime Update { get; set; } //DATETIME 
        
