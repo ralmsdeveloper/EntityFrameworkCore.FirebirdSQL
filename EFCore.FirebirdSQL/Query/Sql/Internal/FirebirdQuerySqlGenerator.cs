@@ -70,7 +70,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
               if (selectExpression.Limit == null)
               {
                   // if we want to use Skip() without Take() we have to define the upper limit of LIMIT 
-                  Sql.AppendLine().Append("FIRST ").Append(18446744073709551610).Append(" ");
+                  Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
               }
               Sql.Append(" SKIP ");
               Visit(selectExpression.Offset);
@@ -88,20 +88,11 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
-        {
-
-            //Visit(sqlFunctionExpression);
-             
-            //if (sqlFunctionExpression.FunctionName.StartsWith("POSITION", StringComparison.Ordinal))
-            //{
-
-            //    Sql.Append(sqlFunctionExpression.FunctionName);
-
-            //    return sqlFunctionExpression;
-            //}
-
-            return base.VisitSqlFunction(sqlFunctionExpression);
-        }
+        =>
+               base.VisitSqlFunction(sqlFunctionExpression);
+        
+         
+        
 
         protected override void GenerateProjection(Expression projection)
         {

@@ -11,12 +11,12 @@
     <Copyright>Copyright © Rafael Almeida</Copyright>
     <Company>Rafael Almeida</Company>
     <Authors>Rafael Almeida</Authors>
-    <Version>2.0.3-preview3</Version>
+    <Version>2.0.4-preview3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM;</PackageTags>
+    <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM</PackageTags>
     <Description>FirebirdSQL database provider for Entity Framework Core.</Description>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>EntityFrameworkCore.FirebirdSQL</PackageId>
     <Product>EntityFrameworkCore.FirebirdSQL</Product>
     <PackageProjectUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</PackageProjectUrl>

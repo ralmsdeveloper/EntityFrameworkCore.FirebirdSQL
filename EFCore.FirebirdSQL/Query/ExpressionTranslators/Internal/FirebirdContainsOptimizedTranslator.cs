@@ -40,41 +40,17 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
            = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
-            => methodCallExpression.Method.Equals(_methodInfo)
+        {
+             return  methodCallExpression.Method.Equals(_methodInfo)
                 ? Expression.GreaterThan(
                     new SqlFunctionExpression("POSITION", typeof(int), new[]
                     {
-                         methodCallExpression.Arguments[0],
-                        methodCallExpression.Object
+                     methodCallExpression.Arguments[0],
+                       methodCallExpression.Object
 
                     }), Expression.Constant(0))
                 : null;
-
-        //private static readonly MethodInfo _methodInfo
-        //    = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
-
-        //public virtual Expression Translate(MethodCallExpression methodCallExpression)
-        //{
-        //    if (Equals(methodCallExpression.Method, _methodInfo))
-        //    {
-        //        var patternExpression = methodCallExpression.Arguments[0];
-        //        var patternConstantExpression = patternExpression as ConstantExpression;
-
-        //        var charIndexExpression = Expression.GreaterThan(
-        //            new SqlFunctionExpression("POSITION", typeof(int), new[]  {  patternExpression,methodCallExpression.Object }   ),
-        //            Expression.Constant(0));
-
-        //        return
-        //            patternConstantExpression != null
-        //                ? (string)patternConstantExpression.Value == string.Empty
-        //                    ? (Expression)Expression.Constant(true)
-        //                    : charIndexExpression
-        //                : Expression.OrElse(
-        //                    charIndexExpression,
-        //                    Expression.Equal(patternExpression, Expression.Constant(string.Empty)));
-        //    }
-
-        //    return null;
-        //}
+        }
+            
     }
 }

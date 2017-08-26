@@ -35,15 +35,20 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
     /// </summary>
     public class FirebirdSqlStartsWithOptimizedTranslator : IMethodCallTranslator
     {
-        private static readonly MethodInfo _methodInfo
+        private static readonly MethodInfo _methodStringOf
             = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(string) });
 
-        private static readonly MethodInfo _concat
-            = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
+        private static readonly MethodInfo _methodCharOf
+            = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(char) });
+
+        static readonly MethodInfo _concatCast
+           = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
+
 
         public virtual Expression Translate(MethodCallExpression methodStartCall)
         {
-            if (!methodStartCall.Method.Equals(_methodInfo) || 
+            if (!methodStartCall.Method.Equals(_methodStringOf) ||
+                !methodStartCall.Method.Equals(_methodCharOf) ||
                 methodStartCall.Object == null)
                 return null;
 
@@ -59,7 +64,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 
             var pattern = methodStartCall.Arguments[0];
             return Expression.AndAlso(
-                new LikeExpression(methodStartCall.Object, Expression.Add(pattern, Expression.Constant("%"), _concat)),
+                new LikeExpression(methodStartCall.Object, Expression.Add(pattern, Expression.Constant("%"), _concatCast)),
                 Expression.Equal(
                     new SqlFunctionExpression("LEFT", typeof(string), new[]
                     {
