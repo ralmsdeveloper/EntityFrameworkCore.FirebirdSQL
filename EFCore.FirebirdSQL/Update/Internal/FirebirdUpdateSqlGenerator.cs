@@ -128,9 +128,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
            ModificationCommand command,
            int commandPosition)
         => AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
-
-
-
+         
 
         public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
