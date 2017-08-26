@@ -396,8 +396,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
 
            
-            if (!nullable && !Identity) 
-                builder.Append(" NOT NULL");
+            
           
 
             if (!nullable && Identity)
@@ -419,6 +418,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                         .Append(" DEFAULT ")
                         .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
                 }
+
+                builder.Append(" NOT NULL");
+
                 if (onUpdateSql != null)
                 {
                     builder
