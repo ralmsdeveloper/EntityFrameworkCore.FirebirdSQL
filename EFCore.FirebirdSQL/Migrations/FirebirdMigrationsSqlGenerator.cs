@@ -21,8 +21,8 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
- 
- using System;
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -45,10 +45,10 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 {
     public class FirebirdSqlMigrationsSqlGenerator : MigrationsSqlGenerator
     {
-	    private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
-	    private readonly IFirebirdSqlOptions _options;
+        private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
+        private readonly IFirebirdSqlOptions _options;
 
-	    public FirebirdSqlMigrationsSqlGenerator(
+        public FirebirdSqlMigrationsSqlGenerator(
             [NotNull] MigrationsSqlGeneratorDependencies dependencies,
             [NotNull] IFirebirdSqlOptions options)
             : base(dependencies)
@@ -84,8 +84,8 @@ namespace Microsoft.EntityFrameworkCore.Migrations
            IModel model,
            MigrationCommandListBuilder builder,
            bool terminate)
-        { 
-            base.Generate(operation, model, builder,false); 
+        {
+            base.Generate(operation, model, builder, false);
             if (terminate)
             {
                 builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
@@ -93,9 +93,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             }
         }
 
-        protected override void Generate(AddUniqueConstraintOperation operation, IModel model,  MigrationCommandListBuilder builder)
-        { 
-            base.Generate(operation, model, builder); 
+        protected override void Generate(AddUniqueConstraintOperation operation, IModel model, MigrationCommandListBuilder builder)
+        {
+            base.Generate(operation, model, builder);
         }
 
         protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -106,7 +106,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             builder.Append(alterBase).Append(Dependencies.SqlGenerationHelper.StatementTerminator);
             EndStatement(builder);
         }
-         
+
         protected override void Generate(AlterColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
@@ -116,24 +116,24 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             if (operation.ColumnType == null)
             {
                 var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
-        
+
                 type = property != null
                     ? Dependencies.TypeMapper.GetMapping(property).StoreType
                     : Dependencies.TypeMapper.GetMapping(operation.ClrType).StoreType;
             }
-            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema); 
+            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
             builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
             builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
- 
+
             builder.Append(" TYPE ")
                    .Append(type)
                    .Append(operation.IsNullable ? " " : " NOT NULL")
-                   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);  
+                   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
             switch (type)
-            { 
+            {
                 case "CHAR":
                 case "VARCHAR":
-                case "BLOB SUB_TYPE TEXT":  
+                case "BLOB SUB_TYPE TEXT":
                 default:
                     if (operation.DefaultValue != null || !string.IsNullOrWhiteSpace(operation.DefaultValueSql))
                     {
@@ -151,10 +151,10 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                             builder.Append(" DEFAULT ")
                                 .Append(operation.DefaultValueSql)
                                 .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                        }  
-                    } 
+                        }
+                    }
                     break;
-            } 
+            }
             EndStatement(builder);
         }
 
@@ -170,17 +170,17 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
             if (operation.NewName != null)
             {
-               
-                    builder.Append("ALTER TABLE ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                        .Append(" RENAME INDEX ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                        .Append(" TO ")
-                        .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-                        .AppendLine(";");
 
-                    EndStatement(builder);
-                 
+                builder.Append("ALTER TABLE ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                    .Append(" RENAME INDEX ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                    .Append(" TO ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
+                    .AppendLine(";");
+
+                EndStatement(builder);
+
             }
         }
 
@@ -202,14 +202,14 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append("UPDATE RDB$RELATION_FIELDS")
                 .Append($"SET RDB$RELATION_NAME = '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName, operation.NewSchema)}' where")
                 .Append($"  RDB$RELATION_NAME = '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}' and")
-                .Append("   RDB$SYSTEM_FLAG = 0;").AppendLine();   
+                .Append("   RDB$SYSTEM_FLAG = 0;").AppendLine();
             EndStatement(builder);
         }
 
         protected override void Generate([NotNull] CreateIndexOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder, bool terminate)
         {
             var method = (string)operation[FirebirdSqlAnnotationNames.Prefix];
-            var isFullText = !string.IsNullOrEmpty((string)operation[FirebirdSqlAnnotationNames.FullTextIndex]); 
+            var isFullText = !string.IsNullOrEmpty((string)operation[FirebirdSqlAnnotationNames.FullTextIndex]);
 
             builder.Append("CREATE ");
 
@@ -221,7 +221,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                 builder.Append("FULLTEXT ");
             }
-            
+
 
             builder
                 .Append("INDEX ")
@@ -282,7 +282,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
-             
+
             throw new NotSupportedException("FirebirdSql Not Implemented!");
         }
 
@@ -336,20 +336,20 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         }
 
         protected override void ColumnDefinition(
-            [CanBeNull] string schema, 
-            [NotNull] string table, 
-            [NotNull] string name, 
-            [NotNull] Type clrType, 
-            [CanBeNull] string type, 
-            [CanBeNull] bool? unicode, 
-            [CanBeNull] int? maxLength, 
-            bool rowVersion, 
-            bool nullable, 
-            [CanBeNull] object defaultValue, 
-            [CanBeNull] string defaultValueSql, 
-            [CanBeNull] string computedColumnSql, 
-            [NotNull] IAnnotatable annotatable, 
-            [CanBeNull] IModel model, 
+            [CanBeNull] string schema,
+            [NotNull] string table,
+            [NotNull] string name,
+            [NotNull] Type clrType,
+            [CanBeNull] string type,
+            [CanBeNull] bool? unicode,
+            [CanBeNull] int? maxLength,
+            bool rowVersion,
+            bool nullable,
+            [CanBeNull] object defaultValue,
+            [CanBeNull] string defaultValueSql,
+            [CanBeNull] string computedColumnSql,
+            [NotNull] IAnnotatable annotatable,
+            [CanBeNull] IModel model,
             [NotNull] MigrationCommandListBuilder builder)
         {
             Check.NotEmpty(name, nameof(name));
@@ -357,51 +357,47 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(clrType, nameof(clrType));
             Check.NotNull(builder, nameof(builder));
 
-	        var matchType = type;
-	        var matchLen = "";
-	        var match = TypeRe.Match(type ?? "-");
-	        if (match.Success)
-	        {
-		        matchType = match.Groups[1].Value.ToUpper();
-		        if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
-			        matchLen = match.Groups[2].Value;
-	        }
+            var matchType = type;
+            var matchLen = "";
+            var match = TypeRe.Match(type ?? "-");
+            if (match.Success)
+            {
+                matchType = match.Groups[1].Value.ToUpper();
+                if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
+                    matchLen = match.Groups[2].Value;
+            }
 
             var Identity = false;
             var valueGenerationStrategy = annotatable[FirebirdSqlAnnotationNames.ValueGenerationStrategy] as FirebirdSqlValueGenerationStrategy?;
-           if ((valueGenerationStrategy == FirebirdSqlValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
+            if ((valueGenerationStrategy == FirebirdSqlValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
             {
                 switch (matchType)
                 {
                     case "INTEGER":
-                    case "BIGINT":  
+                    case "BIGINT":
                         Identity = true;
                         break;
-                    case "DATETIME": 
+                    case "DATETIME":
                     case "TIMESTAMP":
                         defaultValueSql = $"CURRENT_DATE";
                         break;
                 }
             }
-            
+
             string onUpdateSql = null;
             if (valueGenerationStrategy == FirebirdSqlValueGenerationStrategy.ComputedColumn)
             {
-	            //Not Implemented
+                //Not Implemented
             }
 
             builder
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
                 .Append(" ")
                 .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
-
-           
-            
-          
-
+             
             if (!nullable && Identity)
             {
-                builder.Append(" GENERATED BY DEFAULT AS IDENTITY NOT NULL"); 
+                builder.Append(" GENERATED BY DEFAULT AS IDENTITY NOT NULL");
             }
             else
             {
@@ -418,8 +414,8 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                         .Append(" DEFAULT ")
                         .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
                 }
-
-                builder.Append(" NOT NULL");
+                if (!nullable)
+                    builder.Append(" NOT NULL");
 
                 if (onUpdateSql != null)
                 {
@@ -532,7 +528,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 builder.Append("NO ACTION");
             else
                 base.ForeignKeyAction(referentialAction, builder);
-     
+
         }
 
         protected override void ForeignKeyConstraint(
@@ -578,7 +574,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             }
         }
 
-	    protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
+        protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
     }
 
     public static class StringExtensions
