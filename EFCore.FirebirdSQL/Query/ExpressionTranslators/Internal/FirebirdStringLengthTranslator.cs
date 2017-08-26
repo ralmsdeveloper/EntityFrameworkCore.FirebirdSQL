@@ -42,7 +42,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             => memberExpression.Expression != null
                && memberExpression.Expression.Type == typeof(string)
                && memberExpression.Member.Name == nameof(string.Length)
-                ? new SqlFunctionExpression("CHAR_LENGTH", memberExpression.Type, new[] { memberExpression.Expression })
+                ? new SqlFunctionExpression("CHARACTER_LENGTH ", memberExpression.Type, new[] { memberExpression.Expression })
                 : null;
     }
 }

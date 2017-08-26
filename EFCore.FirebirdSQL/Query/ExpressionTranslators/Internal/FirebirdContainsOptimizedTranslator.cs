@@ -34,31 +34,47 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
     /// </summary>
     public class FirebirdSqlContainsOptimizedTranslator : IMethodCallTranslator
     {
-        private static readonly MethodInfo _methodInfo
-            = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
+
+
+        static readonly MethodInfo _methodInfo
+           = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
-        {
-            if (Equals(methodCallExpression.Method, _methodInfo))
-            {
-                var patternExpression = methodCallExpression.Arguments[0];
-                var patternConstantExpression = patternExpression as ConstantExpression;
+            => methodCallExpression.Method.Equals(_methodInfo)
+                ? Expression.GreaterThan(
+                    new SqlFunctionExpression("POSITION", typeof(int), new[]
+                    {
+                         methodCallExpression.Arguments[0],
+                        methodCallExpression.Object
 
-                var charIndexExpression = Expression.GreaterThan(
-                    new SqlFunctionExpression("LOCATE", typeof(int), new[] { patternExpression, methodCallExpression.Object }),
-                    Expression.Constant(0));
+                    }), Expression.Constant(0))
+                : null;
 
-                return
-                    patternConstantExpression != null
-                        ? (string)patternConstantExpression.Value == string.Empty
-                            ? (Expression)Expression.Constant(true)
-                            : charIndexExpression
-                        : Expression.OrElse(
-                            charIndexExpression,
-                            Expression.Equal(patternExpression, Expression.Constant(string.Empty)));
-            }
+        //private static readonly MethodInfo _methodInfo
+        //    = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
 
-            return null;
-        }
+        //public virtual Expression Translate(MethodCallExpression methodCallExpression)
+        //{
+        //    if (Equals(methodCallExpression.Method, _methodInfo))
+        //    {
+        //        var patternExpression = methodCallExpression.Arguments[0];
+        //        var patternConstantExpression = patternExpression as ConstantExpression;
+
+        //        var charIndexExpression = Expression.GreaterThan(
+        //            new SqlFunctionExpression("POSITION", typeof(int), new[]  {  patternExpression,methodCallExpression.Object }   ),
+        //            Expression.Constant(0));
+
+        //        return
+        //            patternConstantExpression != null
+        //                ? (string)patternConstantExpression.Value == string.Empty
+        //                    ? (Expression)Expression.Constant(true)
+        //                    : charIndexExpression
+        //                : Expression.OrElse(
+        //                    charIndexExpression,
+        //                    Expression.Equal(patternExpression, Expression.Constant(string.Empty)));
+        //    }
+
+        //    return null;
+        //}
     }
 }

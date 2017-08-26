@@ -89,12 +89,16 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
         /// </summary>
         public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
         {
-            if (sqlFunctionExpression.FunctionName.StartsWith("@@", StringComparison.Ordinal))
-            {
-                Sql.Append(sqlFunctionExpression.FunctionName);
 
-                return sqlFunctionExpression;
-            }
+            //Visit(sqlFunctionExpression);
+             
+            //if (sqlFunctionExpression.FunctionName.StartsWith("POSITION", StringComparison.Ordinal))
+            //{
+
+            //    Sql.Append(sqlFunctionExpression.FunctionName);
+
+            //    return sqlFunctionExpression;
+            //}
 
             return base.VisitSqlFunction(sqlFunctionExpression);
         }

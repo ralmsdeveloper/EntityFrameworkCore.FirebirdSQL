@@ -41,41 +41,35 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
         private static readonly MethodInfo _concat
             = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
 
-        public virtual Expression Translate(MethodCallExpression methodCallExpression)
+        public virtual Expression Translate(MethodCallExpression methodStartCall)
         {
-            if (Equals(methodCallExpression.Method, _methodInfo))
+            if (!methodStartCall.Method.Equals(_methodInfo) || 
+                methodStartCall.Object == null)
+                return null;
+
+            var constantPatternExpr = methodStartCall.Arguments[0] as ConstantExpression; 
+            if (methodStartCall != null)
             {
-                var patternExpression = methodCallExpression.Arguments[0];
-                var patternConstantExpression = patternExpression as ConstantExpression;
+                // Operation Simple With LIKE Sample (LIKE 'FIREBIRD%')
+                return new LikeExpression(
+                    methodStartCall.Object,
+                    Expression.Constant(System.Text.RegularExpressions.Regex.Replace((string)constantPatternExpr.Value, @"([%_\\'])", @"\$1") + '%')
+                );
+            } 
 
-                var startsWithExpression = Expression.AndAlso(
-                    new LikeExpression(
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        methodCallExpression.Object,
-                        Expression.Add(methodCallExpression.Arguments[0], Expression.Constant("%", typeof(string)), _concat)),
-                    new NullCompensatedExpression(
-                        Expression.Equal(
-                            new SqlFunctionExpression(
-                                "LEFT",
-                                // ReSharper disable once PossibleNullReferenceException
-                                methodCallExpression.Object.Type,
-                                new[]
-                                {
-                                    methodCallExpression.Object,
-                                    new SqlFunctionExpression("LENGTH", typeof(int), new[] { patternExpression })
-                                }),
-                            patternExpression)));
-
-                return patternConstantExpression != null
-                    ? (string)patternConstantExpression.Value == string.Empty
-                        ? (Expression)Expression.Constant(true)
-                        : startsWithExpression
-                    : Expression.OrElse(
-                        startsWithExpression,
-                        Expression.Equal(patternExpression, Expression.Constant(string.Empty)));
-            }
-
-            return null;
+            var pattern = methodStartCall.Arguments[0];
+            return Expression.AndAlso(
+                new LikeExpression(methodStartCall.Object, Expression.Add(pattern, Expression.Constant("%"), _concat)),
+                Expression.Equal(
+                    new SqlFunctionExpression("LEFT", typeof(string), new[]
+                    {
+                        methodStartCall.Object,
+                        new SqlFunctionExpression("CHARACTER_LENGTH", typeof(int), new[] { pattern }),
+                    }),
+                    pattern
+                )
+            );
+              
         }
     }
 }

@@ -41,7 +41,8 @@ namespace EFCore.FirebirdSqlSQL.Test
             cx.SaveChanges();
 
             //Use Include
-            var Authors = cx.Author.Include(p => p.Books).ToList();
+            //var Authors = cx.Author.Include(p => p.Books).Where(p=>p.FirstName.Contains("R") || p.LastName.Contains("e")).ToList();
+            var Authors = cx.Author.Include(p => p.Books).Where(p => p.FirstName.StartsWith("l") || p.LastName.Contains("e")).ToList();
 
             Console.WriteLine($"-----------------------------------");
             Console.WriteLine("             Author                 ");

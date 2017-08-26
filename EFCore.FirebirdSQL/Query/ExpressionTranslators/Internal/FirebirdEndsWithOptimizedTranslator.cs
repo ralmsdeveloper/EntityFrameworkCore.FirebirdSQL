@@ -48,13 +48,12 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 var endsWithExpression = new NullCompensatedExpression(
                     Expression.Equal(
                         new SqlFunctionExpression(
-                            "RIGHT",
-                            // ReSharper disable once PossibleNullReferenceException
+                            "RIGHT", 
                             methodCallExpression.Object.Type,
                             new[]
                             {
                                 methodCallExpression.Object,
-                                new SqlFunctionExpression("LENGTH", typeof(int), new[] { patternExpression })
+                                new SqlFunctionExpression("CHARACTER_LENGTH", typeof(int), new[] { patternExpression })
                             }),
                         patternExpression));
 
