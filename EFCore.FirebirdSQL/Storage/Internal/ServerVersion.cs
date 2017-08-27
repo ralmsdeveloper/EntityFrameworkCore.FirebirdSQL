@@ -44,7 +44,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public readonly Version Version;
 
-        public bool SupportsDateTime6 => Version >= new Version(2,1);
+        public bool SupportIdentityIncrement => Version >= new Version(3,0);
 
         
     }

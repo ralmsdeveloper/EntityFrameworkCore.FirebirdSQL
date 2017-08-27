@@ -33,6 +33,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             "ServerType=0";
 
             optionsBuilder.UseFirebirdSql(connectionString);
+ 
             //if used Log  (log of commands)
             //LoggerFactory loggerFactory = new LoggerFactory();
             //loggerFactory.AddProvider(new TraceLoggerProvider());
@@ -52,6 +53,8 @@ namespace EFCore.FirebirdSqlSQL.Test
 
         [StringLength(100)]
         public string LastName { get; set; }
+
+        public DateTime Date { get; set; }
 
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }

@@ -28,17 +28,25 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
-
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
+using JetBrains.Annotations;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
-    public class FbConnectionSettings
+    public class FbConnectionSettings  
     {
+        public FbConnectionSettings([NotNull] MigrationsSqlGeneratorDependencies dependencies,
+            [NotNull] IFirebirdSqlOptions options) 
+        {
+           // _options = options;
+        } 
         private static readonly ConcurrentDictionary<string, FbConnectionSettings> Settings
             = new ConcurrentDictionary<string, FbConnectionSettings>();
 
         private static FbConnectionStringBuilder _settingsCsb(FbConnectionStringBuilder csb)
         {
+           
             return new FbConnectionStringBuilder
             {                
                 Database = csb.Database,
@@ -98,11 +106,13 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             });
         }
 
-        internal FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
-        =>  ServerVersion = serverVersion;
-        
+     
 
-        public readonly bool OldGuids; 
+        internal FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
+        {
+            ServerVersion = serverVersion;
+        }
+
         public readonly ServerVersion ServerVersion;
 
     }

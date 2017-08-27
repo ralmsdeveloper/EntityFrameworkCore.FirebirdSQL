@@ -142,6 +142,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             Sql.Append(" REGEXP ");
             Visit(regexpExpression.Pattern);
             return regexpExpression;
-        }
+        } 
+
     }
 }

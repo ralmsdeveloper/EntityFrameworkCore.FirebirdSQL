@@ -53,20 +53,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
             var randomBytes = new byte[8];
             Rng.GetBytes(randomBytes);
             var ticks = (ulong)DateTime.UtcNow.Ticks*2;
-
-            if (_options.ConnectionSettings.OldGuids)
-            {
-                var guidBytes = new byte[16];
-                var tickBytes = BitConverter.GetBytes(ticks);
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(tickBytes);
-
-                Buffer.BlockCopy(tickBytes, 0, guidBytes, 0, 8);
-                Buffer.BlockCopy(randomBytes, 0, guidBytes, 8, 8);
-
-                return new Guid(guidBytes);
-            }
-
+ 
             var guid = new Guid((uint) (ticks >> 32), (ushort) (ticks << 32 >> 48), (ushort) (ticks << 48 >> 48),
                 randomBytes[0],
                 randomBytes[1],

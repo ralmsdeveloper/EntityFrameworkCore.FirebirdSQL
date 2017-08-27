@@ -31,29 +31,25 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using FirebirdSql.Data.FirebirdClient;
+using System.Linq;
 
 namespace Microsoft.EntityFrameworkCore.Internal
 {
     public class FirebirdSqlOptions : IFirebirdSqlOptions
     {
 
-        private FbOptionsExtension _relationalOptions; 
-        private readonly Lazy<FbConnectionSettings> _lazyConnectionSettings;
-
-        public FirebirdSqlOptions()
-        {
-            _lazyConnectionSettings = new Lazy<FbConnectionSettings>(() =>
-            {
-                if (_relationalOptions.Connection != null)
-                    return FbConnectionSettings.GetSettings(_relationalOptions.Connection);
-                return FbConnectionSettings.GetSettings(_relationalOptions.ConnectionString);
-            });
-        }
+        private FbOptionsExtension _contextOptions; 
+        private Lazy<FbConnectionSettings> _connectionSettings; 
 
         public virtual void Initialize(IDbContextOptions options)
         {
-            _relationalOptions = options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
-
+            _contextOptions = options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault(); 
+            _connectionSettings = new Lazy<FbConnectionSettings>(() =>
+                {
+                    if (_contextOptions.Connection != null)
+                        return FbConnectionSettings.GetSettings(_contextOptions.Connection);
+                    return FbConnectionSettings.GetSettings(_contextOptions.ConnectionString);
+                }); 
         }
 
         public virtual void Validate(IDbContextOptions options)
@@ -61,13 +57,13 @@ namespace Microsoft.EntityFrameworkCore.Internal
            //Removed Add Future!
         }
 
-        public virtual FbConnectionSettings ConnectionSettings => _lazyConnectionSettings.Value;
+        public virtual FbConnectionSettings ConnectionSettings => _connectionSettings.Value;
 
         public virtual string GetCreateTable(ISqlGenerationHelper sqlGenerationHelper, string table, string schema)
         {
-            if (_relationalOptions.Connection != null)
-                return GetCreateTable(_relationalOptions.Connection, sqlGenerationHelper, table, schema);
-            return GetCreateTable(_relationalOptions.ConnectionString, sqlGenerationHelper, table, schema);
+            if (_contextOptions.Connection != null)
+                return GetCreateTable(_contextOptions.Connection, sqlGenerationHelper, table, schema);
+            return GetCreateTable(_contextOptions.ConnectionString, sqlGenerationHelper, table, schema);
         }
 
         private static string GetCreateTable(string connectionString, ISqlGenerationHelper sqlGenerationHelper, string table, string schema)
