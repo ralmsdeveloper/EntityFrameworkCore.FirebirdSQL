@@ -14,9 +14,13 @@ namespace EFCore.FirebirdSqlSQL.Test
             var cx = new Context();
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
-            cx.Database.EnsureCreated();
+            cx.Database.EnsureCreated(); 
 
-            Console.WriteLine($"Start: {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fffff")}");
+            cx.TestGuid.Add(new TestGuid
+            {
+                 FirstName="Ralms"
+            });
+
             cx.Author.Add(new Author
             {
                 FirstName = "Rafael",
@@ -46,8 +50,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             //Use Include (UPPER)
             //var Authors = cx.Author.Include(p => p.Books).Where(p => p.LastName.ToUpper().Contains("L")).ToList();
             var Authors = cx.Author.Include(p => p.Books).Where(p => p.Date >= DateTime.Parse("2017-01-01")  && p.Date <= DateTime.Now).ToList();
-            Console.WriteLine($"End..: {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.fffff")}");
-
+             
             Console.WriteLine($"-----------------------------------");
             Console.WriteLine("             Author                 ");
             Console.WriteLine($"-----------------------------------");

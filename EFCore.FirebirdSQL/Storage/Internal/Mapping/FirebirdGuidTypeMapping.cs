@@ -40,12 +40,12 @@ namespace Microsoft.EntityFrameworkCore.Storage
     ///         not used in application code.
     ///     </para>
     /// </summary>
-    public class FirebirdSqlDateTimeTypeMapping : DateTimeTypeMapping
+    public class FirebirdGuidTypeMapping : GuidTypeMapping
     { 
         private readonly string _storeType;
         private readonly FbDbType _fbDbType;
 
-        public FirebirdSqlDateTimeTypeMapping(string storeType, FbDbType fbDbType)
+        public FirebirdGuidTypeMapping(string storeType, FbDbType fbDbType)
             : base(storeType)
         {
             _fbDbType = fbDbType;
@@ -55,21 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         protected override void ConfigureParameter([NotNull] DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;
 
-        protected override string SqlLiteralFormatString
-        {
-            get
-            {
-                switch (_fbDbType)
-                {
-                    case FbDbType.TimeStamp:
-                        return $"'{@"{0:yyyy-MM-dd HH\:mm\:ss}"}'";
-                    case FbDbType.Date:
-                        return $"'{@"{0:yyyy-MM-dd}"}'";
-                    case FbDbType.Time:
-                        return $"'{@"{0:HH\:mm\:ss}"}'";
-                }
-                return null;
-            }
-        } 
+        protected override string SqlLiteralFormatString => $"";
+         
     }
 }

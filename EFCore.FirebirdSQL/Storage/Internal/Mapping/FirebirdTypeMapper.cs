@@ -38,9 +38,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     {
 
         // boolean
-        readonly FirebirdSqlBoolTypeMapping _boolean = new FirebirdSqlBoolTypeMapping(); 
+        readonly FirebirdSqlBoolTypeMapping _boolean = new FirebirdSqlBoolTypeMapping();
         // integers 
-	    private ShortTypeMapping _smallint                 = new ShortTypeMapping("SMALLINT", DbType.Int16);
+        readonly ShortTypeMapping _smallint                = new ShortTypeMapping("SMALLINT", DbType.Int16);
         readonly IntTypeMapping _integer                   = new IntTypeMapping("INTEGER", DbType.Int32);
         readonly LongTypeMapping _bigint                   = new LongTypeMapping("BIGINT", DbType.Int64);
         // decimals
@@ -55,10 +55,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         readonly FirebirdSqlStringTypeMapping _varchar     = new FirebirdSqlStringTypeMapping("VARCHAR", FbDbType.VarChar);
         readonly FirebirdSqlStringTypeMapping _text        = new FirebirdSqlStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
         // DateTime
-        readonly FirebirdSqlDateTimeTypeMapping _dateTime  = new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", DbType.DateTime);
-        readonly TimeSpanTypeMapping _date                 = new TimeSpanTypeMapping("DATE", DbType.Date);
+        readonly FirebirdSqlDateTimeTypeMapping _dateTime  = new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
+        readonly FirebirdSqlDateTimeTypeMapping _date      = new FirebirdSqlDateTimeTypeMapping("DATE", FbDbType.Date);
+        readonly FirebirdSqlDateTimeTypeMapping _time      = new FirebirdSqlDateTimeTypeMapping("TIME", FbDbType.Time);
+
         // guid
-        readonly GuidTypeMapping _uniqueidentifier         = new GuidTypeMapping("CHAR(38)", DbType.Guid);
+        readonly FirebirdGuidTypeMapping _guid             = new FirebirdGuidTypeMapping("CHAR(16) CHARACTER SET OCTETS", FbDbType.Guid);
 
         readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
         readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
@@ -91,7 +93,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     { "TIMESTAMP", _dateTime },
                     { "DATE", _date },   
                     // guid
-                    { "CHAR(36)", _uniqueidentifier }
+                    { "CHAR(16) CHARACTER SET OCTETS", _guid }
                 };
 
             _clrTypeMappings
@@ -111,14 +113,14 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	                { typeof(DateTime), _dateTime }, 
 	                { typeof(TimeSpan), _date }, 
 	                // guid
-	                { typeof(Guid), _uniqueidentifier }
+	                { typeof(Guid), _guid }
                 };
 
             _disallowedMappings
                 = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 {
                     "BINARY",
-                    "CHAR",
+                    "CHAR", 
                     "VARBINARY",
                     "VARCHAR" 
                 }; 

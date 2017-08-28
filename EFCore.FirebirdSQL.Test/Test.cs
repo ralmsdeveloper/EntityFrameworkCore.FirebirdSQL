@@ -13,6 +13,7 @@ namespace EFCore.FirebirdSqlSQL.Test
         
         public DbSet<Author> Author { get; set; }
         public DbSet<Book> Book { get; set; }
+        public DbSet<TestGuid> TestGuid { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {  
 
@@ -42,6 +43,14 @@ namespace EFCore.FirebirdSqlSQL.Test
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {}
+    }
+    public class TestGuid
+    {
+        public Guid  Id { get; set; }
+
+        [StringLength(100)]
+        public string FirstName { get; set; }
+         
     }
 
     public class Author
