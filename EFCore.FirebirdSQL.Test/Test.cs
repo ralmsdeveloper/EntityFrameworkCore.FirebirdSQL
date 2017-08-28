@@ -34,11 +34,11 @@ namespace EFCore.FirebirdSqlSQL.Test
             "ServerType=0";
 
             optionsBuilder.UseFirebirdSql(connectionString);
- 
+
             //if used Log  (log of commands)
-            //LoggerFactory loggerFactory = new LoggerFactory();
-            //loggerFactory.AddProvider(new TraceLoggerProvider());
-            //optionsBuilder.UseLoggerFactory(loggerFactory);
+            LoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.AddProvider(new TraceLoggerProvider());
+            optionsBuilder.UseLoggerFactory(loggerFactory);
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
@@ -46,8 +46,7 @@ namespace EFCore.FirebirdSqlSQL.Test
     }
     public class TestGuid
     {
-        public Guid  Id { get; set; }
-
+        public Guid  Id { get; set; } 
         [StringLength(100)]
         public string FirstName { get; set; }
          
@@ -55,7 +54,7 @@ namespace EFCore.FirebirdSqlSQL.Test
 
     public class Author
     {
-        public int AuthorId { get; set; }
+        public long AuthorId { get; set; }
 
         [StringLength(100)]
         public string FirstName { get; set; }
@@ -70,12 +69,12 @@ namespace EFCore.FirebirdSqlSQL.Test
 
     public class Book
     {
-        public int BookId { get; set; }
+        public long BookId { get; set; }
 
         [StringLength(100)]
         public string Title { get; set; }
 
-        public int AuthorId { get; set; }
+        public long AuthorId { get; set; }
 
         public Author Author { get; set; }
     }

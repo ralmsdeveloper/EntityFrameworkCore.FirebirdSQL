@@ -32,6 +32,7 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Cryptography;
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
@@ -68,35 +69,56 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             commandStringBuilder.Append("EXECUTE BLOCK ");
             if (writeOperations.Any())
             {
-                commandStringBuilder.AppendLine("(");
                 var commaAppend = string.Empty;
+                commandStringBuilder.AppendLine("("); 
                 for (var i = 0; i < modificationCommands.Count; i++)
                 {
-                    foreach (var column in modificationCommands[i].ColumnModifications.Where(o => o.IsWrite))
-                    {
-                        commandStringBuilder.Append(commaAppend);
-                        commandStringBuilder.AppendLine($"{column.ParameterName}  {GetDataType(column.Property)}=@{column.ParameterName}");
-                        commaAppend = ",";
-                    }
+                    AppendBlockVariable(commandStringBuilder,modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList(), commaAppend);
+                    commaAppend = ",";
                 }
                 commandStringBuilder.AppendLine(")");
             }
-            commandStringBuilder.AppendLine("RETURNS (Row_Affected INT) AS BEGIN");
+
+            if (readOperations.Length > 0)
+            {
+                var _column = readOperations.FirstOrDefault(p => p.IsKey);
+                var _type = GetDataType(_column.Property);
+                if (_column.IsKey && _type != "CHAR(16) CHARACTER SET OCTETS")
+                    commandStringBuilder.Append($"RETURNS (Row_Affected {_type}) ");
+            }  
+
+            commandStringBuilder.AppendLine(" AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var modified = modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList();
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, modified);
-                AppendValuesInsert(commandStringBuilder, modified);
-
+                AppendValuesInsert(commandStringBuilder, modified); 
                 if (readOperations.Length > 0)
                     AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
+                else
+                    commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
 
             }
             commandStringBuilder.AppendLine("END;"); 
-            return ResultSetMapping.NotLastInResultSet;
+            return readOperations.Length == 0? 
+                                            ResultSetMapping.NoResultSet : 
+                                            ResultSetMapping.NotLastInResultSet;
         }
-
+        private void AppendBlockVariable(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations,string commaAppend)
+        {
+           
+            foreach (var column in operations)
+            {
+                var _type = GetDataType(column.Property);
+                if (_type != "CHAR(16) CHARACTER SET OCTETS")
+                {
+                    commandStringBuilder.Append(commaAppend);
+                    commandStringBuilder.AppendLine($"{column.ParameterName}  {_type}=@{column.ParameterName}");
+                    commaAppend = ",";
+                }
+            }
+        }
         private void AppendValuesInsert(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations)
         {
             if (operations.Count > 0)
@@ -108,13 +130,24 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         SqlGenerationHelper,
                         (sb, o, helper) =>
                         {
-                            if (o.IsWrite) 
-                                sb.Append(":").Append(o.ParameterName);
-                           
+                            var property = GetDataType(o.Property);
+                          
+                            if (o.IsWrite)
+                            {
+                                switch (property)
+                                {
+                                    case "CHAR(16) CHARACTER SET OCTETS":
+                                        sb.Append($"CHAR_TO_UUID('{o.Value}')");
+                                        break;
+                                    default:
+                                        sb.Append(":").Append(o.ParameterName);
+                                        break;
+                                }
+                            } 
                         })
                     .Append(")");
             }
-        } 
+        }
 
         public override ResultSetMapping AppendUpdateOperation(
             StringBuilder commandStringBuilder,
@@ -128,7 +161,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
            ModificationCommand command,
            int commandPosition)
         => AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
-         
+
 
         public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
