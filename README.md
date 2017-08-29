@@ -14,14 +14,14 @@ Same uses the ADO.NET Library  [Firebird Client](https://github.com/cincuranet/F
 ##  What we already have:
 All basic operations are working well
 
-Insert :heavy_check_mark:, Update  :heavy_check_mark:, Delete :heavy_check_mark:
+Insert :heavy_check_mark: Update  :heavy_check_mark: Delete :heavy_check_mark:
 
-Insert Bulk :heavy_check_mark:, Update Bulk :heavy_check_mark:, Delete Bulk :heavy_check_mark:
+Insert Bulk :heavy_check_mark: Update Bulk :heavy_check_mark: Delete Bulk :heavy_check_mark:
 
 ##  Supports: 
 Guid, TimeStamp, Date, BigInt, Varchar, Text
 
-IDENTITY INCREMENT FOR FIREBIRD 3.X
+IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
 
 
 ## Example of use DBContext
