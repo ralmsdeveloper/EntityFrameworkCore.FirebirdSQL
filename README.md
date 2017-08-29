@@ -11,6 +11,19 @@ Same uses the ADO.NET Library  [Firebird Client](https://github.com/cincuranet/F
 
 ##  Prediction Release 2.0 - September 05, 2017
 
+##  What we already have:
+All basic operations are working well
+
+Insert :heavy_check_mark:, Update  :heavy_check_mark:, Delete :heavy_check_mark:
+
+Insert Bulk :heavy_check_mark:, Update Bulk :heavy_check_mark:, Delete Bulk :heavy_check_mark:
+
+##  Supports: 
+Guid, TimeStamp, Date, BigInt, Varchar, Text
+
+IDENTITY INCREMENT FOR FIREBIRD 3.X
+
+
 ## Example of use DBContext
 
  ```csharp
