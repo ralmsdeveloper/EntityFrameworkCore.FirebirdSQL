@@ -1,6 +1,8 @@
 /*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -21,7 +23,7 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
- 
+
  using System.Data.Common;
 using System.Threading.Tasks; 
 using JetBrains.Annotations;
@@ -46,8 +48,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public virtual IFirebirdSqlRelationalConnection CreateMasterConnection()
         {
             var csb = new FbConnectionStringBuilder(ConnectionString)
-            {
-                //Database = "",
+            { 
                 Pooling = false
             };
 
@@ -72,10 +73,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             await OpenAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await BeginTransactionWithNoPreconditionsAsync(isolationLevel, cancellationToken).ConfigureAwait(false);
+            return BeginTransactionWithNoPreconditions(isolationLevel, cancellationToken);
         }
 
-        private async Task<IDbContextTransaction> BeginTransactionWithNoPreconditionsAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken=default(CancellationToken))
+        private IDbContextTransaction BeginTransactionWithNoPreconditions(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dbTransaction = (DbConnection as FbConnection).BeginTransaction(isolationLevel);
 
@@ -85,10 +86,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     dbTransaction,
                     Dependencies.TransactionLogger,
                     transactionOwned: true);
-            
+
             Dependencies.TransactionLogger.TransactionStarted(
-                this, 
-                dbTransaction, 
+                this,
+                dbTransaction,
                 CurrentTransaction.TransactionId,
                 DateTimeOffset.UtcNow);
 

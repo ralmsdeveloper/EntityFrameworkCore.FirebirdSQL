@@ -30,23 +30,24 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class ServerVersion
     {
-        public static Regex ReVersion = new Regex(@"\d+\.\d+\.?(?:\d+)?");
-
-        public ServerVersion(string versionString)
-        { 
-            var semanticVersion = ReVersion.Matches(versionString);
-            if (semanticVersion.Count > 0)
-                Version = Version.Parse(semanticVersion[0].Value);
+       
+        public ServerVersion(string versionStr)
+        {
+            var _version = ReVersion.Matches(versionStr);
+            if (_version.Count > 0)
+                Version = Version.Parse(_version[0].Value);
             else
-                Version = new Version(0,0,0); 
+                Version = new Version(0, 0, 0);
         }
-         
-
-        public readonly Version Version;
-
-        public bool SupportIdentityIncrement => Version >= new Version(3,0);
-
+        /// <summary>
+        /// Navegation
+        /// </summary>
+        internal Regex ReVersion = new Regex(@"\d+\.\d+\.?(?:\d+)?");
+        public readonly Version Version; 
+        public bool SupportIdentityIncrement => Version.Major >= 3;
+        public int ObjectLengthName => Version.Major != 3 ? 64 : 31;
         
+
     }
- 
+
 }

@@ -43,6 +43,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         /// </summary>
         public const string ValueGenerationStrategy = Prefix + "ValueGenerationStrategy";
 
+        //Future Implementation
+        //https://www.firebirdsql.org/en/sphinx-full-text-search/
         public const string FullTextIndex = Prefix + "FullTextIndex";
          
     }

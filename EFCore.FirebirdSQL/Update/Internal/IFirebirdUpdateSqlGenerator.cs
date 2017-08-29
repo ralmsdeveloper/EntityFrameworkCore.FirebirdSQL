@@ -33,6 +33,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
     {
         ResultSetMapping AppendBlockInsertOperation(
             [NotNull] StringBuilder commandStringBuilder,
+            [NotNull] StringBuilder headBlockStringBuilder,
             [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
 

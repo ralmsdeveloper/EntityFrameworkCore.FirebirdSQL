@@ -121,10 +121,9 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
                 binaryExpression.Left.Type == typeof (string) &&
                 binaryExpression.Right.Type == typeof (string))
             {
-                Sql.Append("CONCAT(");
-                //var exp = base.VisitBinary(binaryExpression);
+                Sql.Append("("); 
                 Visit(binaryExpression.Left);
-                Sql.Append(",");
+                Sql.Append("||");
                 var exp = Visit(binaryExpression.Right);
                 Sql.Append(")");
                 return exp;
@@ -134,15 +133,23 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             
             return expr;
         }
-        
-        public virtual Expression VisitRegexp(RegexpExpression regexpExpression)
+         
+        public virtual Expression VisitSubString(SubStringExpression sbString)
         {
-            Check.NotNull(regexpExpression, nameof(regexpExpression));
-            Visit(regexpExpression.Match);
-            Sql.Append(" REGEXP ");
-            Visit(regexpExpression.Pattern);
-            return regexpExpression;
-        } 
+            Check.NotNull(sbString, nameof(sbString)); 
+            Sql.Append(" SUBSTRING(");
+            Visit(sbString.SubjectExpression);
+            Sql.Append(" FROM ");
+            Visit(sbString.FromExpression);
+            Sql.Append(" FOR ");
+            Visit(sbString.ForExpression);
+            Sql.Append(")"); 
+            return sbString;
+        }
 
+        public Expression VisitRegexp([NotNull] FirebirdRegexpExpression regexpExpression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

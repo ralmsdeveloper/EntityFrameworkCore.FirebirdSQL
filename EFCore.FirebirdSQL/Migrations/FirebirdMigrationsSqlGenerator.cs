@@ -46,13 +46,13 @@ namespace Microsoft.EntityFrameworkCore.Migrations
     public class FirebirdSqlMigrationsSqlGenerator : MigrationsSqlGenerator
     {
         private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
-        private readonly IFirebirdSqlOptions _options; 
+        private readonly IFirebirdSqlOptions _options;
         public FirebirdSqlMigrationsSqlGenerator(
             [NotNull] MigrationsSqlGeneratorDependencies dependencies,
             [NotNull] IFirebirdSqlOptions options)
             : base(dependencies)
         {
-            _options = options; 
+            _options = options;
         }
 
         protected override void Generate([NotNull] MigrationOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
@@ -224,7 +224,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
             builder
                 .Append("INDEX ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name.LimitLength(31)))
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .Append(" ON ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
 
@@ -378,22 +378,29 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                         break;
                     case "DATETIME":
                     case "TIMESTAMP":
-                        defaultValueSql = $"CURRENT_DATE";
+                        defaultValueSql = $"CURRENT_TIMESTAMP";
                         break;
                 }
-            }
-            
+            } 
             string onUpdateSql = null;
             if (valueGenerationStrategy == FirebirdSqlValueGenerationStrategy.ComputedColumn)
             {
-                //Not Implemented
+                switch (matchType)
+                {
+                    case "DATETIME":
+                    case "TIMESTAMP":
+                        if (string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
+                            defaultValueSql = $"CURRENT_TIMESTAMP";
+                        onUpdateSql = $"CURRENT_TIMESTAMP";
+                        break;
+                }
             }
 
             builder
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
                 .Append(" ")
                 .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
-        
+
             if (!nullable && Identity)
             {
                 if (_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
@@ -545,7 +552,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                 builder
                     .Append("CONSTRAINT ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name.LimitLength(31)))
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                     .Append(" ");
             }
 
@@ -579,21 +586,5 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
     }
 
-    public static class StringExtensions
-    {
-        /// <summary>
-        /// Method that limits the length of text to a defined length.
-        /// </summary>
-        /// <param name="source">The source text.</param>
-        /// <param name="maxLength">The maximum limit of the string to return.</param>
-        public static string LimitLength(this string source, int maxLength)
-        {
-            if (source.Length <= maxLength)
-            {
-                return source;
-            }
-
-            return source.Substring(0, maxLength);
-        }
-    }
+   
 }

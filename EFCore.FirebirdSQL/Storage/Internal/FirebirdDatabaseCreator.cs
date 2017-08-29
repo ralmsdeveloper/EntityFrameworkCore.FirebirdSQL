@@ -41,28 +41,29 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     public class FirebirdSqlDatabaseCreator : RelationalDatabaseCreator
     {
         private readonly IFirebirdSqlRelationalConnection _connection;
-	    private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
-        
+        private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
+        private TimeSpan _RetryDelay;
+        private TimeSpan _RetryTimeout;
 
-	    /// <summary>
+        /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-	    public FirebirdSqlDatabaseCreator(
+        public FirebirdSqlDatabaseCreator(
             [NotNull] RelationalDatabaseCreatorDependencies dependencies,
             [NotNull] IFirebirdSqlRelationalConnection connection,
             [NotNull] IRawSqlCommandBuilder rawSqlCommandBuilder)
             : base(dependencies)
-        { 
+        {
             _connection = connection;
             _rawSqlCommandBuilder = rawSqlCommandBuilder;
+            _RetryDelay = TimeSpan.FromMilliseconds(500);
+            _RetryTimeout = TimeSpan.FromMinutes(2);
         }
 
-        public virtual TimeSpan RetryDelay { get; set; } = TimeSpan.FromMilliseconds(500);
 
-        public virtual TimeSpan RetryTimeout { get; set; } = TimeSpan.FromMinutes(2);
 
-	    public override void Create()
+        public override void Create()
         {
             using (var masterConnection = _connection.CreateMasterConnection())
             {
@@ -89,15 +90,13 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         }
 
         protected override bool HasTables()
-        {
-            var count = (long)CreateHasTablesCommand().ExecuteScalar(Dependencies.Connection); 
-            return count != 0;
-        }
-        
+            => (long)CreateHasTablesCommand().ExecuteScalar(Dependencies.Connection) != 0;
+
+
         protected override Task<bool> HasTablesAsync(CancellationToken cancellationToken = default(CancellationToken))
             => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(_connection,
                 async (connection, ct) => (long)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct).ConfigureAwait(false) != 0, cancellationToken);
- 
+
 
         private IRelationalCommand CreateHasTablesCommand()
             => _rawSqlCommandBuilder
@@ -112,25 +111,27 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             => Exists(retryOnNotExists: false);
 
         private bool Exists(bool retryOnNotExists)
-            => Dependencies.ExecutionStrategyFactory.Create().Execute(DateTime.UtcNow + RetryTimeout, giveUp =>
+            => Dependencies.ExecutionStrategyFactory.Create().Execute(DateTime.Now + _RetryTimeout, giveUp =>
                 {
                     while (true)
                     {
                         try
                         {
-                            _connection.DbConnection.Open();
+                            if (_connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                                _connection.DbConnection.Open();
+
                             _connection.DbConnection.Close();
                             return true;
                         }
                         catch (FbException e)
                         {
-                            if (!retryOnNotExists && IsDoesNotExist(e))
+                            if (!retryOnNotExists && DatabaseNotExist(e))
                                 return false;
 
-                            if (DateTime.UtcNow > giveUp || !RetryOnExistsFailure(e))
+                            if (DateTime.Now > giveUp || !RetryOnExistsFailure(e))
                                 throw;
 
-                            Thread.Sleep(RetryDelay);
+                            Thread.Sleep(_RetryDelay);
                         }
                     }
                 });
@@ -139,7 +140,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             => ExistsAsync(retryOnNotExists: false, cancellationToken: cancellationToken);
 
         private Task<bool> ExistsAsync(bool retryOnNotExists, CancellationToken cancellationToken)
-            => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(DateTime.UtcNow + RetryTimeout, async (giveUp, ct) =>
+            => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(DateTime.UtcNow + _RetryTimeout, async (giveUp, ct) =>
                 {
                     while (true)
                     {
@@ -151,19 +152,19 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                         }
                         catch (FbException e)
                         {
-                            if (!retryOnNotExists && IsDoesNotExist(e))
+                            if (!retryOnNotExists && DatabaseNotExist(e))
                                 return false;
 
                             if (DateTime.UtcNow > giveUp || !RetryOnExistsFailure(e))
                                 throw;
 
-                            await Task.Delay(RetryDelay, ct).ConfigureAwait(false);
+                            await Task.Delay(_RetryDelay, ct).ConfigureAwait(false);
                         }
                     }
                 }, cancellationToken);
-         
-        private static bool IsDoesNotExist(FbException exception) => exception.ErrorCode == 335544344;
-         
+
+        private static bool DatabaseNotExist(FbException exception) => exception.ErrorCode == 335544344;
+
         private bool RetryOnExistsFailure(FbException exception)
         {
             if (exception.ErrorCode == 335544721)
@@ -182,7 +183,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             ClearAllPools();
             FbConnection.DropDatabase(_connection.ConnectionString);
-           
         }
 
         /// <summary>
@@ -191,21 +191,21 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         /// </summary>
         public override async Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await Task.Run(()=>Delete()) ; 
+            await Task.Run(() => Delete());
         }
 
         private IReadOnlyList<MigrationCommand> CreateDropCommands()
         {
             var operations = new MigrationOperation[]
-            { 
+            {
                 new FirebirdSqlDropDatabaseOperation { Name = _connection.DbConnection.Database }
             };
 
             var masterCommands = Dependencies.MigrationsSqlGenerator.Generate(operations);
             return masterCommands;
         }
-         
-        private static void ClearAllPools() => FbConnection.ClearAllPools(); 
+
+        private static void ClearAllPools() => FbConnection.ClearAllPools();
         private void ClearPool() => FbConnection.ClearPool(_connection.DbConnection as FbConnection);
     }
 }

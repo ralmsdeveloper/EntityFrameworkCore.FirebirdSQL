@@ -29,6 +29,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             [CanBeNull] IReadOnlyDictionary<string, object> parameterValues)
         {
              
+
             return ExecuteAsync( connection, executeMethod, parameterValues)
                 .GetAwaiter()
                 .GetResult();

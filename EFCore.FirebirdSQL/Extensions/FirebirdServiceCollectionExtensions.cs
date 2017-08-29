@@ -54,6 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Check.NotNull(serviceCollection, nameof(serviceCollection)); 
 
             var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
+                 .TryAdd<IRelationalDatabaseCreator, FirebirdSqlDatabaseCreator>()
                 .TryAdd<IRelationalCommandBuilderFactory, FirebirdSqlCommandBuilderFactory>()
                 .TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>() 
                 .TryAdd<ISqlGenerationHelper, FirebirdSqlSqlGenerationHelper>()
@@ -68,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAdd<IMigrationsSqlGenerator, FirebirdSqlMigrationsSqlGenerator>()
                .TryAdd<IBatchExecutor, FirebirdSqlBatchExecutor>()
                 .TryAdd<IBatchExecutor, BatchExecutor>()
-                .TryAdd<IRelationalDatabaseCreator, FirebirdSqlDatabaseCreator>()
+               
                 .TryAdd<IHistoryRepository, FirebirdSqlHistoryRepository>()
                 .TryAdd<IMemberTranslator, FirebirdSqlCompositeMemberTranslator>()
                 .TryAdd<ICompositeMethodCallTranslator, FirebirdSqlCompositeMethodCallTranslator>()

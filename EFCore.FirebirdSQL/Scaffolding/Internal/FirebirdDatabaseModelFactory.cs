@@ -23,15 +23,9 @@
  */
  
  using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using Microsoft.Extensions.Logging;
-using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
+using System.Collections.Generic; 
+using System.Data.Common; 
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata; 
 
 namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
 {

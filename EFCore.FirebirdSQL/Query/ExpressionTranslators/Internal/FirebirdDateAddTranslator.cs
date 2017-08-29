@@ -63,12 +63,11 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
         /// </returns>
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
-            if (_methodInfoDatePartMapping.TryGetValue(methodCallExpression.Method, out var datePart))
+            if (_methodInfoDatePartMapping.TryGetValue(methodCallExpression.Method, out var dateInfo))
             {
-                var amountToAdd = methodCallExpression.Arguments.First();
-
-                if (!datePart.Equals("year")
-                    && !datePart.Equals("month")
+                var amountToAdd = methodCallExpression.Arguments.First(); 
+                if (!dateInfo.Equals("year")
+                    && !dateInfo.Equals("month")
                     && amountToAdd is ConstantExpression constantExpression
                     && ((double)constantExpression.Value >= int.MaxValue
                         || (double)constantExpression.Value <= int.MinValue))
@@ -77,13 +76,12 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 }
 
                 return new SqlFunctionExpression(
-                    functionName: "DATE_ADD",
-                    returnType: methodCallExpression.Type,
-                    arguments: new[]
-                    {
-                        methodCallExpression.Object,
-                        new SqlFragmentExpression("INTERVAL " + amountToAdd + " " + datePart),
-                    });
+                 functionName: "DATEADD",
+                 returnType: methodCallExpression.Type,
+                 arguments: new[]
+                 {
+                        new SqlFragmentExpression(dateInfo), amountToAdd, methodCallExpression.Object
+                 });
             }
 
             return null;

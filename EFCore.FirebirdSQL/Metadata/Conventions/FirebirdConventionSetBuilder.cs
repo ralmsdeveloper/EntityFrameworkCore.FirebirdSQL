@@ -24,6 +24,7 @@
 
 
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
@@ -34,13 +35,15 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
     public class FirebirdSqlConventionSetBuilder : RelationalConventionSetBuilder
     {
         private readonly ISqlGenerationHelper _sqlGenerationHelper;
-
+        private static IFirebirdSqlOptions _options;
         public FirebirdSqlConventionSetBuilder(
             [NotNull] RelationalConventionSetBuilderDependencies dependencies,
+           [NotNull]  IFirebirdSqlOptions options,
             [NotNull] ISqlGenerationHelper sqlGenerationHelper)
             : base(dependencies)
         {
             _sqlGenerationHelper = sqlGenerationHelper;
+            _options = options;
         }
 
         public override ConventionSet AddConventions(ConventionSet conventionSet)
@@ -56,19 +59,6 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
 
             return conventionSet;
-        }
-
-        public static ConventionSet Build()
-        {
-            var sqlServerTypeMapper = new FirebirdSqlTypeMapper(new RelationalTypeMapperDependencies());
-
-            return new FirebirdSqlConventionSetBuilder(
-                    new RelationalConventionSetBuilderDependencies(sqlServerTypeMapper, null, null),
-                    new FirebirdSqlSqlGenerationHelper(new RelationalSqlGenerationHelperDependencies()))
-                .AddConventions(
-                    new CoreConventionSetBuilder(
-                            new CoreConventionSetBuilderDependencies(sqlServerTypeMapper))
-                        .CreateConventionSet());
-        }
+        } 
     }
 }

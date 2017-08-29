@@ -52,10 +52,8 @@ namespace System.Text
                 appended = true;
             }
 
-            if (appended)
-            {
-                stringBuilder.Length -= separator.Length;
-            }
+            if (appended) 
+                stringBuilder.Length -= separator.Length; 
 
             return stringBuilder;
         }
@@ -120,10 +118,9 @@ namespace System.Text
                 appended = true;
             }
 
-            if (appended)
-            {
+            if (appended) 
                 stringBuilder.Length -= separator.Length;
-            }
+            
 
             return stringBuilder;
         }

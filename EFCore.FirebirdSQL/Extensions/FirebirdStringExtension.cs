@@ -1,5 +1,6 @@
 ﻿/*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -21,16 +22,23 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
- namespace Microsoft.Extensions.Logging
+
+namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
-    internal static class LoggingExtensions
+    public static class FirebirdStringExtension
     {
-        public const string CommandsLoggerName = "EntityFramework.Commands";
 
-        public static ILogger CreateCommandsLogger(this ILoggerFactory loggerFactory)
-            => loggerFactory.CreateLogger(CommandsLoggerName);
-
-        public static ILogger CreateCommandsLogger(this ILoggerProvider loggerProvider)
-            => loggerProvider.CreateLogger(CommandsLoggerName);
+        /// <summary>
+        /// Receiver SubString MaxLength
+        /// </summary>
+        /// <param name="strInfo"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
+        public static string MaxLength(this string strInfo, int maxLength)
+        {
+            if (strInfo.Length <= maxLength)
+                return strInfo;
+            return strInfo.Substring(0, maxLength);
+        } 
     }
 }

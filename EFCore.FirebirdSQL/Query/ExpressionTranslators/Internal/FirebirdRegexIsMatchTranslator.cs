@@ -39,7 +39,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
             => _methodInfo.Equals(methodCallExpression.Method)
-                ? new RegexpExpression(
+                ? new FirebirdRegexpExpression(
                     methodCallExpression.Arguments[0],
                     methodCallExpression.Arguments[1])
                 : null;

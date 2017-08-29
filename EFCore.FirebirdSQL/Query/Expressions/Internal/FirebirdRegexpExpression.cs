@@ -32,10 +32,10 @@ using Microsoft.EntityFrameworkCore.Utilities;
 namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 {
     
-    public class RegexpExpression : Expression
+    public class FirebirdRegexpExpression : Expression
     {
         
-        public RegexpExpression([NotNull] Expression match, [NotNull] Expression pattern)
+        public FirebirdRegexpExpression([NotNull] Expression match, [NotNull] Expression pattern)
         {
             Check.NotNull(match, nameof(match));
             Check.NotNull(pattern, nameof(pattern));
@@ -70,7 +70,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 
             return newMatchExpression != Match
                    || newPatternExpression != Pattern
-                ? new RegexpExpression(newMatchExpression, newPatternExpression)
+                ? new FirebirdRegexpExpression(newMatchExpression, newPatternExpression)
                 : this;
         }
 
@@ -86,10 +86,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((RegexpExpression)obj);
+            return obj.GetType() == GetType() && Equals((FirebirdRegexpExpression)obj);
         }
 
-        private bool Equals(RegexpExpression other)
+        private bool Equals(FirebirdRegexpExpression other)
             => Equals(Match, other.Match)
                && Equals(Pattern, other.Pattern);
 
@@ -104,7 +104,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
             }
         }
 
-        public override string ToString() => $"{Match} REGEXP {Pattern}";
+        public override string ToString() => $"{Match} SIMILAR TO {Pattern}";
         
     }
     

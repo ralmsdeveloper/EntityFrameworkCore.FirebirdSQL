@@ -31,6 +31,8 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 {
     public interface IFirebirdSqlExpressionVisitor
     {
-        Expression VisitRegexp([NotNull] RegexpExpression regexpExpression);
+        Expression VisitRegexp([NotNull] FirebirdRegexpExpression regexpExpression);
+        Expression VisitSubString([NotNull] SubStringExpression sbStringExpression);
+        
     }
 }

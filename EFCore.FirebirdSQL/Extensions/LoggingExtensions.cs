@@ -1,6 +1,7 @@
-/*                 
+﻿/*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -21,47 +22,16 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
-
-using System.Diagnostics;
-using System.Linq;
-
-
-namespace System.Collections.Generic
+ namespace Microsoft.Extensions.Logging
 {
-    [DebuggerStepThrough]
-    internal static class EnumerableExtensions
+    internal static class LoggingExtensions
     {
-        public static string Join(this IEnumerable<object> source, string separator = ", ")
-        {
-            return string.Join(separator, source);
-        }
+        public const string CommandsLoggerName = "EntityFramework.Commands";
 
-        public static IEnumerable<T> Distinct<T>(
-            this IEnumerable<T> source, Func<T, T, bool> comparer)
-            where T : class
-        {
-            return source.Distinct(new DynamicEqualityComparer<T>(comparer));
-        }
+        public static ILogger CreateCommandsLogger(this ILoggerFactory loggerFactory)
+            => loggerFactory.CreateLogger(CommandsLoggerName);
 
-        private sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
-            where T : class
-        {
-            private readonly Func<T, T, bool> _func;
-
-            public DynamicEqualityComparer(Func<T, T, bool> func)
-            {
-                _func = func;
-            }
-
-            public bool Equals(T x, T y)
-            {
-                return _func(x, y);
-            }
-
-            public int GetHashCode(T obj)
-            {
-                return 0; // force Equals
-            }
-        }
+        public static ILogger CreateCommandsLogger(this ILoggerProvider loggerProvider)
+            => loggerProvider.CreateLogger(CommandsLoggerName);
     }
 }

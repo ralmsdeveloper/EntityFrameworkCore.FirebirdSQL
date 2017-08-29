@@ -1,5 +1,6 @@
 /*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written

@@ -1,6 +1,8 @@
 /*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -21,17 +23,16 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
- 
- using System;
+
+
+using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Diagnostics; 
+using Microsoft.EntityFrameworkCore.Internal; 
 using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal

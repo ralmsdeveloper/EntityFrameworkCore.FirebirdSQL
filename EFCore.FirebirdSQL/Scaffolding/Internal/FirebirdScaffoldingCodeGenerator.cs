@@ -1,6 +1,8 @@
 /*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -21,8 +23,9 @@
  *         Made In Sergipe-Brasil - ralms@ralms.net 
  *                  All Rights Reserved.
  */
- 
- namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
+
+
+namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
 {
     public class FirebirdSqlScaffoldingCodeGenerator : IScaffoldingProviderCodeGenerator
     {

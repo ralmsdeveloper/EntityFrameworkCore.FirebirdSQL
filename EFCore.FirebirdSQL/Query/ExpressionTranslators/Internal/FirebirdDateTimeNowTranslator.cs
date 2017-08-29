@@ -49,15 +49,9 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 switch (memberExpression.Member.Name)
                 {
                     case nameof(DateTime.Now): 
-                        return new SqlFunctionExpression("CURRENT_TIMESTAMP", memberExpression.Type,new[]
-                        {
-                          new SqlFragmentExpression("0")
-                        });
+                        return new SqlFragmentExpression("CURRENT_TIMESTAMP");
                     case nameof(DateTime.UtcNow):
-                        return new SqlFunctionExpression("CURRENT_TIMESTAMP", memberExpression.Type, new[]
-                        {
-                          new SqlFragmentExpression("0")
-                        });
+                        return new SqlFragmentExpression("CURRENT_TIMESTAMP");
                 }
             } 
             return null;

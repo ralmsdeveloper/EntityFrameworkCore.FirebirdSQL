@@ -33,49 +33,43 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
 
     public class FirebirdSqlBatchExecutor : IBatchExecutor
-    {
-
-        public int Execute(
-            IEnumerable<ModificationCommandBatch> commandBatches,
+    { 
+        public int Execute(IEnumerable<ModificationCommandBatch> commandBatches,
             IRelationalConnection connection)
         {
-            var registrosAfetados = 0;
-            connection.Open();
-            IDbContextTransaction startedTransaction = null;
+            var RowsAffecteds = 0;
+            if(connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                connection.Open();
+
+            IDbContextTransaction currentTransaction = null;
             try
             {
                 if (connection.CurrentTransaction == null) 
-                    startedTransaction = connection.BeginTransaction();
-             
+                    currentTransaction = connection.BeginTransaction(); 
 
                 foreach (var commandbatch in commandBatches)
                 {
                     commandbatch.Execute(connection);
-                    registrosAfetados += commandbatch.ModificationCommands.Count;
+                    RowsAffecteds += commandbatch.ModificationCommands.Count;
                 } 
-                startedTransaction?.Commit();
-                startedTransaction?.Dispose();
+                currentTransaction?.Commit();
+                currentTransaction?.Dispose();
             }
             catch(Exception ex)
-            {
-                ex.Message.ToString();
+            { 
                 try
                 {
-                    startedTransaction?.Rollback();
-                    startedTransaction?.Dispose();
+                    currentTransaction?.Rollback();
+                    currentTransaction?.Dispose();
                 }
-                catch
-                {
-                    // if the connection was lost, rollback command will fail.  prefer to throw original exception in that case
-                }
-                throw;
+                catch{}
+                throw ex;
             }
             finally
             {
-                connection.Close();
-            }
-
-            return registrosAfetados;
+                connection?.Close();
+            } 
+            return RowsAffecteds;
         }
 
         public async Task<int> ExecuteAsync(
@@ -83,44 +77,41 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             IRelationalConnection connection,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var registrosAfetados = 0;
+            var RowsAffecteds = 0;
             await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
-            FirebirdSqlRelationalTransaction startedTransaction = null;
+            FirebirdSqlRelationalTransaction currentTransaction = null;
             try
             {
                 if (connection.CurrentTransaction == null) 
-                    startedTransaction = await (connection as FirebirdSqlRelationalConnection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FirebirdSqlRelationalTransaction;
+                    currentTransaction = await (connection as FirebirdSqlRelationalConnection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FirebirdSqlRelationalTransaction;
                
 
                 foreach (var commandbatch in commandBatches)
                 {
                     await commandbatch.ExecuteAsync(connection, cancellationToken).ConfigureAwait(false);
-                    registrosAfetados += commandbatch.ModificationCommands.Count;
+                    RowsAffecteds += commandbatch.ModificationCommands.Count;
                 }
 
-                if (startedTransaction != null) 
-                    await startedTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                if (currentTransaction != null) 
+                    await currentTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
            
-                startedTransaction?.Dispose();
+                currentTransaction?.Dispose();
             }
             catch (Exception err)
             {
                 try
                 {
-                    startedTransaction?.Rollback();
-                    startedTransaction?.Dispose();
+                    currentTransaction?.Rollback();
+                    currentTransaction?.Dispose();
                 }
-                catch
-                {
-                    // if the connection was lost, rollback command will fail.  prefer to throw original exception in that case
-                }
+                catch{}
                 throw err;
             }
             finally
             {
-                connection.Close();
+                connection?.Close();
             } 
-            return registrosAfetados;
+            return RowsAffecteds;
         }
     }
 }

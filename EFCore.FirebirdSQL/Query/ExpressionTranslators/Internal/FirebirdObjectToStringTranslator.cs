@@ -44,7 +44,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             typeof(Guid),
             typeof(bool),
             typeof(byte),
-            //typeof(byte[])
+            typeof(byte[]),
             typeof(double),
             typeof(DateTimeOffset),
             typeof(char),

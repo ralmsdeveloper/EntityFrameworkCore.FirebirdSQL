@@ -1,6 +1,8 @@
 /*                 
  *     EntityFrameworkCore.FirebirdSqlSQL  - Congratulations EFCore Team
+ *     
  *              https://www.FirebirdSqlsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -66,15 +68,14 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 //Error connection database not exists
                 try
                 {
-                    using (var schemalessConnection = new FbConnection(csb.ConnectionString))
+                    using (var _connection = new FbConnection(csb.ConnectionString))
                     {
-                        schemalessConnection.Open();
-                        serverVersion = schemalessConnection.ServerVersion;
+                        _connection.Open();
+                        serverVersion = _connection.ServerVersion;
                     }
                 }
                 catch 
-                { }
-              
+                { } 
                 var version = new ServerVersion(serverVersion);
                 return new FbConnectionSettings(settingsCsb, version);
             });
@@ -86,11 +87,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             var settingsCsb = _settingsCsb(csb);
             return Settings.GetOrAdd(settingsCsb.ConnectionString, key =>
             {
-                var opened = false;
+                var open = false;
                 if (connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
-                    opened = true;
+                    open = true;
                 }
                 try
                 {
@@ -100,7 +101,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 }
                 finally
                 {
-                    if (opened)
+                    if (open)
                         connection.Close();
                 }
             });
@@ -109,9 +110,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
      
 
         internal FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
-        {
-            ServerVersion = serverVersion;
-        }
+        => ServerVersion = serverVersion;  
 
         public readonly ServerVersion ServerVersion;
 

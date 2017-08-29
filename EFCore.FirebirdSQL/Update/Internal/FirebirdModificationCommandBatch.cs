@@ -25,13 +25,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text; 
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Internal;
-
+using Microsoft.EntityFrameworkCore.Internal; 
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 { 
@@ -39,9 +36,11 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
     public class FirebirdSqlModificationCommandBatch : AffectedCountModificationCommandBatch
     { 
         internal const int MaxParameterCount = 1500;
-        internal const int MaxRowCount = 300;
+        internal const int MaxRowCount = 256;
         internal int CountParameter = 1;
         internal readonly int _maxBatchSize;
+        internal readonly IRelationalCommandBuilderFactory _commandBuilderFactory = null;
+        internal readonly IRelationalValueBufferFactoryFactory _valueBufferFactory = null;
         internal readonly List<ModificationCommand> _BlockInsertCommands = new List<ModificationCommand>();
         internal readonly List<ModificationCommand> _BlockUpdateCommands = new List<ModificationCommand>();
         internal readonly List<ModificationCommand> _BlockDeleteCommands = new List<ModificationCommand>();
@@ -64,6 +63,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
            
             _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
+            _commandBuilderFactory = commandBuilderFactory;
+            _valueBufferFactory= valueBufferFactoryFactory;
         }
 
         /// <summary>
@@ -117,8 +118,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 if (columnModification.UseOriginalValueParameter) 
                     parameterCount++;
                 
-            }
-
+            } 
             return parameterCount;
         }
 
@@ -139,10 +139,15 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         protected override string GetCommandText()
-            => base.GetCommandText() 
-            + GetBlockInsertCommandText(ModificationCommands.Count) 
-            + GetBlockUpdateCommandText(ModificationCommands.Count)
-            + GetBlockDeleteCommandText(ModificationCommands.Count);
+        {
+            var StrCommands = new StringBuilder();
+            StrCommands.Append(base.GetCommandText());
+            StrCommands.Append(GetBlockInsertCommandText(ModificationCommands.Count));
+            StrCommands.Append(GetBlockUpdateCommandText(ModificationCommands.Count));
+            StrCommands.Append(GetBlockDeleteCommandText(ModificationCommands.Count));
+            return StrCommands.ToString();
+        }
+            
 
         private string GetBlockDeleteCommandText(int lastIndex)
         {
@@ -184,10 +189,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 return string.Empty;
        
             var stringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBlockInsertOperation(stringBuilder, _BlockInsertCommands, lastIndex - _BlockInsertCommands.Count);
+            var headStringBuilder = new StringBuilder();
+            var resultSetMapping = UpdateSqlGenerator.AppendBlockInsertOperation(stringBuilder, headStringBuilder, _BlockInsertCommands, lastIndex - _BlockInsertCommands.Count);
             for (var i = lastIndex - _BlockInsertCommands.Count; i < lastIndex; i++)
-                CommandResultSet[i] = resultSetMapping;
-            
+                CommandResultSet[i] = resultSetMapping; 
 
             if (resultSetMapping != ResultSetMapping.NoResultSet) 
                 CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
@@ -206,14 +211,20 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
             if (newModificationCommand.EntityState == EntityState.Added)
             {
-                if (_BlockInsertCommands.Count > 0
-                    && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
-                {
-                    CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
-                    _BlockInsertCommands.Clear();
-                }
-                _BlockInsertCommands.Add(newModificationCommand); 
-                LastCachedCommandIndex = commandPosition;
+                //if (_BlockInsertCommands.Count > 0
+                //    && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
+                //{
+                    
+                //    CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
+                //    _BlockInsertCommands.Clear();
+                //    commandPosition = 0;
+                //}
+                //else
+                //{
+                    _BlockInsertCommands.Add(newModificationCommand);
+                    LastCachedCommandIndex = commandPosition;
+               // }
+
             }
             else if (newModificationCommand.EntityState == EntityState.Modified)
             {
@@ -244,16 +255,17 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 base.UpdateCachedCommandText(commandPosition);
             }
         }
+         
+
 
         private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-  => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-     && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
-     && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
-         secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-     && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
-         secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-
-
+          => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
+             && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
+             && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
+                 secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+             && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
+                 secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+         
         private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
     => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
        && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)

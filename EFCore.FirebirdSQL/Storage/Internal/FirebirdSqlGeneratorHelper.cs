@@ -28,15 +28,19 @@ using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.Update;
-
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FirebirdSqlSqlGenerationHelper : RelationalSqlGenerationHelper
     {
-        public FirebirdSqlSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies)
+        internal readonly IFirebirdSqlOptions _options = null;
+        public FirebirdSqlSqlGenerationHelper([NotNull] RelationalSqlGenerationHelperDependencies dependencies,
+              [NotNull] IFirebirdSqlOptions options)
             : base(dependencies)
         {
+            _options = options;
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             Check.NotEmpty(identifier, nameof(identifier));
 
             var initialLength = builder.Length;
-            builder.Append(identifier);
+            builder.Append(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
             //builder.Replace("", "", initialLength, identifier.Length);
         }
 
@@ -64,7 +68,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public override string DelimitIdentifier(string identifier)
-            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier, nameof(identifier)))}\""; // Interpolation okay; strings
+            => $"\"{EscapeIdentifier(Check.NotEmpty(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName), nameof(identifier)))}\""; // Interpolation okay; strings
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -73,7 +77,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             Check.NotEmpty(identifier, nameof(identifier));
             builder.Append('"');
-            EscapeIdentifier(builder, identifier);
+            EscapeIdentifier(builder, identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
             builder.Append('"');
         }
 
@@ -88,7 +92,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         // Returns:
         //     A valid name based on the candidate name.
         public override string GenerateParameterName(string name)
-        =>   $"@{name}";
+        =>   $"@{name.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName)}";
         
 
         //
@@ -102,7 +106,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         //   name:
         //     The candidate name for the parameter.
         public override void GenerateParameterName(StringBuilder builder, string name)
-       => builder.Append("@").Append(name);
+       => builder.Append("@").Append(name.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
 
     
 

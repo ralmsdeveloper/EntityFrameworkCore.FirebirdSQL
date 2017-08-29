@@ -44,10 +44,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
 
         protected override RelationalOptionsExtension Clone()
             => new FbOptionsExtension(this);
-
-
-        public bool Firebird3()
-           =>true;
+         
 
         public override bool ApplyServices(IServiceCollection services)
         {
