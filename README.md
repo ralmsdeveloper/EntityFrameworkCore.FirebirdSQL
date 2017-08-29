@@ -1,10 +1,28 @@
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 [![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL)
-
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
- 
 [![Nuget count](http://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSQL.svg)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSQL/)
+
+
+The EntityFrameworkCore.FirebirdSQL is an Entity Framework Core access provider for Firebird SQL, compatible with version 3.X and earlier versions 2.x.
+
+Same uses the ADO.NET Library  [Firebird Client](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient)  written by friend Cincura.
+
+##  Prediction Release 2.0 - September 05, 2017
+
+##  What we already have:
+All basic operations are working well
+
+Insert :heavy_check_mark: Update  :heavy_check_mark: Delete :heavy_check_mark:
+
+Insert Bulk :heavy_check_mark: Update Bulk :heavy_check_mark: Delete Bulk :heavy_check_mark:
+
+##  Supports: 
+Guid, TimeStamp, Date, BigInt, Varchar, Text
+
+IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
+
 
 ## Example of use DBContext
 
