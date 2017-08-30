@@ -133,32 +133,31 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                    .Append(type)
                    .Append(operation.IsNullable ? " " : " NOT NULL")
                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-            switch (type)
+
+            if (!type.StartsWith("BLOB", StringComparison.Ordinal))
             {
-                case "CHAR":
-                case "VARCHAR":
-                case "BLOB SUB_TYPE TEXT":
-                default:
-                    if (operation.DefaultValue != null || !string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                    {
-                        builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
-                        builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
-                        if (operation.DefaultValue != null)
-                        {
-                            var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
-                            builder.Append(" DEFAULT ")
-                                .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
-                                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                        }
-                        else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                        {
-                            builder.Append(" DEFAULT ")
-                                .Append(operation.DefaultValueSql)
-                                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                        }
-                    }
-                    break;
+                builder.Append($"ALTER TABLE {identifier} ALTER COLUMN");
+                builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+
+                if (operation.DefaultValue != null)
+                {
+                    var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
+                    builder.Append(" SET DEFAULT ")
+                        .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                }
+                else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
+                {
+                    builder.Append(" SET DEFAULT ")
+                        .Append(operation.DefaultValueSql)
+                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+                }
+                else
+                {
+                    builder.Append(" DROP DEFAULT;");
+                }
             }
+
             EndStatement(builder);
         }
 
@@ -174,17 +173,36 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
             if (operation.NewName != null)
             {
+                var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
 
-                builder.Append("ALTER TABLE ")
+                if (createTableSyntax == null)
+                    throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
+
+                var indexDefinitionRe = new Regex($"^\\s*((?:UNIQUE\\s)?KEY\\s)?{operation.Name}?(.*)$", RegexOptions.Multiline);
+                var match = indexDefinitionRe.Match(createTableSyntax);
+
+                string newIndexDefinition;
+                if (match.Success)
+                    newIndexDefinition = match.Groups[1].Value + Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName) + " " + match.Groups[2].Value.Trim().TrimEnd(',');
+                else
+                    throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
+
+                builder
+                    .Append("ALTER TABLE ")
                     .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                    .Append(" RENAME INDEX ")
+                    .Append(" DROP INDEX ")
                     .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                    .Append(" TO ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-                    .AppendLine(";");
-
+                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
                 EndStatement(builder);
 
+                builder
+                    .Append("ALTER TABLE ")
+                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                    .Append(" ADD ")
+                    .Append(newIndexDefinition)
+                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+
+                EndStatement(builder);
             }
         }
 
@@ -208,6 +226,23 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append($"  RDB$RELATION_NAME = '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}' and")
                 .Append("   RDB$SYSTEM_FLAG = 0;").AppendLine();
             EndStatement(builder);
+            
+            // Correct method imo, but require GetCreateTable to be improved (or the triggers will be missing)
+            /*
+            var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Name, operation.Schema);
+            
+            createTableSyntax = createTableSyntax?.Replace(operation.Name, operation.NewName) ?? throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}'");
+
+            builder.Append(createTableSyntax);
+
+            builder
+                .Append("INSERT INTO")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName, operation.Schema))
+                .Append(" SELECT * FROM ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.NewSchema));
+
+            EndStatement(builder);
+             */
         }
 
         protected override void Generate([NotNull] CreateIndexOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder, bool terminate)
@@ -287,7 +322,11 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
 
-            throw new NotSupportedException("Fb Not Implemented!");
+            builder
+                .Append("DROP DATABASE")
+                .Append(Dependencies.SqlGenerationHelper.StatementTerminator);
+
+            EndStatement(builder);
         }
 
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -298,7 +337,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             builder
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP INDEX ")
+                .Append(" DROP CONSTRAINT ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
@@ -313,28 +352,12 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
 
-            var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
-
-            if (createTableSyntax == null)
-                throw new InvalidOperationException($"Not Implemented: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
-
-            var columnDefinitionRe = new Regex($"^\\s*?{operation.Name}?\\s(.*)?$", RegexOptions.Multiline);
-            var match = columnDefinitionRe.Match(createTableSyntax);
-
-            string columnDefinition;
-            if (match.Success)
-                columnDefinition = match.Groups[1].Value.Trim().TrimEnd(',');
-            else
-                throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
-
             builder.Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" CHANGE ")
+                .Append(" ALTER ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .Append(" ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName))
-                .Append(" ")
-                .Append(columnDefinition);
+                .Append(" TO ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
 
             EndStatement(builder);
         }
@@ -468,7 +491,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             builder
                 .Append("ALTER TABLE ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP FOREIGN KEY ")
+                .Append(" DROP CONSTRAINT ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
@@ -498,7 +521,11 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
-            //future implementation
+            builder
+                .Append("ALTER TABLE ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                .Append(" DROP CONSTRAINT ")
+                .Append(operation.Name);
 
             EndStatement(builder);
         }
@@ -515,8 +542,12 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotEmpty(type, nameof(type));
             Check.NotNull(builder, nameof(builder));
 
-
-            //more implementation
+            builder
+                .Append("ALTER ")
+                .Append(type)
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
+                .Append(" TO ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
         }
 
         public virtual void Transfer(
