@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirebirdSQL", "EFCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSQL.Console.Test", "EFCore.FirebirdSQL.Test\EFCore.FirebirdSQL.Console.Test.csproj", "{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{48F660F0-8ED4-4688-A565-0E2CEAF15A81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B} = {48F660F0-8ED4-4688-A565-0E2CEAF15A81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCB461D4-B163-4511-8434-CE0C357FDC74}

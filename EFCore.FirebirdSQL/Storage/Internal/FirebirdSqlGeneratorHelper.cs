@@ -60,7 +60,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             var initialLength = builder.Length;
             builder.Append(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
-            //builder.Replace("", "", initialLength, identifier.Length);
         }
 
         /// <summary>

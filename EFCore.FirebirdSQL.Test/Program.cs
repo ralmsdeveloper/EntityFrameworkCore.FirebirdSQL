@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,20 @@ namespace EFCore.FirebirdSqlSQL.Test
 
         static void Main(string[] args)
         {
+            var con = new FbConnection();
+            var strConnection = "User=SYSDBA;Password=masterkey;Database=R:\\RalmsDev.fdb;DataSource=localhost;Port=2017;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=100;Packet Size=8192;ServerType=0;";
+            var csb = new FbConnectionStringBuilder(strConnection);
+            var dbName = csb.Database; // "" + csb.Database.Replace('', ' ') + "";
+            //csb.Database = "";
+            using (var connection = new FbConnection(csb.ConnectionString))
+            {
+                connection.Open();
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = $"CREATE DATABASE {dbName} CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+                    cmd.ExecuteNonQuery();
+                }
+            }
             Console.WriteLine("# Wait... ");
             var cx = new Context();
             Console.WriteLine("# Deleting database...\n");

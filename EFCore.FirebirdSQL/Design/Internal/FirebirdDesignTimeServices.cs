@@ -37,8 +37,8 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
         {
             serviceCollection
                 .AddSingleton<IRelationalTypeMapper, FirebirdSqlTypeMapper>()
-                .AddSingleton<IScaffoldingProviderCodeGenerator, FirebirdSqlScaffoldingCodeGenerator>()
                 .AddSingleton<IDatabaseModelFactory, FirebirdSqlDatabaseModelFactory>()
+                .AddSingleton<IScaffoldingProviderCodeGenerator, FirebirdSqlScaffoldingCodeGenerator>()
                 .AddSingleton<IAnnotationCodeGenerator, FirebirdSqlAnnotationCodeGenerator>();
                 
         }

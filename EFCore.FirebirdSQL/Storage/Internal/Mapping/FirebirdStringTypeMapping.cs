@@ -36,7 +36,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     {
         readonly FbDbType _fbDbType;
 
-        public FirebirdSqlStringTypeMapping(string storeType, FbDbType fbDbType)
+        public FirebirdSqlStringTypeMapping(string storeType, FbDbType fbDbType, bool unicode = false,int? size=null)
             : base(storeType)
         {
             _fbDbType = fbDbType;

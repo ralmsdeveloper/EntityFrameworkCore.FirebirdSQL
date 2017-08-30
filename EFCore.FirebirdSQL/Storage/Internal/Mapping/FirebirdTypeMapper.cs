@@ -37,34 +37,61 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
     public class FirebirdSqlTypeMapper : RelationalTypeMapper
     {
 
-        // boolean
-        readonly FirebirdSqlBoolTypeMapping _boolean = new FirebirdSqlBoolTypeMapping();
-        // integers 
-        readonly ShortTypeMapping _smallint                = new ShortTypeMapping("SMALLINT", DbType.Int16);
-        readonly IntTypeMapping _integer                   = new IntTypeMapping("INTEGER", DbType.Int32);
-        readonly LongTypeMapping _bigint                   = new LongTypeMapping("BIGINT", DbType.Int64);
-        // decimals
-        readonly DecimalTypeMapping _decimal               = new DecimalTypeMapping("DECIMAL(18,4)", DbType.Decimal);
-        readonly DoubleTypeMapping _double                 = new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
-        readonly FloatTypeMapping _float                   = new FloatTypeMapping("FLOAT");
-        // binary
-        readonly RelationalTypeMapping _binary             = new FirebirdSqlByteArrayTypeMapping("CHAR", DbType.Binary, 8000);
-        readonly RelationalTypeMapping _varbinary          = new FirebirdSqlByteArrayTypeMapping("CHAR", DbType.Binary,8000);
-        // string
-        readonly FirebirdSqlStringTypeMapping _char        = new FirebirdSqlStringTypeMapping("CHAR", FbDbType.VarChar);
-        readonly FirebirdSqlStringTypeMapping _varchar     = new FirebirdSqlStringTypeMapping("VARCHAR", FbDbType.VarChar);
-        readonly FirebirdSqlStringTypeMapping _text        = new FirebirdSqlStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
+        // bool
+        private FirebirdSqlBoolTypeMapping _boolean
+                                            => new FirebirdSqlBoolTypeMapping();
+        // int 
+        private ShortTypeMapping _smallint
+                                            => new ShortTypeMapping("SMALLINT", DbType.Int16);
+        private IntTypeMapping _integer
+                                            => new IntTypeMapping("INTEGER", DbType.Int32);
+        private LongTypeMapping _bigint
+                                            => new LongTypeMapping("BIGINT", DbType.Int64);
+        // decimal
+        private DecimalTypeMapping _decimal
+                                            => new DecimalTypeMapping("DECIMAL(18,4)", DbType.Decimal);
+        private DoubleTypeMapping _double
+                                            => new DoubleTypeMapping("DOUBLE PRECISION", DbType.Double);
+        private FloatTypeMapping _float                      
+                                            => new FloatTypeMapping("FLOAT");
+        // Binary
+        private RelationalTypeMapping _binary                
+                                            => new FirebirdSqlByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
+        private RelationalTypeMapping _varbinary             
+                                            => new FirebirdSqlByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
+        private FirebirdSqlByteArrayTypeMapping _varbinary767
+                                            => new FirebirdSqlByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary,767);
+        private RelationalTypeMapping _varbinaryMax          
+                                            => new FirebirdSqlByteArrayTypeMapping("BLOB SUB_TYPE 0 SEGMENT SIZE 80", DbType.Binary);
+
+        // String   
+        private FirebirdSqlStringTypeMapping _char        
+                                            => new FirebirdSqlStringTypeMapping("CHAR", FbDbType.VarChar);
+        private FirebirdSqlStringTypeMapping _varchar     
+                                            => new FirebirdSqlStringTypeMapping("VARCHAR", FbDbType.VarChar);
+        private FirebirdSqlStringTypeMapping _varchar127 
+                                            => new FirebirdSqlStringTypeMapping("VARCHAR(127)", FbDbType.VarChar, true, 127);
+        private FirebirdSqlStringTypeMapping _varcharMax 
+                                            => new FirebirdSqlStringTypeMapping("VARCHAR(4000)", FbDbType.VarChar);
+        private FirebirdSqlStringTypeMapping _text        
+                                            => new FirebirdSqlStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
         // DateTime
-        readonly FirebirdSqlDateTimeTypeMapping _dateTime  = new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
-        readonly FirebirdSqlDateTimeTypeMapping _date      = new FirebirdSqlDateTimeTypeMapping("DATE", FbDbType.Date);
-        readonly FirebirdSqlDateTimeTypeMapping _time      = new FirebirdSqlDateTimeTypeMapping("TIME", FbDbType.Time);
-
+        private FirebirdSqlDateTimeTypeMapping _dateTime  
+                                            => new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
+        private FirebirdSqlDateTimeTypeMapping _date      
+                                            => new FirebirdSqlDateTimeTypeMapping("DATE", FbDbType.Date);
+        private FirebirdSqlDateTimeTypeMapping _time      
+                                            => new FirebirdSqlDateTimeTypeMapping("TIME", FbDbType.Time);
         // guid
-        readonly FirebirdGuidTypeMapping _guid             = new FirebirdGuidTypeMapping("CHAR(16) CHARACTER SET OCTETS", FbDbType.Guid);
+        private FirebirdGuidTypeMapping _guid             
+                                            => new FirebirdGuidTypeMapping("CHAR(16) CHARACTER SET OCTETS", FbDbType.Guid);
+        //Row Version
+        private RelationalTypeMapping _rowVersion 
+                                            => new FirebirdSqlDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
 
-        readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
-        readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
-        private readonly HashSet<string> _disallowedMappings;
+        private Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
+        private Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
+        private List<string> _disallowedMappings;
 
         public FirebirdSqlTypeMapper([NotNull] RelationalTypeMapperDependencies dependencies)
             : base(dependencies)
@@ -72,67 +99,101 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             _storeTypeMappings
                 = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
                 {
-                    // boolean
+                    // Boolean
                     { "BOOLEAN", _boolean },
-                    // integers 
+                    // Integer 
                     { "SMALLINT", _smallint },
                     { "INTEGER", _integer },
                     { "BIGINT", _bigint },  
-                    // decimals
+                    // Decimal
                     { "DECIMAL(18,4)", _decimal },
                     { "DOUBLE PRECICION(18,4)", _double },
                     { "FLOAT", _float }, 
-                    // binary
+                    // Binary
                     { "BINARY", _binary },
                     { "VARBINARY", _varbinary } , 
-                    // string
+                    // String
                     { "CHAR", _char },
                     { "VARCHAR", _varchar }, 
                     { "BLOB SUB_TYPE TEXT", _text },  
                     // DateTime
                     { "TIMESTAMP", _dateTime },
-                    { "DATE", _date },   
-                    // guid
+                    { "DATE", _date },
+                    { "TIME", _time },   
+                    // Guid
                     { "CHAR(16) CHARACTER SET OCTETS", _guid }
                 };
 
             _clrTypeMappings
                 = new Dictionary<Type, RelationalTypeMapping>
                 {
-	                // boolean
+	                // Boolean
 	                { typeof(bool), _boolean }, 
-	                // integers
+	                // Integer
 	                { typeof(short), _smallint }, 
 	                { typeof(int), _integer }, 
 	                { typeof(long), _bigint },  
-	                // decimals
+	                // Decimal
 	                { typeof(decimal), _decimal },
 	                { typeof(float), _float },
 	                { typeof(double), _double }, 
 	                // DateTime
 	                { typeof(DateTime), _dateTime }, 
-	                { typeof(TimeSpan), _date }, 
-	                // guid
+	                { typeof(TimeSpan), _date },
+                    { typeof(TimeSpan), _time }, 
+	                // Guid
 	                { typeof(Guid), _guid }
                 };
 
             _disallowedMappings
-                = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                = new List<string>()
                 {
                     "BINARY",
                     "CHAR", 
                     "VARBINARY",
                     "VARCHAR" 
-                }; 
+                };
+
+            ByteArrayMapper
+                = new ByteArrayRelationalTypeMapper(
+                    8000,
+                    _binary,
+                    _varbinaryMax,
+                    _varbinary767,
+                    _rowVersion,
+                     size => new FirebirdSqlByteArrayTypeMapping(
+                        "BLOB SUB_TYPE 0 SEGMENT SIZE 80",
+                        DbType.Binary));
 
             StringMapper = new FirebirdSqlStringRelationalTypeMapper();
+
+            StringMapper
+                = new StringRelationalTypeMapper(
+                    maxBoundedAnsiLength: 4000,
+                    defaultAnsiMapping: _varcharMax,
+                    unboundedAnsiMapping: _varcharMax,
+                    keyAnsiMapping: _varchar127,
+                    createBoundedAnsiMapping: size => new FirebirdSqlStringTypeMapping(
+                        "VARCHAR(" + size + ")",
+                        FbDbType.VarChar,
+                        unicode: false,
+                        size: size),
+                    maxBoundedUnicodeLength: 4000,
+                    defaultUnicodeMapping: _varcharMax,
+                    unboundedUnicodeMapping: _varcharMax,
+                    keyUnicodeMapping: _varchar127,
+                    createBoundedUnicodeMapping: size => new FirebirdSqlStringTypeMapping(
+                        "VARCHAR(" + size + ")",
+                        FbDbType.VarChar,
+                        unicode: false,
+                        size: size));
         }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-       // public override IByteArrayRelationalTypeMapper ByteArrayMapper { get; }
+        public override IByteArrayRelationalTypeMapper ByteArrayMapper { get; }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -146,10 +207,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         /// </summary>
         public override void ValidateTypeName(string storeType)
         {
-            if (_disallowedMappings.Contains(storeType))
-            {
+            if (_disallowedMappings.Contains(storeType)) 
                 throw new ArgumentException("Daty Type Invalid!" + storeType);
-            }
         }
 
         /// <summary>
