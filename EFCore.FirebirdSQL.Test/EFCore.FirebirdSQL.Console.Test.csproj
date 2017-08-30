@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>EFCore.FirebirdSQL.Test</RootNamespace>
-    <AssemblyName>EFCore.FirebirdSQL.Test</AssemblyName>
+    <RootNamespace>FirebirdSql.EntityFrameworkCore.Firebird.Test</RootNamespace>
+    <AssemblyName>FirebirdSql.EntityFrameworkCore.Firebird.Console.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -43,8 +43,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test.cs" />
-    <Compile Include="Trace.cs" />
+    <Compile Include="Context.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

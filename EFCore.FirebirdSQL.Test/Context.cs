@@ -6,23 +6,22 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-namespace EFCore.FbSQL.Test
+namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
 {
     public class Context : DbContext
     {
         
         public DbSet<Author> Author { get; set; }
-        public DbSet<Book> Book { get; set; }
-        public DbSet<TestGuid> TestGuid { get; set; }
+        public DbSet<Book> Book { get; set; } 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {  
 
             string connectionString =
             "User=SYSDBA;" +
             "Password=masterkey;" +
-            $"Database={System.IO.Directory.GetCurrentDirectory()}\\FirebirdSample.fdb;" +
+            $"Database={System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
             "DataSource=127.0.0.1;" +
-            "Port=2017;"+ //Default 3050
+            "Port=3050"+
             "Dialect=3;" +
             "Charset=NONE;" +
             "Role=;" +
@@ -31,26 +30,13 @@ namespace EFCore.FbSQL.Test
             "MinPoolSize=1;" +
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
-            "ServerType=0";
-
-            optionsBuilder.UseFirebird(connectionString);
-
-            //if used Log  (log of commands)
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new TraceLoggerProvider());
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+            "ServerType=0"; 
+            optionsBuilder.UseFirebird(connectionString); 
 
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {}
-    }
-    public class TestGuid
-    {
-        public Guid  Id { get; set; } 
-        [StringLength(100)]
-        public string FirstName { get; set; }
-         
-    }
+    } 
 
     public class Author
     {
@@ -63,6 +49,8 @@ namespace EFCore.FbSQL.Test
         public string LastName { get; set; }
 
         public DateTime Date { get; set; }
+         
+        public Guid Identification { get; set; }
 
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
