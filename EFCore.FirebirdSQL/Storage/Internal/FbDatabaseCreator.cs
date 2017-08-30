@@ -67,13 +67,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             using (var masterConnection = _connection.CreateMasterConnection())
             {
-                FbConnection.CreateDatabase(_connection.ConnectionString);
-                //Dependencies.MigrationCommandExecutor
-                //    .ExecuteNonQuery(CreateCreateOperations(), masterConnection);
-
-                ClearPool();
+                Dependencies.MigrationCommandExecutor
+                            .ExecuteNonQuery(CreateCreateOperations(), masterConnection);
             }
-
             Exists(retryOnNotExists: true);
         }
 
@@ -82,7 +78,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             using (var masterConnection = _connection.CreateMasterConnection())
             {
                 await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(CreateCreateOperations(), masterConnection, cancellationToken).ConfigureAwait(false);
-
                 ClearPool();
             }
 
@@ -104,8 +99,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         private IReadOnlyList<MigrationCommand> CreateCreateOperations()
         {
-            var builder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString);
-            return Dependencies.MigrationsSqlGenerator.Generate((new[] { new FbCreateDatabaseOperation { Name = _connection.DbConnection.Database } }));
+            var operations = new MigrationOperation[]
+            {
+                new FbCreateDatabaseOperation { connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)}
+            };
+            return Dependencies.MigrationsSqlGenerator.Generate(operations);
         }
         public override bool Exists()
             => Exists(retryOnNotExists: false);
@@ -182,7 +180,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public override void Delete()
         {
             ClearAllPools();
-            FbConnection.DropDatabase(_connection.ConnectionString);
+            FbConnection.DropDatabase(_connection.ConnectionString); 
         }
 
         /// <summary>
@@ -198,11 +196,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             var operations = new MigrationOperation[]
             {
-                new FbDropDatabaseOperation { Name = _connection.DbConnection.Database }
+                new FbDropDatabaseOperation { connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)}
             };
-
-            var masterCommands = Dependencies.MigrationsSqlGenerator.Generate(operations);
-            return masterCommands;
+            return Dependencies.MigrationsSqlGenerator.Generate(operations);
         }
 
         private static void ClearAllPools() => FbConnection.ClearAllPools();

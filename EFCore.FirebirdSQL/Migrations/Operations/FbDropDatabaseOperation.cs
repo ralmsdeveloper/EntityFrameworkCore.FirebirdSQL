@@ -27,13 +27,14 @@
  *                  All Rights Reserved.
  */
 
+using FirebirdSql.Data.FirebirdClient;
 using JetBrains.Annotations;
 
 
 namespace Microsoft.EntityFrameworkCore.Migrations.Operations
 {
     public class FbDropDatabaseOperation : MigrationOperation
-    {
-        public virtual string Name { get;[param: NotNull] set; }
+    { 
+        public virtual FbConnectionStringBuilder connectionStrBuilder { get; [param: NotNull] set; }
     }
 }

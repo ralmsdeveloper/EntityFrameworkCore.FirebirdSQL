@@ -21,7 +21,7 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             "Password=masterkey;" +
             $"Database={System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
             "DataSource=127.0.0.1;" +
-            "Port=3050"+
+            "Port=3050;"+
             "Dialect=3;" +
             "Charset=NONE;" +
             "Role=;" +

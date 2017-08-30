@@ -68,6 +68,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         /// </summary>
         public override string DelimitIdentifier(string identifier)
             => $"\"{EscapeIdentifier(Check.NotEmpty(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName), nameof(identifier)))}\""; // Interpolation okay; strings
+
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.

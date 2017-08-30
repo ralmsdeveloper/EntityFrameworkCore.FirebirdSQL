@@ -44,7 +44,7 @@ using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
-
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Migrations
 {
@@ -255,12 +255,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             if (operation.IsUnique)
             {
                 builder.Append("UNIQUE ");
-            }
-            else if (isFullText)
-            {
-                builder.Append("FULLTEXT ");
-            }
-
+            }  
 
             builder
                 .Append("INDEX ")
@@ -310,23 +305,19 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
-
-            builder
-                .Append("CREATE RULE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+            var stringConnection = operation.connectionStrBuilder.ToString();
+            FbConnection.CreateDatabase(stringConnection);
+            FbConnection.ClearAllPools(); 
         }
 
         public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
-
-            builder
-                .Append("DROP DATABASE")
-                .Append(Dependencies.SqlGenerationHelper.StatementTerminator);
-
-            EndStatement(builder);
+            FbConnection.ClearAllPools();
+            var stringConnection = operation.connectionStrBuilder.ToString();
+            FbConnection.DropDatabase(stringConnection);
+            
         }
 
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)

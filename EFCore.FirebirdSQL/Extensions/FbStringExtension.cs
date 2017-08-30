@@ -39,6 +39,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             if (strInfo.Length <= maxLength)
                 return strInfo;
             return strInfo.Substring(0, maxLength);
-        } 
+        }
     }
 }
