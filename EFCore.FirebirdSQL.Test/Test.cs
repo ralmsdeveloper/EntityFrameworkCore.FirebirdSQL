@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
-namespace EFCore.FirebirdSqlSQL.Test
+namespace EFCore.FbSQL.Test
 {
     public class Context : DbContext
     {
@@ -33,7 +33,7 @@ namespace EFCore.FirebirdSqlSQL.Test
             "Packet Size=8192;" +
             "ServerType=0";
 
-            optionsBuilder.UseFirebirdSql(connectionString);
+            optionsBuilder.UseFb(connectionString);
 
             //if used Log  (log of commands)
             LoggerFactory loggerFactory = new LoggerFactory();

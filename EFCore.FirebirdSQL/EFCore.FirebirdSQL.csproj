@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>EntityFrameworkCore.FirebirdSQL</AssemblyName>
-    <RootNamespace>EntityFrameworkCore.FirebirdSQL</RootNamespace>
+    <AssemblyName>FirebirdSql.EntityFrameworkCore.Firebird</AssemblyName>
+    <RootNamespace>FirebirdSql.EntityFrameworkCore.Firebird</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -11,7 +11,7 @@
     <Copyright>Copyright © Rafael Almeida</Copyright>
     <Company>Rafael Almeida</Company>
     <Authors>Rafael Almeida</Authors>
-    <Version>2.0.5-preview5</Version>
+    <Version>2.0.6-preview6</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM</PackageTags>
@@ -21,7 +21,8 @@
     <Product>EntityFrameworkCore.FirebirdSQL</Product>
     <PackageProjectUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</PackageProjectUrl>
     <PackageIconUrl>https://firebirdsql.org/img/site/fb.jpg</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/cincuranet/FirebirdSql.Data.FirebirdClient/master/license.txt</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

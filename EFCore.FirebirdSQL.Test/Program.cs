@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EFCore.FirebirdSqlSQL.Test
+namespace EFCore.FbSQL.Test
 {
     class Program
     {
 
         static void Main(string[] args)
-        {
+        { 
             //Command Sample Scaffolding
             //Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=R:\RALMS.FDB;DataSource=127.0.0.1;Port=2017;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;Packet Size=8192;ServerType=0;" EntityFrameworkCore.FirebirdSQL -OutputDir Models -Context "FirebirdDbContext" -DataAnnotations -force -verbose
             Console.WriteLine("# Wait... ");

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFCore.FirebirdSqlSQL.Test
+namespace EFCore.FbSQL.Test
 {
     public class TraceLogger : ILogger
     {
