@@ -17,7 +17,7 @@ namespace SouchProd.EFCore.Firebird.AspNetSample.Models
                             .AddJsonFile("appsettings.json")
                             .Build();
             
-            optionsBuilder.UseFirebirdSql(Configuration["ConnectionString"]);
+            optionsBuilder.UseFirebird(Configuration["ConnectionString"]);
         }
 
     }
