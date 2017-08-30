@@ -1,13 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirebirdSQL", "EFCore.FirebirdSQL\EFCore.FirebirdSQL.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSQL.Console.Test", "EFCore.FirebirdSQL.Test\EFCore.FirebirdSQL.Console.Test.csproj", "{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{48F660F0-8ED4-4688-A565-0E2CEAF15A81}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{61F7E35E-FCDB-499E-B527-85A2D268F227}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore", "AspNetCore", "{641AAD0D-B815-41BE-A5E6-32C941D7620A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScaffoldingConsoleApp", "ScaffoldingConsoleApp", "{DA2BBCEF-5423-4437-9157-D6A788F5DA2F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingConsoleApp", "Samples\ScaffoldingConsoleApp\ScaffoldingConsoleApp.csproj", "{DC5FD402-9857-4917-9B95-EE1E806E8B8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.Firebird.AspNetSample", "Samples\AspNetCore\EFCore.Firebird.AspNetSample\EFCore.Firebird.AspNetSample.csproj", "{DF2CF326-D401-4394-9A3A-56F244430EEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,12 +33,24 @@ Global
 		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B} = {48F660F0-8ED4-4688-A565-0E2CEAF15A81}
+		{641AAD0D-B815-41BE-A5E6-32C941D7620A} = {61F7E35E-FCDB-499E-B527-85A2D268F227}
+		{DA2BBCEF-5423-4437-9157-D6A788F5DA2F} = {61F7E35E-FCDB-499E-B527-85A2D268F227}
+		{DC5FD402-9857-4917-9B95-EE1E806E8B8B} = {DA2BBCEF-5423-4437-9157-D6A788F5DA2F}
+		{DF2CF326-D401-4394-9A3A-56F244430EEF} = {641AAD0D-B815-41BE-A5E6-32C941D7620A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCB461D4-B163-4511-8434-CE0C357FDC74}
