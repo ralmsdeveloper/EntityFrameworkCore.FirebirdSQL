@@ -32,7 +32,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal; 
 using System.Collections.Concurrent; 
 
-namespace EntityFrameworkCore.FirebirdSQL.Storage
+namespace FirebirdSql.EntityFrameworkCore.Firebird.Storage
 {
     public class FbStringRelationalTypeMapper : IStringRelationalTypeMapper
     {

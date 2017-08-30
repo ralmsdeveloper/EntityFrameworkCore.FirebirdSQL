@@ -30,7 +30,7 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 using FirebirdSql.Data.FirebirdClient;
-using EntityFrameworkCore.FirebirdSQL.Storage;
+using FirebirdSql.EntityFrameworkCore.Firebird.Storage;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
