@@ -52,7 +52,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 ? (Expression)Expression.Constant((int)((ConstantExpression)methodCallExpression.Arguments[0]).Value + 1)
                 : Expression.Add(methodCallExpression.Arguments[0], Expression.Constant(1));
 
-            return new SubStringExpression(
+            return new FbSubStringExpression(
                     methodCallExpression.Object,
                     from,
                     methodCallExpression.Arguments[1]);

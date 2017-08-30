@@ -1,6 +1,8 @@
 /*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -19,8 +21,12 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *
+ *
+ *                              
  *                  All Rights Reserved.
  */
+
 
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;

@@ -53,7 +53,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             };
 
             var contextOptions = new DbContextOptionsBuilder()
-                .UseFb(csb.ConnectionString)
+                .UseFirebird(csb.ConnectionString)
                 .Options;
                 
             return new FbRelationalConnection(Dependencies.With(contextOptions));

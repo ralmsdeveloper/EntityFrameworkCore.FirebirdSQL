@@ -21,10 +21,13 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *
+ *
+ *                              
  *                  All Rights Reserved.
  */
 
- using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using System;
@@ -33,10 +36,10 @@ using System.Linq.Expressions;
 namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 {
 
-    public class SubStringExpression : Expression
+    public class FbSubStringExpression : Expression
     {
 
-        public SubStringExpression([NotNull] Expression subjectExpression, [NotNull] Expression fromExpression, [NotNull] Expression forExpression)
+        public FbSubStringExpression([NotNull] Expression subjectExpression, [NotNull] Expression fromExpression, [NotNull] Expression forExpression)
         {
             Check.NotNull(subjectExpression, nameof(subjectExpression));
             Check.NotNull(fromExpression, nameof(fromExpression));
@@ -76,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
             return newFromExpression != FromExpression
                    || newForExpression != ForExpression
                    || newSubjectExpression != SubjectExpression
-                ? new SubStringExpression(newSubjectExpression, newFromExpression, newForExpression)
+                ? new FbSubStringExpression(newSubjectExpression, newFromExpression, newForExpression)
                 : this;
         }
 
@@ -88,10 +91,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
             if (ReferenceEquals(this, obj)) 
                 return true; 
 
-            return obj.GetType() == GetType() && Equals((SubStringExpression)obj);
+            return obj.GetType() == GetType() && Equals((FbSubStringExpression)obj);
         }
 
-        private bool Equals(SubStringExpression other)
+        private bool Equals(FbSubStringExpression other)
             => Equals(FromExpression, other.FromExpression)
                && Equals(ForExpression, other.ForExpression)
                && Equals(SubjectExpression, other.SubjectExpression);

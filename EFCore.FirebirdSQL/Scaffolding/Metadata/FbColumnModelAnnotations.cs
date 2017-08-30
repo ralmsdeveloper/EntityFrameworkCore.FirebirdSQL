@@ -1,6 +1,8 @@
 /*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -19,18 +21,9 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *                              
  *                  All Rights Reserved.
- */
- 
- using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Utilities;
-using FirebirdSql.Data.FirebirdClient;
-
+ */ 
 
 namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
 {
@@ -42,16 +35,6 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
         { 
             _column = column;
         }
-
-        public bool IsSerial
-        {
-            get
-            {
-                var value = _column[FbDatabaseModelAnnotationNames.IsSerial];
-                return value is bool && (bool)value;
-            }
-            //[param: CanBeNull]
-            set { _column[FbDatabaseModelAnnotationNames.IsSerial] = value; }
-        }
+ 
     }
 }

@@ -1,6 +1,8 @@
 /*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -19,9 +21,11 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *
+ *
+ *                              
  *                  All Rights Reserved.
  */
-
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
@@ -32,10 +36,10 @@ using Microsoft.EntityFrameworkCore.Utilities;
 namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 {
     
-    public class FirebirdRegexpExpression : Expression
+    public class FbRegexpExpression : Expression
     {
         
-        public FirebirdRegexpExpression([NotNull] Expression match, [NotNull] Expression pattern)
+        public FbRegexpExpression([NotNull] Expression match, [NotNull] Expression pattern)
         {
             Check.NotNull(match, nameof(match));
             Check.NotNull(pattern, nameof(pattern));
@@ -70,7 +74,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 
             return newMatchExpression != Match
                    || newPatternExpression != Pattern
-                ? new FirebirdRegexpExpression(newMatchExpression, newPatternExpression)
+                ? new FbRegexpExpression(newMatchExpression, newPatternExpression)
                 : this;
         }
 
@@ -86,10 +90,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
                 return true;
             }
 
-            return obj.GetType() == GetType() && Equals((FirebirdRegexpExpression)obj);
+            return obj.GetType() == GetType() && Equals((FbRegexpExpression)obj);
         }
 
-        private bool Equals(FirebirdRegexpExpression other)
+        private bool Equals(FbRegexpExpression other)
             => Equals(Match, other.Match)
                && Equals(Pattern, other.Pattern);
 

@@ -31,7 +31,7 @@ namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
     {
         public virtual string GenerateUseProvider(string connectionString, string language)
         {
-            return $".UseFb(\"{connectionString}\")";
+            return $".UseFirebidSql(\"{connectionString}\")";
         }
     }
 }

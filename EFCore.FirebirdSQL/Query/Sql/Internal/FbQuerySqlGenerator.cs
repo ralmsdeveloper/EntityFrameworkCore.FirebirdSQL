@@ -134,7 +134,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             return expr;
         }
          
-        public virtual Expression VisitSubString(SubStringExpression sbString)
+        public virtual Expression VisitSubString(FbSubStringExpression sbString)
         {
             Check.NotNull(sbString, nameof(sbString)); 
             Sql.Append(" SUBSTRING(");
@@ -147,7 +147,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
             return sbString;
         }
 
-        public Expression VisitRegexp([NotNull] FirebirdRegexpExpression regexpExpression)
+        public Expression VisitRegexp([NotNull] FbRegexpExpression regexpExpression)
         {
             throw new NotImplementedException();
         }

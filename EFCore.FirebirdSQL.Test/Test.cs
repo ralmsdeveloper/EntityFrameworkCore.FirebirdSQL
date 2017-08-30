@@ -33,7 +33,7 @@ namespace EFCore.FbSQL.Test
             "Packet Size=8192;" +
             "ServerType=0";
 
-            optionsBuilder.UseFb(connectionString);
+            optionsBuilder.UseFirebird(connectionString);
 
             //if used Log  (log of commands)
             LoggerFactory loggerFactory = new LoggerFactory();

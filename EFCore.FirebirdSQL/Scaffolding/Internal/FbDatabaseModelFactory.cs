@@ -4,7 +4,9 @@
 
 /*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -23,13 +25,18 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *               Jean Ressouche (jean.ressouche@souchprod.com)
+ *                              Paris-France
+ *                              
  *                  All Rights Reserved.
  */
 
-//Search reference
-//https://firebirdsql.org/refdocs/langrefupd20-select.html
-//http://www.firebirdfaq.org/faq174/
-//https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
+// Search reference
+// https://firebirdsql.org/refdocs/langrefupd20-select.html
+// http://www.firebirdfaq.org/faq174/
+// https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
+// Credit Query Schema Table:
+// Jean Ressouche: https://raw.githubusercontent.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
 
 using System;
 using System.Collections.Generic;

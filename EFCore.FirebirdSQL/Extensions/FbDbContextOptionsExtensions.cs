@@ -1,6 +1,8 @@
 /*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
+ *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -19,6 +21,9 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *
+ *
+ *                              
  *                  All Rights Reserved.
  */
 
@@ -37,7 +42,7 @@ namespace Microsoft.EntityFrameworkCore
 {
     public static class FbDbContextOptionsExtensions
     {
-        public static DbContextOptionsBuilder UseFb(
+        public static DbContextOptionsBuilder UseFirebird(
             [NotNull] this DbContextOptionsBuilder optionsBuilder,
             [NotNull] string connectionString,
             [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
@@ -51,7 +56,7 @@ namespace Microsoft.EntityFrameworkCore
             return optionsBuilder;
         }
 
-        public static DbContextOptionsBuilder UseFb(
+        public static DbContextOptionsBuilder UseFirebird(
             [NotNull] this DbContextOptionsBuilder optionsBuilder,
             [NotNull] DbConnection connection,
             [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
@@ -64,12 +69,12 @@ namespace Microsoft.EntityFrameworkCore
             return optionsBuilder;
         }
 
-        public static DbContextOptionsBuilder<TContext> UseFb<TContext>(
+        public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(
             [NotNull] this DbContextOptionsBuilder<TContext> optionsBuilder,
             [NotNull] string connectionString,
             [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
             where TContext : DbContext
-            => (DbContextOptionsBuilder<TContext>)UseFb(
+            => (DbContextOptionsBuilder<TContext>)UseFirebird(
                 (DbContextOptionsBuilder)optionsBuilder, connectionString, FbOptionsAction);
 
         public static DbContextOptionsBuilder<TContext> UseFb<TContext>(
@@ -77,7 +82,7 @@ namespace Microsoft.EntityFrameworkCore
             [NotNull] DbConnection connection,
             [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
             where TContext : DbContext
-            => (DbContextOptionsBuilder<TContext>)UseFb(
+            => (DbContextOptionsBuilder<TContext>)UseFirebird(
                 (DbContextOptionsBuilder)optionsBuilder, connection, FbOptionsAction);
 
         private static FbOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)

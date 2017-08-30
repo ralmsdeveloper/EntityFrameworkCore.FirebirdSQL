@@ -1,6 +1,6 @@
 ﻿/*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
- *                  
+ *     
  *              https://www.firebirdsql.org/en/net-provider/ 
  *              
  *     Permission to use, copy, modify, and distribute this software and its
@@ -21,8 +21,12 @@
  *
  *      Credits: Rafael Almeida (ralms@ralms.net)
  *                              Sergipe-Brazil
+ *
+ *
+ *                              
  *                  All Rights Reserved.
  */
+
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal; 
