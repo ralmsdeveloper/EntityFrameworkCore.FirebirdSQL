@@ -23,6 +23,7 @@
  */
 
 
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -33,14 +34,12 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
 {
     public class FirebirdSqlDesignTimeServices : IDesignTimeServices
     {
-        public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection
+        public virtual void ConfigureDesignTimeServices([NotNull] IServiceCollection serviceCollection)
+            => serviceCollection
                 .AddSingleton<IRelationalTypeMapper, FirebirdSqlTypeMapper>()
                 .AddSingleton<IDatabaseModelFactory, FirebirdSqlDatabaseModelFactory>()
                 .AddSingleton<IScaffoldingProviderCodeGenerator, FirebirdSqlScaffoldingCodeGenerator>()
                 .AddSingleton<IAnnotationCodeGenerator, FirebirdSqlAnnotationCodeGenerator>();
-                
-        }
     }
 }
+ 

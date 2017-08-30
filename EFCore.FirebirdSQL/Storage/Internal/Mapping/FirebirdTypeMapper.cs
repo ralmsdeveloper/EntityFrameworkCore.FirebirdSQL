@@ -138,8 +138,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	                { typeof(float), _float },
 	                { typeof(double), _double }, 
 	                // DateTime
-	                { typeof(DateTime), _dateTime }, 
-	                { typeof(TimeSpan), _date },
+	                { typeof(DateTimeOffset), _dateTime }, 
+	                { typeof(DateTime), _date },
                     { typeof(TimeSpan), _time }, 
 	                // Guid
 	                { typeof(Guid), _guid }
