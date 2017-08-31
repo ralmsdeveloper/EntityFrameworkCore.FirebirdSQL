@@ -468,6 +468,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             }
             else
             {
+                if (!nullable)
+                    builder.Append(" NOT NULL");
+
                 if (defaultValueSql != null)
                 {
                     builder
@@ -481,8 +484,6 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                         .Append(" DEFAULT ")
                         .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
                 }
-                if (!nullable)
-                    builder.Append(" NOT NULL");
 
                 if (onUpdateSql != null)
                 {
