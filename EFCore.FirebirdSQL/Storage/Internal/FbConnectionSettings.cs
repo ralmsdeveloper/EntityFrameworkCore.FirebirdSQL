@@ -107,7 +107,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             });
         }
 
-        public FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
+     
+
+        internal FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
         => ServerVersion = serverVersion;  
 
         public readonly ServerVersion ServerVersion;

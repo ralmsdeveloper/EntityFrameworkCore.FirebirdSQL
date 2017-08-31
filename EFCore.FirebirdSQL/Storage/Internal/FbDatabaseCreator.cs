@@ -61,6 +61,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             _RetryTimeout = TimeSpan.FromMinutes(2);
         }
 
+
+
         public override void Create()
         {
             using (var masterConnection = _connection.CreateMasterConnection())
@@ -99,11 +101,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             var operations = new MigrationOperation[]
             {
-                new FbCreateDatabaseOperation
-                {
-                    connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString),
-                    Name = _connection.DbConnection.Database
-                }
+                new FbCreateDatabaseOperation { connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)}
             };
             return Dependencies.MigrationsSqlGenerator.Generate(operations);
         }
