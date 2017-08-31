@@ -95,6 +95,45 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
                 EndStatement(builder);
             }
+
+            //https://firebirdsql.org/manual/generatorguide-rowids.html
+            //If the version of FirebirdSQL is less than 3,
+            //generate auto increment per trigger!
+            if (!_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
+            {
+                foreach (var column in operation.Columns.Where(p => !p.IsNullable))
+                {
+                    var colAnnotation = (IAnnotation)column.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy);
+                    if (colAnnotation != null)
+                    {
+                        var valueGenerationStrategy = colAnnotation.Value as FbValueGenerationStrategy?;
+                        if (valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn
+                                                    && string.IsNullOrWhiteSpace(column.DefaultValueSql)
+                                                    && column.DefaultValue == null)
+                        {
+                            //Creation Generator
+                            var nameGenerator = $"{column.Table}_{column.Name}";
+                            builder.Append("CREATE GENERATOR ")
+                                   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
+                                   .Append(Dependencies.SqlGenerationHelper.StatementTerminator);
+                            EndStatement(builder);
+
+                            builder.Append($"CREATE OR ALTER TRIGGER ")
+                                   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
+                                   .Append(" FOR ")
+                                   .AppendLine(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Table))
+                                   .AppendLine("ACTIVE BEFORE INSERT POSITION 0 AS BEGIN")
+                                   .Append($"    IF(new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} IS NULL) THEN")
+                                   .Append($"       new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} ")
+                                   .AppendLine($"=GEN_ID({Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator)},1);")
+                                   .AppendLine("END;");
+
+                            EndStatement(builder);
+
+                        }
+                    }
+                }
+            }
         }
 
         protected override void Generate(AddUniqueConstraintOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -226,7 +265,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                 .Append($"  RDB$RELATION_NAME = '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}' and")
                 .Append("   RDB$SYSTEM_FLAG = 0;").AppendLine();
             EndStatement(builder);
-            
+
             // Correct method imo, but require GetCreateTable to be improved (or the triggers will be missing)
             /*
             var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Name, operation.Schema);
@@ -255,7 +294,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             if (operation.IsUnique)
             {
                 builder.Append("UNIQUE ");
-            }  
+            }
 
             builder
                 .Append("INDEX ")
@@ -307,7 +346,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             Check.NotNull(builder, nameof(builder));
             var stringConnection = operation.connectionStrBuilder.ToString();
             FbConnection.CreateDatabase(stringConnection);
-            FbConnection.ClearAllPools(); 
+            FbConnection.ClearAllPools();
         }
 
         public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -317,7 +356,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             FbConnection.ClearAllPools();
             var stringConnection = operation.connectionStrBuilder.ToString();
             FbConnection.DropDatabase(stringConnection);
-            
+
         }
 
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -400,7 +439,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
                         defaultValueSql = $"CURRENT_TIMESTAMP";
                         break;
                 }
-            } 
+            }
             string onUpdateSql = null;
             if (valueGenerationStrategy == FbValueGenerationStrategy.ComputedColumn)
             {
@@ -613,5 +652,5 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
     }
 
-   
+
 }
