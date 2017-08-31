@@ -1,3 +1,13 @@
+## Temporary repository
+
+## Attention! This repository will be merged with the [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/) repository, intent is to unite all our efforts.
+## The same will be officially integrated with FirebirdSQL in a few days!
+
+
+## Atenção! Este repositório será mesclado com o repositório [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/), intenção é unir todos nossos esforços.
+## O mesmo será integrado de forma Oficial com o FirebirdSQL em alguns dias!
+
+
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 [![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL)
