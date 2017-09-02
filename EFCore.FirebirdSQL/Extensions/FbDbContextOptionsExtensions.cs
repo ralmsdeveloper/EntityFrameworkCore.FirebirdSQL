@@ -77,7 +77,7 @@ namespace Microsoft.EntityFrameworkCore
             => (DbContextOptionsBuilder<TContext>)UseFirebird(
                 (DbContextOptionsBuilder)optionsBuilder, connectionString, FbOptionsAction);
 
-        public static DbContextOptionsBuilder<TContext> UseFb<TContext>(
+        public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(
             [NotNull] this DbContextOptionsBuilder<TContext> optionsBuilder,
             [NotNull] DbConnection connection,
             [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
