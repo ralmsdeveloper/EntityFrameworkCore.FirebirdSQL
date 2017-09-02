@@ -33,25 +33,22 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities; 
+using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal; 
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
     {
-        private StringBuilder _headBlockStringBuilder = null;
         private readonly IRelationalTypeMapper _typeMapperRelational;
         public FbUpdateSqlGenerator(
-            [NotNull] UpdateSqlGeneratorDependencies dependencies, 
+            [NotNull] UpdateSqlGeneratorDependencies dependencies,
             [NotNull] IRelationalTypeMapper typeMapper)
             : base(dependencies)
         {
-            _typeMapperRelational = typeMapper; 
-
-        }
-        
+            _typeMapperRelational = typeMapper;
+        } 
 
         public override ResultSetMapping AppendInsertOperation(
            StringBuilder commandStringBuilder,
@@ -59,74 +56,48 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
            int commandPosition)
         {
             Check.NotNull(command, nameof(command));
-            _headBlockStringBuilder = new StringBuilder();
-            return AppendBlockInsertOperation(commandStringBuilder, _headBlockStringBuilder, new[] { command }, commandPosition);
+            return AppendBlockInsertOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
         }
-         
-       
+
+
         public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-            Check.NotEmpty(modificationCommands, nameof(modificationCommands));  
-
+            Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             commandStringBuilder.Clear();
-            commandStringBuilder.Append("EXECUTE BLOCK ");
-            commandStringBuilder.AppendLine("(");
             var commaAppend = string.Empty;
-            foreach (var commandNotification in modificationCommands)
-            {
-                var name = commandNotification.TableName;
-                var schema = commandNotification.Schema;
-                var operations = commandNotification.ColumnModifications;
-                var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray(); 
-                if (writeOperations.Any())
-                {  
-                    AppendBlockVariable(commandStringBuilder, writeOperations, commaAppend);
-                    //Implementation Future!
-                    //AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
-                    commaAppend = ","; 
-                }
-            }
-            commandStringBuilder.AppendLine(")");
-            var opc = modificationCommands.Select(p => p.ColumnModifications); 
-            var ReadNotification =  opc.Last().Where(p=>p.IsRead);
-            if (ReadNotification.Count()>0)
-            {
-                var _column = ReadNotification.Where(p => p.IsKey).FirstOrDefault();
-                if (_column != null)
-                    commandStringBuilder.Append($"RETURNS (AffectedRows {GetDataType(_column.Property)}) ");
-            }
-            commandStringBuilder.AppendLine(" AS BEGIN");
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var name = modificationCommands[i].TableName;
                 var schema = modificationCommands[i].Schema;
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray(); 
-                var modified = modificationCommands[i].ColumnModifications.Where(o => o.IsWrite).ToList();
-                AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
-                AppendValuesHeader(commandStringBuilder, modified);
-                AppendValuesInsert(commandStringBuilder, modified);
-                if (readOperations.Length > 0)
-                    AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
-                else
+                var readOperations = operations.Where(o => o.IsRead).ToArray();
+                if (writeOperations.Any())
                 {
-                    commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
-                    commandStringBuilder.AppendLine("END;");
-                    return ResultSetMapping.LastInResultSet;
+                    AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
+                    commaAppend = ",";
                 }
-
+                AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
+                AppendValuesHeader(commandStringBuilder, writeOperations);
+                AppendValuesInsert(commandStringBuilder, writeOperations);
+                if (readOperations.Length > 0)
+                {
+                    AppendInsertOutputClause(commandStringBuilder, name, schema, readOperations, operations);
+                }
+                else if (readOperations.Length == 0)
+                {
+                    AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
+                }
             }
-            commandStringBuilder.AppendLine("END;");  
-            return  ResultSetMapping.NotLastInResultSet;
+             
+            return ResultSetMapping.NotLastInResultSet;
         }
 
-        private void AppendBlockVariable(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations,string commaAppend)
+        private void AppendBlockVariable(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, string commaAppend)
         {
-           
+
             foreach (var column in operations)
             {
                 var _type = GetDataType(column.Property);
@@ -151,7 +122,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                         (sb, o, helper) =>
                         {
                             var property = GetDataType(o.Property);
-                          
+
                             if (o.IsWrite)
                             {
                                 switch (property)
@@ -163,7 +134,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                                         sb.Append(":").Append(o.ParameterName);
                                         break;
                                 }
-                            } 
+                            }
                         })
                     .Append(")");
             }
@@ -285,7 +256,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             commandStringBuilder.AppendLine("SUSPEND;");
             commandStringBuilder.AppendLine("END;");
             return ResultSetMapping.NotLastInResultSet;
-        } 
+        }
 
         private void AppendUpdateOutputClause(StringBuilder commandStringBuilder)
         {
@@ -294,7 +265,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     .AppendLine("IF (ROW_COUNT > 0) THEN")
                     .AppendLine("   AffectedRows=AffectedRows+ROW_COUNT;");
 
-        } 
+        }
 
         private void AppendInsertOutputClause(
             StringBuilder commandStringBuilder,
@@ -306,22 +277,21 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
                 commandStringBuilder
-                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
-                    .AppendLine("IF (ROW_COUNT > 0) THEN")
-                    .AppendLine("   SUSPEND;");
+                      .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
+                      .AppendLine("IF (ROW_COUNT > 0) THEN")
+                      .AppendLine("   SUSPEND;");
             }
         }
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name,
             string schema, int commandPosition)
         {
-            // Not Implemented!
-            return ResultSetMapping.LastInResultSet;
-        }
 
-        public override void AppendBatchHeader(StringBuilder commandStringBuilder)
-        {
-            //Insert FbSQL Fast(Insert/Update) 
+            commandStringBuilder
+                .AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;") 
+                .AppendLine("   SUSPEND;");
+
+            return ResultSetMapping.LastInResultSet;
         }
 
         protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
@@ -331,8 +301,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
         protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
         {
+
             // Not Implemented!
         }
+
 
         private string GetDataType(IProperty property)
         {
@@ -358,7 +330,6 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 return property.IsNullable ? "varbinary(8)" : "binary(8)";
 
             return typeName;
-        }
-
+        } 
     }
 }

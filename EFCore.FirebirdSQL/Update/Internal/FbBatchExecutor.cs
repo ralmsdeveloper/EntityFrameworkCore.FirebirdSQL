@@ -55,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 foreach (var commandbatch in commandBatches)
                 {
                     commandbatch.Execute(connection);
-                    RowsAffecteds += commandbatch.ModificationCommands.Count;
+                    RowsAffecteds += commandbatch.ModificationCommands.Count;  
                 } 
                 currentTransaction?.Commit();
                 currentTransaction?.Dispose();

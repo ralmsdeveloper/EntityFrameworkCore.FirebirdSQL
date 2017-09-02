@@ -12,7 +12,9 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
     {
         
         public DbSet<Author> Author { get; set; }
-        public DbSet<Book> Book { get; set; } 
+        public DbSet<Book> Book { get; set; }
+        public DbSet<Test> Test { get; set; }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {  
 
@@ -67,5 +69,12 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
         public Author Author { get; set; }
     }
 
+    public class Test
+    {
+        public Guid  Id { get; set; } 
+
+        [StringLength(100)]
+        public string Description { get; set; } 
+    }
 }
 

@@ -72,9 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAdd<IValueGeneratorSelector, FbValueGeneratorSelector>()
                 .TryAdd<IRelationalConnection>(p => p.GetService<IFbRelationalConnection>())
 
-                .TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
-               .TryAdd<IBatchExecutor, FbBatchExecutor>()
-                .TryAdd<IBatchExecutor, BatchExecutor>()
+
+                //.TryAdd<IBatchExecutor, BatchExecutor>()
 
                 .TryAdd<IHistoryRepository, FbHistoryRepository>()
                 .TryAdd<IMemberTranslator, FbCompositeMemberTranslator>()
@@ -84,7 +83,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAddProviderSpecificServices(b => b
                     .TryAddSingleton<IFbOptions, FbOptions>()
                     .TryAddScoped<IFbUpdateSqlGenerator, FbUpdateSqlGenerator>()
-                    .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>());
+                    .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>())
+
+
+                .TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
+                .TryAdd<IBatchExecutor, FbBatchExecutor>();
 
             builder.TryAddCoreServices();
 

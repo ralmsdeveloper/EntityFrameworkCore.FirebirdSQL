@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirebirdSQL", "EFCore.FirebirdSQL\EFCore.FirebirdSQL.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
 EndProject
@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirebirdSql.Data.FirebirdClient", "..\..\..\FirebirdSQL\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj", "{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF2CF326-D401-4394-9A3A-56F244430EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

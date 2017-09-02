@@ -64,8 +64,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             _valueBufferFactoryFactory = valueBufferFactoryFactory;
             _options = options;
         }
-
-        public virtual ModificationCommandBatch Create()
+         
+        public ModificationCommandBatch Create()
         {
             var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault(); 
             return new FbModificationCommandBatch(

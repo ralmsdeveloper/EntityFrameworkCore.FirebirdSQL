@@ -1,5 +1,4 @@
-﻿using FirebirdSql.Data.FirebirdClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
     {
 
         static void Main(string[] args)
-        { 
+        {
             //Command Sample Scaffolding
             //Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=C:\FirebirdEFCore.FDB;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;Packet Size=8192;ServerType=0;" EntityFrameworkCore.FirebirdSQL -OutputDir Models -Context "FirebirdDbContext" -DataAnnotations -force -verbose
             Console.WriteLine("# Wait... ");
@@ -18,41 +17,55 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
             cx.Database.EnsureCreated();
-            //Add Pool 
-            cx.Author.Add(new Author
+          
+            //fifty rows
+            for (int i = 0; i < 50; i++)
             {
-                FirstName = "Rafael",
-                LastName = "Almeida",
-                Date = DateTime.Now.AddMilliseconds(1),
-                Identification = Guid.NewGuid(),
-                Books = new List<Book>
+                cx.Author.Add(new Author
+                {
+                    FirstName = "Rafael",
+                    LastName = "Almeida",
+                    Date = DateTime.Now.AddMilliseconds(1),
+                    Identification = Guid.NewGuid(),
+                    Books = new List<Book>
                             {
-                                new Book {  Title="Firebird 3.0.2"},
-                                new Book {  Title="Firebird 4.0.0"}
+                                new Book {  Title=$"Firebird 3.0.2 {i}"},
+                                new Book {  Title=$"Firebird 4.0.0 {i}"}
                             }
-            });  
+                });
+            } 
 
-            cx.Author.Add(new Author
+            //four rows
+            for (int i = 0; i < 5; i++)
             {
-                FirstName = "Jean",
-                LastName = "Ressouche",
-                Date = DateTime.Now.AddMilliseconds(1),
-                Identification = Guid.NewGuid(),
-                Books = new List<Book>
-                            {
-                                new Book {  Title="Firebird 3.0.2"},
-                                new Book {  Title="Firebird 4.0.0"}
-                            }
-            });
+                cx.Book.Add(new Book
+                {
+                    AuthorId = 1,
+                    Title = $"Test Book {i}!"
+                });
+            }
+                
+
+            //Five rows
+            for (int i = 0; i < 5; i++)
+            {
+                cx.Test.Add(new Test
+                {
+                    Id = Guid.NewGuid(),
+                    Description = $"Test Guid {i}!"
+                });
+            }
+           
+
             //Save all
-            cx.SaveChanges();  
-             
+            cx.SaveChanges();
+
             var Authors = cx.Author
                             .Include(p => p.Books)
                             .Where(p => p.FirstName.Contains("Rafael") ||
                                         p.FirstName.Contains("Jean")).ToList();
-            
- 
+
+
             foreach (var item in Authors)
             {
                 Console.WriteLine($"Author #->{item.FirstName} {item.LastName} / Identification: {item.Identification.ToString()}");
