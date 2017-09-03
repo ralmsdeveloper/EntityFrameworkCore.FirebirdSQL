@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirebirdSql.Data.FirebirdClient", "..\..\..\FirebirdSQL\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj", "{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCore.FirebirdSQL.Samples", "EFCore.FirebirdSQL.Samples", "{331974B1-B109-487C-BCDF-85DA9B677C0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{69EF00B6-5279-4EB8-BE4A-DC4F7DE68844}"
@@ -42,10 +40,6 @@ Global
 		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC5FD402-9857-4917-9B95-EE1E806E8B8B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A1C1C54-6C02-4D23-8B11-81A1971F3EFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -64,10 +64,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\FirebirdSQL\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
-      <Project>{6a1c1c54-6c02-4d23-8b11-81a1971f3eff}</Project>
-      <Name>FirebirdSql.Data.FirebirdClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EFCore.FirebirdSQL\EFCore.FirebirdSQL.csproj">
       <Project>{c725ac99-64c8-4cbf-b01f-094d5837bc58}</Project>
       <Name>EFCore.FirebirdSQL</Name>
