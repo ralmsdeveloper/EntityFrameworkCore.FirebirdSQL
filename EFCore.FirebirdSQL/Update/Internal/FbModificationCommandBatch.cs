@@ -176,7 +176,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             }
             SbExecuteBlock.AppendLine($"RETURNS (AffectedRows BIGINT) AS BEGIN");
             SbExecuteBlock.Append("AffectedRows=0;");
-            SbExecuteBlock.Append(SbCommands.ToString());
+            SbExecuteBlock.Append(SbCommands);
             SbExecuteBlock.AppendLine("END;");
             return SbExecuteBlock.ToString().Trim(); 
         }

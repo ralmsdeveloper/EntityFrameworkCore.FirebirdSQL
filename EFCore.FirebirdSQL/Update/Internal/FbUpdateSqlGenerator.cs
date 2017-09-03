@@ -164,12 +164,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             var commaAppend = string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
             { 
-                var name = modificationCommands[i].TableName;
-                var schema = modificationCommands[i].Schema;
+                var name = modificationCommands[i].TableName; 
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray();
-                var condicoesOperations = operations.Where(o => o.IsCondition).ToArray();
+                var conditionsOperations = operations.Where(o => o.IsCondition).ToArray();
                 AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
                 commaAppend = ","; 
                 commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
@@ -180,32 +178,26 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     {
                         if (o.IsWrite)
                             sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
-                    }); 
-                AppendWhereClauseCustoom(commandStringBuilder, condicoesOperations);
+                    });
+                AppendWhereClauseCustom(commandStringBuilder, conditionsOperations);
                 commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
-                AppendUpdateOutputClause(commandStringBuilder);
+                AppendUpdateOrDeleteOutputClause(commandStringBuilder);
                 commandStringBuilder.AppendLine("SUSPEND;");
             } 
             return ResultSetMapping.NotLastInResultSet;
         }
 
-        private void AppendWhereClauseCustoom(StringBuilder commandStringBuilder, ColumnModification[] col)
+        private void AppendWhereClauseCustom(StringBuilder commandStringBuilder, ColumnModification[] col)
         {
-            if (col.Any())
+            if (!col.Any()) return;
+            commandStringBuilder.Append(" WHERE "); 
+            foreach (var item in col)
             {
-                commandStringBuilder.Append(" WHERE ");
-                var And = string.Empty;
-                foreach (var item in col)
-                {
-                    commandStringBuilder
-                        .Append(And)
-                        .Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
-                        .Append("=")
-                        .Append(item.Value);
-                }
+                commandStringBuilder 
+                    .Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
+                    .Append("=")
+                    .Append(item.Value);
             }
-
-
         }
 
         public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
@@ -214,26 +206,21 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
             Check.NotEmpty(modificationCommands, nameof(modificationCommands));
             var name = modificationCommands[0].TableName;
-            var schema = modificationCommands[0].Schema;
-
-            commandStringBuilder.AppendLine("EXECUTE BLOCK RETURNS (AffectedRows INT) AS BEGIN")
-                                .AppendLine($"AffectedRows=0;");
-
+            
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;
-                var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                var readOperations = operations.Where(o => o.IsRead).ToArray();
+                var conditionsOperations = operations.Where(o => o.IsCondition).ToArray();
                 commandStringBuilder.Append($"DELETE FROM {SqlGenerationHelper.DelimitIdentifier(name)} ");
-                commandStringBuilder.AppendLine($" WHERE {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)}={operations[0].Value}; ");
-                AppendUpdateOutputClause(commandStringBuilder);
-            }
-            commandStringBuilder.AppendLine("SUSPEND;");
-            commandStringBuilder.AppendLine("END;");
+                AppendWhereClauseCustom(commandStringBuilder, conditionsOperations);
+                commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
+                AppendUpdateOrDeleteOutputClause(commandStringBuilder);
+                commandStringBuilder.AppendLine("SUSPEND;");
+            } 
             return ResultSetMapping.NotLastInResultSet;
         }
 
-        private void AppendUpdateOutputClause(StringBuilder commandStringBuilder)
+        private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
         {
             //Increment of updates 
            commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
@@ -269,17 +256,15 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             return ResultSetMapping.LastInResultSet;
         }
 
-        protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
-        {
-            // Not Implemented!
-        }
-
         protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
         {
-
-            // Not Implemented!
+            throw new NotImplementedException();
         }
 
+        protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
+        {
+            throw new NotImplementedException();
+        }
 
         private string GetDataType(IProperty property)
         {
