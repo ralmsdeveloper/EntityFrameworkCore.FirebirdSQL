@@ -17,8 +17,8 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
             cx.Database.EnsureCreated();
-          
-            //fifty rows
+
+            ////fifty rows
             for (int i = 0; i < 50; i++)
             {
                 cx.Author.Add(new Author
@@ -33,10 +33,10 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
                                 new Book {  Title=$"Firebird 4.0.0 {i}"}
                             }
                 });
-            } 
+            }
 
             //four rows
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 1; i++)
             {
                 cx.Book.Add(new Book
                 {
@@ -44,31 +44,44 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
                     Title = $"Test Book {i}!"
                 });
             }
-                
+
 
             //Five rows
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 1; i++)
             {
                 cx.Test.Add(new Test
                 {
                     Id = Guid.NewGuid(),
                     Description = $"Test Guid {i}!"
                 });
-            }
-           
+            } 
 
-            //Save all
+            //////Save all
             cx.SaveChanges();
 
-            var Authors = cx.Author
-                            .Include(p => p.Books)
-                            .Where(p => p.FirstName.Contains("Rafael") ||
-                                        p.FirstName.Contains("Jean")).ToList();
+            var AuthorsUpdate1 = cx.Author.Find((long)1); 
+            Console.WriteLine($"Before *** {AuthorsUpdate1.FirstName}");
+            cx.Attach(AuthorsUpdate1);
+            AuthorsUpdate1.FirstName = $"Author Modified {Guid.NewGuid()}";
+             
+            var AuthorsUpdate2 = cx.Author.Find((long)2);
+            cx.Attach(AuthorsUpdate2);
+            AuthorsUpdate2.FirstName = $"Author Modified {Guid.NewGuid()}";
 
+            var AuthorsUpdate3 = cx.Author.Find((long)3);
+            cx.Attach(AuthorsUpdate3);
+            AuthorsUpdate3.FirstName = $"Author Modified {Guid.NewGuid()}";
 
+            cx.SaveChanges();
+
+            var Authors = cx.Author.AsNoTracking()
+                            .Include(p => p.Books).Where(p=>p.AuthorId<10)
+                             .ToList();
+
+            Console.WriteLine($"After *** {Authors.First().FirstName}");
             foreach (var item in Authors)
             {
-                Console.WriteLine($"Author #->{item.FirstName} {item.LastName} / Identification: {item.Identification.ToString()}");
+                Console.WriteLine($"Author #->{item.FirstName}  {item.LastName} ");
                 Console.WriteLine($"--------------BOOKS----------------");
                 foreach (var book in item.Books)
                     Console.WriteLine($"Book: {book.Title}");

@@ -41,9 +41,9 @@ using FirebirdSql.Data.FirebirdClient;
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
 
-    public class FbModificationCommandBatch :  ReaderModificationCommandBatch
+    public class FbModificationCommandBatch  : AffectedCountModificationCommandBatch
     {
-        internal const int MaxParameterCount = 1500;
+        internal const int MaxParameterCount = 1000;
         internal const int MaxRowCount = 256;
         internal int CountParameter = 1;
         internal readonly int _maxBatchSize;
@@ -54,7 +54,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         internal readonly List<ModificationCommand> _BlockUpdateCommands = new List<ModificationCommand>();
         internal readonly List<ModificationCommand> _BlockDeleteCommands = new List<ModificationCommand>();
 
-        internal readonly StringBuilder _Head=null;
+        internal readonly StringBuilder _ExecuteParameters = null;
         private string _Seperator = null;
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -75,7 +75,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
             _commandBuilderFactory = commandBuilderFactory;
             _valueBufferFactory = valueBufferFactoryFactory;
-            _Head = new StringBuilder();
+            _ExecuteParameters = new StringBuilder();
             _Seperator = string.Empty;
 
         
@@ -155,31 +155,32 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         /// </summary>
         protected override string GetCommandText()
         {
-            var StrCommands = new StringBuilder();
-            var SbTemp = new StringBuilder(); 
-            _Head.Clear();
-             
+            var SbCommands     = new StringBuilder();
+            var SbExecuteBlock = new StringBuilder();
+            _ExecuteParameters.Clear();
 
-            StrCommands.AppendLine(base.GetCommandText());
-            StrCommands.AppendLine(GetBlockInsertCommandText(ModificationCommands.Count));
-            StrCommands.AppendLine(GetBlockUpdateCommandText(ModificationCommands.Count));
-            StrCommands.AppendLine(GetBlockDeleteCommandText(ModificationCommands.Count));
+            //Commands Insert/Update/Delete
+            SbCommands.AppendLine(base.GetCommandText());
+            SbCommands.Append(GetBlockInsertCommandText(ModificationCommands.Count));
+            SbCommands.Append(GetBlockUpdateCommandText(ModificationCommands.Count));
+            SbCommands.Append(GetBlockDeleteCommandText(ModificationCommands.Count));
 
-            var parameters = _Head.ToString();
-            _Head.Clear();
-            _Head.Append("EXECUTE BLOCK ");
-            _Head.AppendLine("(");
-            _Head.Append(parameters);
-            _Head.AppendLine(")");
-            _Head.Append($"RETURNS (AffectedRows INT) ");
-            _Head.AppendLine(" AS BEGIN");
-
-            StrCommands.Insert(0, _Head.ToString());
-            StrCommands.AppendLine("END;"); 
-            return StrCommands.ToString(); 
+            //Execute Block
+            var parameters = _ExecuteParameters.ToString();
+            SbExecuteBlock.Append("EXECUTE BLOCK ");
+            if (parameters.Length > 0)
+            {
+                SbExecuteBlock.Append("( ");
+                SbExecuteBlock.Append(parameters);
+                SbExecuteBlock.Append(") ");
+            }
+            SbExecuteBlock.AppendLine($"RETURNS (AffectedRows BIGINT) AS BEGIN");
+            SbExecuteBlock.Append("AffectedRows=0;");
+            SbExecuteBlock.Append(SbCommands.ToString());
+            SbExecuteBlock.AppendLine("END;");
+            return SbExecuteBlock.ToString().Trim(); 
         }
-
-
+         
         private string GetBlockDeleteCommandText(int lastIndex)
         {
             if (_BlockDeleteCommands.Count == 0)
@@ -204,12 +205,21 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
 
             var stringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBlockUpdateOperation(stringBuilder, _BlockUpdateCommands, lastIndex - _BlockUpdateCommands.Count);
+            var headStringBuilder = new StringBuilder();
+            var resultSetMapping = UpdateSqlGenerator.AppendBlockUpdateOperation(stringBuilder, headStringBuilder,_BlockUpdateCommands, lastIndex - _BlockUpdateCommands.Count);
             for (var i = lastIndex - _BlockUpdateCommands.Count; i < lastIndex; i++)
                 CommandResultSet[i] = resultSetMapping;
 
             if (resultSetMapping != ResultSetMapping.NoResultSet)
                 CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+
+            var ExecuteParameters = headStringBuilder.ToString();
+            if (ExecuteParameters.Length > 0)
+            {
+                _ExecuteParameters.Append(_Seperator);
+                _ExecuteParameters.Append(ExecuteParameters);
+                _Seperator = ",";
+            }
 
             return stringBuilder.ToString();
         }
@@ -228,9 +238,14 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             if (resultSetMapping != ResultSetMapping.NoResultSet)
                 CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
 
-            _Head.Append(_Seperator);
-            _Head.Append(headStringBuilder.ToString());
-            _Seperator = ",";
+            var ExecuteParameters = headStringBuilder.ToString();
+            if (ExecuteParameters.Length > 0)
+            {
+                _ExecuteParameters.Append(_Seperator);
+                _ExecuteParameters.Append(ExecuteParameters);
+                _Seperator = ",";
+            }
+            
             return stringBuilder.ToString();
         }
 
@@ -244,7 +259,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
             if (newModificationCommand.EntityState == EntityState.Added)
             {
-                if (_BlockInsertCommands.Count > 0 && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
+                if (_BlockInsertCommands.Count > 0 
+                    && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
                 { 
                     CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
                     _BlockInsertCommands.Clear(); 
@@ -309,45 +325,55 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                    secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 
 
-        /// <summary>
-        /// Make the Datareader consummation
-        /// </summary>
-        /// <param name="reader"></param>
+
+
+
+        ///// <summary>
+        ///// Make the Datareader consummation
+        ///// </summary>
+        ///// <param name = "reader" ></ param >
         protected override void Consume(RelationalDataReader relationalReader)
         {
+             
             //Cast FbDataReader
-            var _dataReader = (FbDataReader)relationalReader.DbDataReader;
+            var _dataReader = (FbDataReader)relationalReader.DbDataReader; 
             var commandIndex = 0;
             try
             {
+
                 for (; ; )
                 {
-                    int propragation= commandIndex;
+                    while (commandIndex < CommandResultSet.Count
+                          && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+                    {
+                        commandIndex++;
+                    } 
+                    int propragation = commandIndex;
                     while (propragation < ModificationCommands.Count &&
                         !ModificationCommands[propragation].RequiresResultPropagation)
                         propragation++;
-                     
+
                     while (commandIndex < propragation)
                     {
                         commandIndex++;
-                        if (!_dataReader.HasRows)
+                        if (!_dataReader.Read())
                         {
                             throw new DbUpdateConcurrencyException(
                                 RelationalStrings.UpdateConcurrencyException(1, 0),
                                 ModificationCommands[commandIndex].Entries
                             );
                         }
-                    } 
+                    }
                     //check if you've gone through all notifications
                     if (propragation == ModificationCommands.Count)
-                        break; 
+                        break;
 
                     var modifications = ModificationCommands[commandIndex++];
                     if (!relationalReader.Read())
                     {
                         throw new DbUpdateConcurrencyException(
-                            RelationalStrings.UpdateConcurrencyException(1, 0), 
-                            AggregateEntries(commandIndex, propragation));
+                            RelationalStrings.UpdateConcurrencyException(1, 0),
+                            modifications.Entries);
                     }
                     var _bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
                     modifications.PropagateResults(_bufferFactory.Create(_dataReader));
@@ -366,23 +392,14 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     ModificationCommands[commandIndex].Entries);
             }
         }
-        private IReadOnlyList<IUpdateEntry> AggregateEntries(int endIndex, int commandCount)
-        {
-            var entries = new List<IUpdateEntry>();
-            for (var i = endIndex - commandCount; i < endIndex; i++) 
-                 entries.AddRange(ModificationCommands[i].Entries);
-           
-            return entries;
-        }
-
 
         /// <summary>
         /// Method Async for Propagation DataReader
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name = "reader" ></ param >
+        /// < param name="cancellationToken"></param>
         /// <returns></returns>
-        protected override Task ConsumeAsync([NotNull] RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
             => Task.Run(() => Consume(reader));
     }
 

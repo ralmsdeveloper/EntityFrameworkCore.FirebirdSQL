@@ -44,6 +44,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
         ResultSetMapping AppendBlockUpdateOperation(
             [NotNull] StringBuilder commandStringBuilder,
+            [NotNull] StringBuilder headBlockStringBuilder,
             [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
 

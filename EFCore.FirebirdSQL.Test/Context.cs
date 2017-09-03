@@ -21,8 +21,8 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             string connectionString =
             "User=SYSDBA;" +
             "Password=masterkey;" +
-            $"Database={System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
-            "DataSource=127.0.0.1;" +
+            $"Database=localhost:{System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
+            "DataSource=localhost;" +
             "Port=3050;"+
             "Dialect=3;" +
             "Charset=NONE;" +
@@ -33,8 +33,10 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
             "ServerType=0"; 
-            optionsBuilder.UseFirebird(connectionString); 
-
+            optionsBuilder.UseFirebird(connectionString);
+            LoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.AddProvider(new TraceLoggerProvider());
+            optionsBuilder.UseLoggerFactory(loggerFactory);
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {}

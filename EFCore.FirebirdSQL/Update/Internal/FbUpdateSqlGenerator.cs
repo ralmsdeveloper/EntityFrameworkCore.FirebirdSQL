@@ -48,7 +48,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             : base(dependencies)
         {
             _typeMapperRelational = typeMapper;
-        } 
+        }
 
         public override ResultSetMapping AppendInsertOperation(
            StringBuilder commandStringBuilder,
@@ -91,7 +91,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
                 }
             }
-             
+
             return ResultSetMapping.NotLastInResultSet;
         }
 
@@ -104,7 +104,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 if (!_type.Equals("CHAR(16) CHARACTER SET OCTETS", StringComparison.InvariantCultureIgnoreCase))
                 {
                     commandStringBuilder.Append(commaAppend);
-                    commandStringBuilder.AppendLine($"{column.ParameterName}  {_type}=@{column.ParameterName}");
+                    commandStringBuilder.Append($"{column.ParameterName}  {_type}=@{column.ParameterName}");
                     commaAppend = ",";
                 }
             }
@@ -144,7 +144,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             StringBuilder commandStringBuilder,
             ModificationCommand command,
             int commandPosition)
-        => AppendBlockUpdateOperation(commandStringBuilder, new[] { command }, commandPosition);
+        => AppendBlockUpdateOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
 
 
         public override ResultSetMapping AppendDeleteOperation(
@@ -154,47 +154,24 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         => AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
 
 
-        public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
+        public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
+
             Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-            Check.NotEmpty(modificationCommands, nameof(modificationCommands));
-            var name = modificationCommands[0].TableName;
-            var schema = modificationCommands[0].Schema;
+            Check.NotEmpty(modificationCommands, nameof(modificationCommands)); 
             commandStringBuilder.Clear();
-            commandStringBuilder.Append("EXECUTE BLOCK ");
-            if (modificationCommands.Any())
-            {
-                commandStringBuilder.AppendLine("(");
-                var separator = string.Empty;
-                for (var i = 0; i < modificationCommands.Count; i++)
-                {
-                    var operations = modificationCommands[i].ColumnModifications;
-                    var writeOperations = operations.Where(o => o.IsWrite).ToArray();
-                    var readOperations = operations.Where(o => o.IsRead).ToArray();
-                    foreach (var param in writeOperations)
-                    {
-                        commandStringBuilder.Append(separator);
-                        commandStringBuilder.Append(param.ParameterName.Replace("@", string.Empty));
-                        commandStringBuilder.Append(" ");
-                        commandStringBuilder.Append($" {GetDataType(param.Property)}");
-                        commandStringBuilder.Append($" = @{param.ParameterName}");
-                        separator = ", ";
-                    }
-                }
-                commandStringBuilder.AppendLine();
-                commandStringBuilder.Append(") ");
-                commandStringBuilder.AppendLine("RETURNS (AffectedRows INT) AS BEGIN")
-                                   .AppendLine("AffectedRows=0;");
-            }
-
-
+            var commaAppend = string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
-            {
+            { 
+                var name = modificationCommands[i].TableName;
+                var schema = modificationCommands[i].Schema;
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
                 var readOperations = operations.Where(o => o.IsRead).ToArray();
-                var condicoes = operations.Where(o => o.IsCondition).ToArray();
+                var condicoesOperations = operations.Where(o => o.IsCondition).ToArray();
+                AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
+                commaAppend = ","; 
                 commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
                 .AppendJoinUpadate(
                     writeOperations,
@@ -203,14 +180,12 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     {
                         if (o.IsWrite)
                             sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
-                    });
-
-                AppendWhereClauseCustoom(commandStringBuilder, condicoes);
+                    }); 
+                AppendWhereClauseCustoom(commandStringBuilder, condicoesOperations);
                 commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
                 AppendUpdateOutputClause(commandStringBuilder);
-            }
-            commandStringBuilder.AppendLine("SUSPEND;");
-            commandStringBuilder.AppendLine("END;");
+                commandStringBuilder.AppendLine("SUSPEND;");
+            } 
             return ResultSetMapping.NotLastInResultSet;
         }
 
@@ -261,9 +236,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         private void AppendUpdateOutputClause(StringBuilder commandStringBuilder)
         {
             //Increment of updates 
-            commandStringBuilder
-                    .AppendLine("IF (ROW_COUNT > 0) THEN")
-                    .AppendLine("   AffectedRows=AffectedRows+ROW_COUNT;");
+           commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
+                               .AppendLine("   AffectedRows=AffectedRows+1;");
+            
 
         }
 
@@ -288,7 +263,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
         {
 
             commandStringBuilder
-                .AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;") 
+                .AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
                 .AppendLine("   SUSPEND;");
 
             return ResultSetMapping.LastInResultSet;
@@ -330,6 +305,6 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                 return property.IsNullable ? "varbinary(8)" : "binary(8)";
 
             return typeName;
-        } 
+        }
     }
 }
