@@ -27,7 +27,6 @@
  *                  All Rights Reserved.
  */
 
-
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -56,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal
             }
 
             propertyBuilder.ValueGenerated(valueGenerated, ConfigurationSource.Convention);
-            propertyBuilder.Fb(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
+            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
 
             return base.Apply(propertyBuilder, attribute, clrMember);
         }
@@ -67,7 +66,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal
         /// </summary>
         public virtual InternalModelBuilder Apply(InternalModelBuilder modelBuilder)
         {
-            modelBuilder.Fb(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
+            modelBuilder.Firebird(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
 
             return modelBuilder;
         }

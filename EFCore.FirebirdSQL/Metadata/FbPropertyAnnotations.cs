@@ -27,7 +27,6 @@
  *                  All Rights Reserved.
  */
 
-
 using System;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -80,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
                 return null;
             }
 
-            var modelStrategy = Property.DeclaringEntityType.Model.Fb().ValueGenerationStrategy;
+            var modelStrategy = Property.DeclaringEntityType.Model.Firebird().ValueGenerationStrategy;
 
             if (modelStrategy == FbValueGenerationStrategy.IdentityColumn
                 && IsCompatibleIdentityColumn(Property.ClrType))

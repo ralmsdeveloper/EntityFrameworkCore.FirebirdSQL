@@ -28,7 +28,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
-
 namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
 {
     public sealed class FbOptionsExtension : RelationalOptionsExtension
@@ -49,7 +48,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
         public override bool ApplyServices(IServiceCollection services)
         {
             Check.NotNull(services, nameof(services));
-            services.AddEntityFrameworkFb();
+            services.AddEntityFrameworkFirebird();
             return true;
         }
     }

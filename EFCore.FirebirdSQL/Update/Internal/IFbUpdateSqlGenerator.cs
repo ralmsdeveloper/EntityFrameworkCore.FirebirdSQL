@@ -31,27 +31,26 @@ using System.Collections.Generic;
 using System.Text;
 using JetBrains.Annotations;
 
-
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator
     {
-        ResultSetMapping AppendBlockInsertOperation(
-            [NotNull] StringBuilder commandStringBuilder,
-            [NotNull] StringBuilder headBlockStringBuilder,
-            [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
-            int commandPosition);
+		ResultSetMapping AppendBlockInsertOperation(
+		    [NotNull] StringBuilder commandStringBuilder,
+		    [NotNull] StringBuilder headBlockStringBuilder,
+		    [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
+		    int commandPosition);
 
-        ResultSetMapping AppendBlockUpdateOperation(
-            [NotNull] StringBuilder commandStringBuilder,
-            [NotNull] StringBuilder headBlockStringBuilder,
-            [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
-            int commandPosition);
+	    ResultSetMapping AppendBlockUpdateOperation(
+		    [NotNull] StringBuilder commandStringBuilder,
+		    [NotNull] StringBuilder headBlockStringBuilder,
+		    [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
+		    int commandPosition);
 
-        ResultSetMapping AppendBlockDeleteOperation(
-          [NotNull] StringBuilder commandStringBuilder,
-          [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
-          int commandPosition);
-    }
+	    ResultSetMapping AppendBlockDeleteOperation(
+		    [NotNull] StringBuilder commandStringBuilder,
+		    [NotNull] IReadOnlyList<ModificationCommand> modificationCommands,
+		    int commandPosition);
+	}
    
 }

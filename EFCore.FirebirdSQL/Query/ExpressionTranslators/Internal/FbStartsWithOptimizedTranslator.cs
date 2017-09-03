@@ -22,7 +22,6 @@
  *                  All Rights Reserved.
  */
 
-
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
@@ -43,7 +42,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 
         static readonly MethodInfo _concatCast
            = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
-
 
         public virtual Expression Translate(MethodCallExpression methodStartCall)
         {

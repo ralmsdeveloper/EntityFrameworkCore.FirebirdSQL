@@ -24,7 +24,6 @@
  *                  All Rights Reserved.
  */
 
-
 using System;
 using System.Data.Common;
 using System.Diagnostics;
@@ -86,7 +85,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     _relationalConnection,
                     _dbTransaction,
                     TransactionId,
-                    "CommitAsync",
+                    nameof(CommitAsync),
                     e,
                     startTime,
                     stopwatch.Elapsed);
@@ -121,7 +120,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     _relationalConnection,
                     _dbTransaction,
                     TransactionId,
-                    "RollbackAsync",
+                    nameof(RollbackAsync),
                     e,
                     startTime,
                     stopwatch.Elapsed);

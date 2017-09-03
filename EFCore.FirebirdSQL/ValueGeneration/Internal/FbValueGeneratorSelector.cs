@@ -34,7 +34,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
 
-
 namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
 {
     public class FbValueGeneratorSelector : RelationalValueGeneratorSelector
@@ -56,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
 
             var ret = property.ClrType.UnwrapNullableType() == typeof(Guid)
                 ? property.ValueGenerated == ValueGenerated.Never
-                  || property.Fb().DefaultValueSql != null
+                  || property.Firebird().DefaultValueSql != null
                     ? (ValueGenerator)new TemporaryGuidValueGenerator()
                     : new FbSequentialGuidValueGenerator(_options)
                 : base.Create(property, entityType);

@@ -34,373 +34,379 @@ using System.Text;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
-using System.Threading;
-using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
+	public class FbModificationCommandBatch : AffectedCountModificationCommandBatch
+	{
+		private const int MaxParameterCount = 1000;
+		private const int MaxRowCount = 256;
+		private int _countParameter = 1;
+		private readonly int _maxBatchSize;
+		private readonly IRelationalCommandBuilderFactory _commandBuilderFactory;
+		private readonly IRelationalValueBufferFactoryFactory _valueBufferFactory;
+		private readonly List<ModificationCommand> _blockInsertCommands;
+		private readonly List<ModificationCommand> _blockUpdateCommands;
+		private readonly List<ModificationCommand> _blockDeleteCommands; 
+		private readonly StringBuilder _executeParameters;
+		private string _seperator;
 
-    public class FbModificationCommandBatch  : AffectedCountModificationCommandBatch
-    {
-        internal const int MaxParameterCount = 1000;
-        internal const int MaxRowCount = 256;
-        internal int CountParameter = 1;
-        internal readonly int _maxBatchSize;
-        internal readonly IRelationalCommandBuilderFactory _commandBuilderFactory = null;
-        internal readonly IRelationalValueBufferFactoryFactory _valueBufferFactory = null;
-        
-        internal readonly List<ModificationCommand> _BlockInsertCommands = new List<ModificationCommand>();
-        internal readonly List<ModificationCommand> _BlockUpdateCommands = new List<ModificationCommand>();
-        internal readonly List<ModificationCommand> _BlockDeleteCommands = new List<ModificationCommand>();
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		public FbModificationCommandBatch(
+			[NotNull] IRelationalCommandBuilderFactory commandBuilderFactory,
+			[NotNull] ISqlGenerationHelper sqlGenerationHelper, 
+			[NotNull] IFbUpdateSqlGenerator updateSqlGenerator,
+			[NotNull] IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
+			[CanBeNull] int? maxBatchSize)
+			: base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
+		{
+			if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
+				throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
 
-        internal readonly StringBuilder _ExecuteParameters = null;
-        private string _Seperator = null;
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public FbModificationCommandBatch(
-            [NotNull] IRelationalCommandBuilderFactory commandBuilderFactory,
-            [NotNull] ISqlGenerationHelper sqlGenerationHelper,
-            // ReSharper disable once SuggestBaseTypeForParameter
-            [NotNull] IFbUpdateSqlGenerator updateSqlGenerator,
-            [NotNull] IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
-            [CanBeNull] int? maxBatchSize)
-            : base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
-        {
-            if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
-                throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
+			_maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
+			_commandBuilderFactory = commandBuilderFactory;
+			_valueBufferFactory = valueBufferFactoryFactory;
+			_executeParameters = new StringBuilder();
+			_seperator = string.Empty;
+			_blockInsertCommands = new List<ModificationCommand>();
+			_blockUpdateCommands = new List<ModificationCommand>();
+			_blockDeleteCommands = new List<ModificationCommand>();
+		}
 
-            _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
-            _commandBuilderFactory = commandBuilderFactory;
-            _valueBufferFactory = valueBufferFactoryFactory;
-            _ExecuteParameters = new StringBuilder();
-            _Seperator = string.Empty;
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator()
+		{
+			return (IFbUpdateSqlGenerator) base.UpdateSqlGenerator;
+		}
 
-        
-
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator => (IFbUpdateSqlGenerator)base.UpdateSqlGenerator;
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override bool CanAddCommand(ModificationCommand modificationCommand)
-        {
-            if (ModificationCommands.Count >= _maxBatchSize)
-                return false;
-
-
-            var additionalParameterCount = CountParameters(modificationCommand);
-            if (CountParameter + additionalParameterCount >= MaxParameterCount)
-                return false;
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override bool CanAddCommand(ModificationCommand modificationCommand)
+		{
+			if (ModificationCommands.Count >= _maxBatchSize)
+				return false;
 
 
-            CountParameter += additionalParameterCount;
-            return true;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override bool IsCommandTextValid()
-            => true;
+			var additionalParameterCount = CountParameters(modificationCommand);
+			if (_countParameter + additionalParameterCount >= MaxParameterCount)
+				return false;
 
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override int GetParameterCount()
-            => CountParameter;
+			_countParameter += additionalParameterCount;
+			return true;
+		}
 
-        private static int CountParameters(ModificationCommand modificationCommand)
-        {
-            var parameterCount = 0;
-            foreach (var columnModification in modificationCommand.ColumnModifications)
-            {
-                if (columnModification.UseCurrentValueParameter)
-                    parameterCount++;
-
-                if (columnModification.UseOriginalValueParameter)
-                    parameterCount++;
-
-            }
-            return parameterCount;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override void ResetCommandText()
-        {
-            base.ResetCommandText();
-            _BlockInsertCommands.Clear();
-            _BlockUpdateCommands.Clear();
-            _BlockDeleteCommands.Clear();
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override string GetCommandText()
-        {
-            var SbCommands     = new StringBuilder();
-            var SbExecuteBlock = new StringBuilder();
-            _ExecuteParameters.Clear();
-
-            //Commands Insert/Update/Delete
-            SbCommands.AppendLine(base.GetCommandText());
-            SbCommands.Append(GetBlockInsertCommandText(ModificationCommands.Count));
-            SbCommands.Append(GetBlockUpdateCommandText(ModificationCommands.Count));
-            SbCommands.Append(GetBlockDeleteCommandText(ModificationCommands.Count));
-
-            //Execute Block
-            var parameters = _ExecuteParameters.ToString();
-            SbExecuteBlock.Append("EXECUTE BLOCK ");
-            if (parameters.Length > 0)
-            {
-                SbExecuteBlock.Append("( ");
-                SbExecuteBlock.Append(parameters);
-                SbExecuteBlock.Append(") ");
-            }
-            SbExecuteBlock.AppendLine($"RETURNS (AffectedRows BIGINT) AS BEGIN");
-            SbExecuteBlock.Append("AffectedRows=0;");
-            SbExecuteBlock.Append(SbCommands);
-            SbExecuteBlock.AppendLine("END;");
-            return SbExecuteBlock.ToString().Trim(); 
-        }
-         
-        private string GetBlockDeleteCommandText(int lastIndex)
-        {
-            if (_BlockDeleteCommands.Count == 0)
-                return string.Empty;
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override bool IsCommandTextValid()
+		{
+			return true;
+		}
 
 
-            var stringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBlockDeleteOperation(stringBuilder, _BlockDeleteCommands, lastIndex - _BlockDeleteCommands.Count);
-            for (var i = lastIndex - _BlockDeleteCommands.Count; i < lastIndex; i++)
-                CommandResultSet[i] = resultSetMapping;
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override int GetParameterCount()
+		{
+			return _countParameter;
+		}
 
-            if (resultSetMapping != ResultSetMapping.NoResultSet)
-                CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+		private static int CountParameters(ModificationCommand modificationCommand)
+		{
+			var parameterCount = 0;
+			foreach (var columnModification in modificationCommand.ColumnModifications)
+			{
+				if (columnModification.UseCurrentValueParameter)
+					parameterCount++;
 
-            return stringBuilder.ToString();
-        }
+				if (columnModification.UseOriginalValueParameter)
+					parameterCount++;
+			}
+			return parameterCount;
+		}
 
-        private string GetBlockUpdateCommandText(int lastIndex)
-        {
-            if (_BlockUpdateCommands.Count == 0)
-                return string.Empty;
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override void ResetCommandText()
+		{
+			base.ResetCommandText();
+			_blockInsertCommands.Clear();
+			_blockUpdateCommands.Clear();
+			_blockDeleteCommands.Clear();
+		}
 
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override string GetCommandText()
+		{
+			var sbCommands = new StringBuilder();
+			var sbExecuteBlock = new StringBuilder();
+			_executeParameters.Clear();
 
-            var stringBuilder = new StringBuilder();
-            var headStringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBlockUpdateOperation(stringBuilder, headStringBuilder,_BlockUpdateCommands, lastIndex - _BlockUpdateCommands.Count);
-            for (var i = lastIndex - _BlockUpdateCommands.Count; i < lastIndex; i++)
-                CommandResultSet[i] = resultSetMapping;
+			//Commands Insert/Update/Delete
+			sbCommands.AppendLine(base.GetCommandText());
+			sbCommands.Append(GetBlockInsertCommandText(ModificationCommands.Count));
+			sbCommands.Append(GetBlockUpdateCommandText(ModificationCommands.Count));
+			sbCommands.Append(GetBlockDeleteCommandText(ModificationCommands.Count));
 
-            if (resultSetMapping != ResultSetMapping.NoResultSet)
-                CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+			//Execute Block
+			var parameters = _executeParameters.ToString();
+			sbExecuteBlock.Append("EXECUTE BLOCK ");
+			if (parameters.Length > 0)
+			{
+				sbExecuteBlock.Append("( ");
+				sbExecuteBlock.Append(parameters);
+				sbExecuteBlock.Append(") ");
+			}
+			sbExecuteBlock.AppendLine($"RETURNS (AffectedRows BIGINT) AS BEGIN");
+			sbExecuteBlock.Append("AffectedRows=0;");
+			sbExecuteBlock.Append(sbCommands);
+			sbExecuteBlock.AppendLine("END;");
+			return sbExecuteBlock.ToString().Trim();
+		}
 
-            var ExecuteParameters = headStringBuilder.ToString();
-            if (ExecuteParameters.Length > 0)
-            {
-                _ExecuteParameters.Append(_Seperator);
-                _ExecuteParameters.Append(ExecuteParameters);
-                _Seperator = ",";
-            }
-
-            return stringBuilder.ToString();
-        }
-
-        private string GetBlockInsertCommandText(int lastIndex)
-        {
-            if (_BlockInsertCommands.Count == 0)
-                return string.Empty;
-
-            var stringBuilder = new StringBuilder();
-            var headStringBuilder = new StringBuilder();
-            var resultSetMapping = UpdateSqlGenerator.AppendBlockInsertOperation(stringBuilder, headStringBuilder, _BlockInsertCommands, lastIndex - _BlockInsertCommands.Count);
-            for (var i = lastIndex - _BlockInsertCommands.Count; i < lastIndex; i++)
-                CommandResultSet[i] = resultSetMapping;
-
-            if (resultSetMapping != ResultSetMapping.NoResultSet)
-                CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-
-            var ExecuteParameters = headStringBuilder.ToString();
-            if (ExecuteParameters.Length > 0)
-            {
-                _ExecuteParameters.Append(_Seperator);
-                _ExecuteParameters.Append(ExecuteParameters);
-                _Seperator = ",";
-            }
-            
-            return stringBuilder.ToString();
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override void UpdateCachedCommandText(int commandPosition)
-        {
-            var newModificationCommand = ModificationCommands[commandPosition];
-
-            if (newModificationCommand.EntityState == EntityState.Added)
-            {
-                if (_BlockInsertCommands.Count > 0 
-                    && !CanBeInsertedInSameStatement(_BlockInsertCommands[0], newModificationCommand))
-                { 
-                    CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
-                    _BlockInsertCommands.Clear(); 
-                } 
-                _BlockInsertCommands.Add(newModificationCommand);
-                LastCachedCommandIndex = commandPosition;
-                
-
-            }
-            else if (newModificationCommand.EntityState == EntityState.Modified)
-            {
-                if (_BlockUpdateCommands.Count > 0
-                    && !CanBeUpdateInSameStatement(_BlockUpdateCommands[0], newModificationCommand))
-                {
-                    CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
-                    _BlockUpdateCommands.Clear();
-                }
-                _BlockUpdateCommands.Add(newModificationCommand);
-                LastCachedCommandIndex = commandPosition;
-            }
-            else if (newModificationCommand.EntityState == EntityState.Deleted)
-            {
-                if (_BlockDeleteCommands.Count > 0
-                    && !CanBeDeleteInSameStatement(_BlockDeleteCommands[0], newModificationCommand))
-                {
-                    CachedCommandText.Append(GetBlockDeleteCommandText(commandPosition));
-                    _BlockDeleteCommands.Clear();
-                }
-                _BlockDeleteCommands.Add(newModificationCommand);
-                LastCachedCommandIndex = commandPosition;
-            }
-            else
-            {
-                CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
-                _BlockInsertCommands.Clear(); 
-                base.UpdateCachedCommandText(commandPosition);
-            }
-        } 
-
-        private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-          => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-             && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
-             && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
-                 secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-             && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
-                 secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-
-        private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-    => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-       && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
-       && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
-           secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-       && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
-           secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-
-        private static bool CanBeInsertedInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-            => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-               && string.Equals(firstCommand.Schema, secondCommand.Schema, StringComparison.Ordinal)
-               && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
-                   secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-               && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
-                   secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+		private string GetBlockDeleteCommandText(int lastIndex)
+		{
+			if (_blockDeleteCommands.Count == 0)
+				return string.Empty;
 
 
+			var stringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator()
+				.AppendBlockDeleteOperation(stringBuilder, _blockDeleteCommands, lastIndex - _blockDeleteCommands.Count);
+			for (var i = lastIndex - _blockDeleteCommands.Count; i < lastIndex; i++)
+				CommandResultSet[i] = resultSetMapping;
+
+			if (resultSetMapping != ResultSetMapping.NoResultSet)
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+
+			return stringBuilder.ToString();
+		}
+
+		private string GetBlockUpdateCommandText(int lastIndex)
+		{
+			if (_blockUpdateCommands.Count == 0)
+				return string.Empty;
 
 
+			var stringBuilder = new StringBuilder();
+			var headStringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator().AppendBlockUpdateOperation(stringBuilder, headStringBuilder,
+				_blockUpdateCommands, lastIndex - _blockUpdateCommands.Count);
+			for (var i = lastIndex - _blockUpdateCommands.Count; i < lastIndex; i++)
+				CommandResultSet[i] = resultSetMapping;
 
-        ///// <summary>
-        ///// Make the Datareader consummation
-        ///// </summary>
-        ///// <param name = "reader" ></ param >
-        protected override void Consume(RelationalDataReader relationalReader)
-        {
-             
-            //Cast FbDataReader
-            var _dataReader = (FbDataReader)relationalReader.DbDataReader; 
-            var commandIndex = 0;
-            try
-            {
+			if (resultSetMapping != ResultSetMapping.NoResultSet)
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
 
-                for (; ; )
-                {
-                    while (commandIndex < CommandResultSet.Count
-                          && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
-                    {
-                        commandIndex++;
-                    } 
-                    int propragation = commandIndex;
-                    while (propragation < ModificationCommands.Count &&
-                        !ModificationCommands[propragation].RequiresResultPropagation)
-                        propragation++;
+			var executeParameters = headStringBuilder.ToString();
+			if (executeParameters.Length > 0)
+			{
+				_executeParameters.Append(_seperator);
+				_executeParameters.Append(executeParameters);
+				_seperator = ",";
+			}
 
-                    while (commandIndex < propragation)
-                    {
-                        commandIndex++;
-                        if (!_dataReader.Read())
-                        {
-                            throw new DbUpdateConcurrencyException(
-                                RelationalStrings.UpdateConcurrencyException(1, 0),
-                                ModificationCommands[commandIndex].Entries
-                            );
-                        }
-                    }
-                    //check if you've gone through all notifications
-                    if (propragation == ModificationCommands.Count)
-                        break;
+			return stringBuilder.ToString();
+		}
 
-                    var modifications = ModificationCommands[commandIndex++];
-                    if (!relationalReader.Read())
-                    {
-                        throw new DbUpdateConcurrencyException(
-                            RelationalStrings.UpdateConcurrencyException(1, 0),
-                            modifications.Entries);
-                    }
-                    var _bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
-                    modifications.PropagateResults(_bufferFactory.Create(_dataReader));
-                    _dataReader.NextResult();
-                }
-            }
-            catch (DbUpdateException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new DbUpdateException(
-                    RelationalStrings.UpdateStoreException,
-                    ex,
-                    ModificationCommands[commandIndex].Entries);
-            }
-        }
+		private string GetBlockInsertCommandText(int lastIndex)
+		{
+			if (_blockInsertCommands.Count == 0)
+				return string.Empty;
 
-        /// <summary>
-        /// Method Async for Propagation DataReader
-        /// </summary>
-        /// <param name = "reader" ></ param >
-        /// < param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
-            => Task.Run(() => Consume(reader));
-    }
+			var stringBuilder = new StringBuilder();
+			var headStringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator().AppendBlockInsertOperation(stringBuilder, headStringBuilder,
+				_blockInsertCommands, lastIndex - _blockInsertCommands.Count);
+			for (var i = lastIndex - _blockInsertCommands.Count; i < lastIndex; i++)
+				CommandResultSet[i] = resultSetMapping;
 
+			if (resultSetMapping != ResultSetMapping.NoResultSet)
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+
+			var executeParameters = headStringBuilder.ToString();
+			if (executeParameters.Length > 0)
+			{
+				_executeParameters.Append(_seperator);
+				_executeParameters.Append(executeParameters);
+				_seperator = ",";
+			}
+
+			return stringBuilder.ToString();
+		}
+
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override void UpdateCachedCommandText(int commandPosition)
+		{
+			var newModificationCommand = ModificationCommands[commandPosition];
+
+			if (newModificationCommand.EntityState == EntityState.Added)
+			{
+				if (_blockInsertCommands.Count > 0
+				    && !CanBeInsertedInSameStatement(_blockInsertCommands[0], newModificationCommand))
+				{
+					CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
+					_blockInsertCommands.Clear();
+				}
+				_blockInsertCommands.Add(newModificationCommand);
+				LastCachedCommandIndex = commandPosition;
+			}
+			else if (newModificationCommand.EntityState == EntityState.Modified)
+			{
+				if (_blockUpdateCommands.Count > 0
+				    && !CanBeUpdateInSameStatement(_blockUpdateCommands[0], newModificationCommand))
+				{
+					CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
+					_blockUpdateCommands.Clear();
+				}
+				_blockUpdateCommands.Add(newModificationCommand);
+				LastCachedCommandIndex = commandPosition;
+			}
+			else if (newModificationCommand.EntityState == EntityState.Deleted)
+			{
+				if (_blockDeleteCommands.Count > 0
+				    && !CanBeDeleteInSameStatement(_blockDeleteCommands[0], newModificationCommand))
+				{
+					CachedCommandText.Append(GetBlockDeleteCommandText(commandPosition));
+					_blockDeleteCommands.Clear();
+				}
+				_blockDeleteCommands.Add(newModificationCommand);
+				LastCachedCommandIndex = commandPosition;
+			}
+			else
+			{
+				CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
+				_blockInsertCommands.Clear();
+				base.UpdateCachedCommandText(commandPosition);
+			}
+		}
+
+		private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
+		{
+			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal) 
+			       && firstCommand.ColumnModifications.Where(o => o.IsWrite)
+				       .Select(o => o.ColumnName)
+				       .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+			       && firstCommand.ColumnModifications.Where(o => o.IsRead)
+				       .Select(o => o.ColumnName)
+				       .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+		}
+
+		private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
+		{
+			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal) 
+			       && firstCommand.ColumnModifications.Where(o => o.IsWrite)
+				       .Select(o => o.ColumnName)
+				       .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+			       && firstCommand.ColumnModifications.Where(o => o.IsRead)
+				       .Select(o => o.ColumnName)
+				       .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+		}
+
+		private static bool CanBeInsertedInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
+		{
+			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal) 
+			       && firstCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName).SequenceEqual(
+				       secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+			       && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
+				       secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+		}
+
+
+		///// <summary>
+		///// Make the Datareader consummation
+		///// </summary>
+		///// <param name = "reader" ></ param >
+		protected override void Consume(RelationalDataReader relationalReader)
+		{
+			if (relationalReader == null)
+			{
+				throw new ArgumentNullException(nameof(relationalReader));
+			}
+			//Cast FbDataReader
+			var dataReader = (FbDataReader) relationalReader.DbDataReader;
+			var commandIndex = 0;
+			try
+			{
+				for (;;)
+				{
+					while (commandIndex < CommandResultSet.Count
+					       && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+						commandIndex++;
+					var propragation = commandIndex;
+					while (propragation < ModificationCommands.Count &&
+					       !ModificationCommands[propragation].RequiresResultPropagation)
+						propragation++;
+
+					while (commandIndex < propragation)
+					{
+						commandIndex++;
+						if (!dataReader.Read())
+							throw new DbUpdateConcurrencyException(
+								RelationalStrings.UpdateConcurrencyException(1, 0),
+								ModificationCommands[commandIndex].Entries
+							);
+					}
+					//check if you've gone through all notifications
+					if (propragation == ModificationCommands.Count)
+						break;
+
+					var modifications = ModificationCommands[commandIndex++];
+					if (!relationalReader.Read())
+						throw new DbUpdateConcurrencyException(
+							RelationalStrings.UpdateConcurrencyException(1, 0),
+							modifications.Entries);
+					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
+					modifications.PropagateResults(bufferFactory.Create(dataReader));
+					dataReader.NextResult();
+				}
+			}
+			catch (DbUpdateException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new DbUpdateException(
+					RelationalStrings.UpdateStoreException,
+					ex,
+					ModificationCommands[commandIndex].Entries);
+			}
+		}
+
+		/// <summary>
+		///     Method Async for Propagation DataReader
+		/// </summary>
+		/// <param name="reader"></param>
+		/// < param name="cancellationToken"></param>
+		/// <returns></returns>
+		protected override Task ConsumeAsync(RelationalDataReader reader,
+			CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.Run(() => Consume(reader));
+		}
+	}
 }

@@ -30,11 +30,12 @@
 using JetBrains.Annotations;
 using FirebirdSql.Data.FirebirdClient;
 
-
 namespace Microsoft.EntityFrameworkCore.Migrations.Operations
 {
     public class FbCreateDatabaseOperation : MigrationOperation 
-    { 
+    {
+        public virtual string Name { get; [param: NotNull] set; }
+
         public virtual FbConnectionStringBuilder connectionStrBuilder { get;[param: NotNull] set; } 
     }
 }

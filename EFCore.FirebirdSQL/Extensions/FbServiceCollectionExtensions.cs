@@ -27,7 +27,6 @@
  *                  All Rights Reserved.
  */
 
-
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
@@ -50,12 +49,11 @@ using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class FbServiceCollectionExtensions
     {
-        public static IServiceCollection AddEntityFrameworkFb([NotNull] this IServiceCollection serviceCollection)
+        public static IServiceCollection AddEntityFrameworkFirebird([NotNull] this IServiceCollection serviceCollection)
         {
             Check.NotNull(serviceCollection, nameof(serviceCollection));
 
@@ -72,8 +70,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAdd<IValueGeneratorSelector, FbValueGeneratorSelector>()
                 .TryAdd<IRelationalConnection>(p => p.GetService<IFbRelationalConnection>())
 
-
-                //.TryAdd<IBatchExecutor, BatchExecutor>()
+                .TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
+               .TryAdd<IBatchExecutor, FbBatchExecutor>()
+                .TryAdd<IBatchExecutor, BatchExecutor>()
 
                 .TryAdd<IHistoryRepository, FbHistoryRepository>()
                 .TryAdd<IMemberTranslator, FbCompositeMemberTranslator>()
@@ -83,11 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAddProviderSpecificServices(b => b
                     .TryAddSingleton<IFbOptions, FbOptions>()
                     .TryAddScoped<IFbUpdateSqlGenerator, FbUpdateSqlGenerator>()
-                    .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>())
-
-
-                .TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
-                .TryAdd<IBatchExecutor, FbBatchExecutor>();
+                    .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>());
 
             builder.TryAddCoreServices();
 

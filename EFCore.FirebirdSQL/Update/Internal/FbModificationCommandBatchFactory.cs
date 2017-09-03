@@ -34,7 +34,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
 
-
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public class FbModificationCommandBatchFactory : IModificationCommandBatchFactory
@@ -64,8 +63,8 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             _valueBufferFactoryFactory = valueBufferFactoryFactory;
             _options = options;
         }
-         
-        public ModificationCommandBatch Create()
+
+        public virtual ModificationCommandBatch Create()
         {
             var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault(); 
             return new FbModificationCommandBatch(

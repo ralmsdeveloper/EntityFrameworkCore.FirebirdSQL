@@ -36,7 +36,7 @@
 // http://www.firebirdfaq.org/faq174/
 // https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
 // Credit Query Schema Table:
-// Jean Ressouche: https://raw.githubusercontent.com/souchprod/SouchProd.EntityFrameworkCore.Firebird/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
+// Jean Ressouche: https://raw.githubusercontent.com/souchprod/FirebirdSql.EntityFrameworkCore.Firebird/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
 
 using System;
 using System.Collections.Generic;
@@ -184,7 +184,6 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             _connection = connection as FbConnection;
             if (_connection.State != ConnectionState.Open)
                 _connection.Open();
-
 
             try
             {

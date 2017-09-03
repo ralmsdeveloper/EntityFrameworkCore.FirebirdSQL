@@ -27,7 +27,6 @@
  *                  All Rights Reserved.
  */
 
-
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Utilities;  
@@ -38,7 +37,7 @@ namespace Microsoft.EntityFrameworkCore
         public static IndexBuilder ForFbIsFullText([NotNull] this IndexBuilder indexBuilder, bool fullText = true)
         {
             Check.NotNull(indexBuilder, nameof(indexBuilder)); 
-            indexBuilder.Metadata.Fb().IsFullText = fullText;
+            indexBuilder.Metadata.Firebird().IsFullText = fullText;
 
             return indexBuilder;
         }  

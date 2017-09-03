@@ -24,7 +24,6 @@
  *                  All Rights Reserved.
  */
 
-
 using System;
 using System.Collections.Concurrent;
 using System.Data;
@@ -107,9 +106,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             });
         }
 
-     
-
-        internal FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
+        public FbConnectionSettings(FbConnectionStringBuilder settingsCsb, ServerVersion serverVersion)
         => ServerVersion = serverVersion;  
 
         public readonly ServerVersion ServerVersion;
