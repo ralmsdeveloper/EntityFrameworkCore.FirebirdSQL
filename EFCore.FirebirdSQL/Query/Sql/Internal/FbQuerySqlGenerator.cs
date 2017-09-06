@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
@@ -32,122 +33,151 @@ using Microsoft.EntityFrameworkCore.Utilities;
 
 namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
-    {
-        protected override string TypedTrueLiteral => "TRUE";
-        protected override string TypedFalseLiteral => "FALSE";
+	/// <summary>
+	///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+	///     directly from your code. This API may change or be removed in future releases.
+	/// </summary>
+	public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
+	{
+		protected override string TypedTrueLiteral => "TRUE";
+		protected override string TypedFalseLiteral => "FALSE";
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public FbQuerySqlGenerator(
-            [NotNull] QuerySqlGeneratorDependencies dependencies,
-            [NotNull] SelectExpression selectExpression)
-            : base(dependencies, selectExpression)
-        {
-        }
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		public FbQuerySqlGenerator(
+			[NotNull] QuerySqlGeneratorDependencies dependencies,
+			[NotNull] SelectExpression selectExpression)
+			: base(dependencies, selectExpression)
+		{
+		}
+
+	    public override Expression VisitSelect(SelectExpression selectExpression)
+	    {
+	        base.VisitSelect(selectExpression);
+
+            //Fix Any()
+	        if (selectExpression.Type == typeof(bool))
+	        {
+	            Sql.Append(" FROM RDB$DATABASE");
+	        }
+	        return selectExpression;
+
+	    }
+        //public override  Expression VisitExists(ExistsExpression existsExpression)
+        //{
+        //	Sql.AppendLine("EXISTS (");
+
+        //	using (Sql.Indent())
+        //	{
+        //		Visit(existsExpression.Subquery);
+        //	}
+
+        //	Sql.Append(")");
+        //	Sql.Append(" FROM RDB$DATABASE");
+        //	return existsExpression;
+        //} 
 
         protected override void GenerateTop(SelectExpression selectExpression)
-        {
-            Check.NotNull(selectExpression, nameof(selectExpression));
+		{
+			Check.NotNull(selectExpression, nameof(selectExpression));
 
-          if (selectExpression.Limit != null)
-          {
-              Sql.AppendLine().Append("FIRST ");
-              Visit(selectExpression.Limit);
-              Sql.AppendLine().Append(" ");
-            }
+			if (selectExpression.Limit != null)
+			{
+				Sql.AppendLine().Append("FIRST ");
+				Visit(selectExpression.Limit);
+				Sql.AppendLine().Append(" ");
+			}
 
-          if (selectExpression.Offset != null)
-          {
-              if (selectExpression.Limit == null)
-              {
-                  // if we want to use Skip() without Take() we have to define the upper limit of LIMIT 
-                  Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
-              }
-              Sql.Append(" SKIP ");
-              Visit(selectExpression.Offset);
-          }
-        }
+			if (selectExpression.Offset != null)
+			{
+				if (selectExpression.Limit == null)
+				{
+					// if we want to use Skip() without Take() we have to define the upper limit of LIMIT 
+					Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
+				}
+				Sql.Append(" SKIP ");
+				Visit(selectExpression.Offset);
+			}
+		}
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected override void GenerateLimitOffset(SelectExpression selectExpression) { }
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		protected override void GenerateLimitOffset(SelectExpression selectExpression) { }
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
-        =>
-               base.VisitSqlFunction(sqlFunctionExpression);
-        
-         
-        
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
+		{
+			return base.VisitSqlFunction(sqlFunctionExpression);
+		}
+			
 
-        protected override void GenerateProjection(Expression projection)
-        {
-            var aliasedProjection = projection as AliasExpression;
-            var expressionToProcess = aliasedProjection?.Expression ?? projection;
-            var updatedExperssion = ExplicitCastToBool(expressionToProcess);
 
-            expressionToProcess = aliasedProjection != null
-                ? new AliasExpression(aliasedProjection.Alias, updatedExperssion)
-                : updatedExperssion;
 
-            base.GenerateProjection(expressionToProcess);
-        }
 
-        private Expression ExplicitCastToBool(Expression expression)
-        {
-            return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
-                   && expression.Type.UnwrapNullableType() == typeof(bool)
-                ? new ExplicitCastExpression(expression, expression.Type)
-                : expression;
-        }
+		protected override void GenerateProjection(Expression projection)
+		{
+			var aliasedProjection = projection as AliasExpression;
+			var expressionToProcess = aliasedProjection?.Expression ?? projection;
+			var updatedExperssion = ExplicitCastToBool(expressionToProcess);
 
-        protected override Expression VisitBinary(BinaryExpression binaryExpression)
-        {
-            if (binaryExpression.NodeType == ExpressionType.Add &&
-                binaryExpression.Left.Type == typeof (string) &&
-                binaryExpression.Right.Type == typeof (string))
-            {
-                Sql.Append("("); 
-                Visit(binaryExpression.Left);
-                Sql.Append("||");
-                var exp = Visit(binaryExpression.Right);
-                Sql.Append(")");
-                return exp;
-            }
-            
-            var expr = base.VisitBinary(binaryExpression);
-            
-            return expr;
-        }
-         
-        public virtual Expression VisitSubString(FbSubStringExpression sbString)
-        {
-            Check.NotNull(sbString, nameof(sbString)); 
-            Sql.Append(" SUBSTRING(");
-            Visit(sbString.SubjectExpression);
-            Sql.Append(" FROM ");
-            Visit(sbString.FromExpression);
-            Sql.Append(" FOR ");
-            Visit(sbString.ForExpression);
-            Sql.Append(")"); 
-            return sbString;
-        }
+			expressionToProcess = aliasedProjection != null
+				? new AliasExpression(aliasedProjection.Alias, updatedExperssion)
+				: updatedExperssion;
 
-        public Expression VisitRegexp([NotNull] FbRegexpExpression regexpExpression)
-        {
-            throw new NotImplementedException();
-        }
-    }
+			base.GenerateProjection(expressionToProcess);
+		}
+
+		private Expression ExplicitCastToBool(Expression expression)
+		{
+			return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
+				   && expression.Type.UnwrapNullableType() == typeof(bool)
+				? new ExplicitCastExpression(expression, expression.Type)
+				: expression;
+		}
+
+		protected override Expression VisitBinary(BinaryExpression binaryExpression)
+		{
+			if (binaryExpression.NodeType == ExpressionType.Add &&
+				binaryExpression.Left.Type == typeof(string) &&
+				binaryExpression.Right.Type == typeof(string))
+			{
+				Sql.Append("(");
+				Visit(binaryExpression.Left);
+				Sql.Append("||");
+				var exp = Visit(binaryExpression.Right);
+				Sql.Append(")");
+				return exp;
+			}
+
+			var expr = base.VisitBinary(binaryExpression);
+
+			return expr;
+		}
+
+		public virtual Expression VisitSubString(FbSubStringExpression sbString)
+		{
+			Check.NotNull(sbString, nameof(sbString));
+			Sql.Append(" SUBSTRING(");
+			Visit(sbString.SubjectExpression);
+			Sql.Append(" FROM ");
+			Visit(sbString.FromExpression);
+			Sql.Append(" FOR ");
+			Visit(sbString.ForExpression);
+			Sql.Append(")");
+			return sbString;
+		}
+
+		public Expression VisitRegexp([NotNull] FbRegexpExpression regexpExpression)
+		{
+			throw new NotImplementedException();
+		}
+		 
+	}
 }

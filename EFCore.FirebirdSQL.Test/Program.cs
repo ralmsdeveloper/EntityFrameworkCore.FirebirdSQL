@@ -16,8 +16,9 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             var cx = new Context();
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
-            cx.Database.EnsureCreated(); 
+            cx.Database.EnsureCreated();
 
+            //Sample (https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/issues/3)
             if (!cx.Author.Any())
             {
                 var autores = new List<Author>(){
