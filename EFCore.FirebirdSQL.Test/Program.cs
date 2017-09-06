@@ -16,8 +16,31 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             var cx = new Context();
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
-            cx.Database.EnsureCreated();
+            cx.Database.EnsureCreated(); 
 
+            if (!cx.Author.Any())
+            {
+                var autores = new List<Author>(){
+                    new Author()
+                    {
+                        FirstName = "Rafael",
+                        LastName = "Almeida",
+                        Date = DateTime.Now.AddMilliseconds(1),
+                        Identification = Guid.NewGuid(),
+                        Books = new List<Book>
+                        {
+                            new Book {  Title=$"Firebird 3.0.2  "},
+                            new Book {  Title=$"Firebird 4.0.0  "}
+                        }
+                    }
+                };
+                autores.ForEach(v =>
+                {
+                    cx.Author.Add(v);
+                });
+                cx.SaveChanges();
+            }
+             
             ////fifty rows
             for (int i = 0; i < 50; i++)
             {
@@ -73,7 +96,8 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
             AuthorsUpdate3.FirstName = $"Author Modified {Guid.NewGuid()}";
 
             cx.SaveChanges();
-
+            var y = cx.Author.Include(p => p.Books).Where(p => p.LastName.Trim()!="A")
+                .ToList();
             var Authors = cx.Author.AsNoTracking()
                             .Include(p => p.Books).Where(p=>p.AuthorId<10)
                              .ToList();

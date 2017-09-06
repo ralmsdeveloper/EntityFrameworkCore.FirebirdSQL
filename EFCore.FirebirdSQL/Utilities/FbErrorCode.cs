@@ -1,4 +1,4 @@
-/*                 
+﻿/*                 
  *            FirebirdSql.EntityFrameworkCore.Firebird
  *     
  *              https://www.firebirdsql.org/en/net-provider/ 
@@ -27,13 +27,17 @@
  *                  All Rights Reserved.
  */
 
-using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
-
-namespace Microsoft.EntityFrameworkCore.Migrations.Operations
+namespace FirebirdSql.EntityFrameworkCore.Firebird.Utilities
 {
-    public class FbDropDatabaseOperation : MigrationOperation
-    { 
-        public virtual FbConnectionStringBuilder ConnectionStringBuilder { get; [param: NotNull] set; }
-    }
+	public enum FbErrorCode
+	{
+		/* network_error */
+		FbErrorNetworkConnection = 335544721,
+
+		/* io_error */
+		FbErrorAccessFile = 335544344,
+
+		/* net_connect_err */
+		FbErrorEstablishConnection = 335544722
+	}
 }
