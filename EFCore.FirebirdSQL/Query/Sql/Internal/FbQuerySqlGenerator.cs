@@ -53,33 +53,17 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		{
 		}
 
-	    public override Expression VisitSelect(SelectExpression selectExpression)
-	    {
-	        base.VisitSelect(selectExpression);
+		public override Expression VisitSelect(SelectExpression selectExpression)
+		{
+			base.VisitSelect(selectExpression);
 
-            //Fix Any()
-	        if (selectExpression.Type == typeof(bool))
-	        {
-	            Sql.Append(" FROM RDB$DATABASE");
-	        }
-	        return selectExpression;
+			//Fix Any()
+			if (selectExpression.Type == typeof(bool))
+				Sql.Append(" FROM RDB$DATABASE");
+			return selectExpression;
+		}
 
-	    }
-        //public override  Expression VisitExists(ExistsExpression existsExpression)
-        //{
-        //	Sql.AppendLine("EXISTS (");
-
-        //	using (Sql.Indent())
-        //	{
-        //		Visit(existsExpression.Subquery);
-        //	}
-
-        //	Sql.Append(")");
-        //	Sql.Append(" FROM RDB$DATABASE");
-        //	return existsExpression;
-        //} 
-
-        protected override void GenerateTop(SelectExpression selectExpression)
+		protected override void GenerateTop(SelectExpression selectExpression)
 		{
 			Check.NotNull(selectExpression, nameof(selectExpression));
 
@@ -93,10 +77,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 			if (selectExpression.Offset != null)
 			{
 				if (selectExpression.Limit == null)
-				{
-					// if we want to use Skip() without Take() we have to define the upper limit of LIMIT 
 					Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
-				}
 				Sql.Append(" SKIP ");
 				Visit(selectExpression.Offset);
 			}
@@ -106,7 +87,9 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
 		///     directly from your code. This API may change or be removed in future releases.
 		/// </summary>
-		protected override void GenerateLimitOffset(SelectExpression selectExpression) { }
+		protected override void GenerateLimitOffset(SelectExpression selectExpression)
+		{
+		}
 
 		/// <summary>
 		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -116,9 +99,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		{
 			return base.VisitSqlFunction(sqlFunctionExpression);
 		}
-			
-
-
 
 
 		protected override void GenerateProjection(Expression projection)
@@ -137,7 +117,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		private Expression ExplicitCastToBool(Expression expression)
 		{
 			return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
-				   && expression.Type.UnwrapNullableType() == typeof(bool)
+			       && expression.Type.UnwrapNullableType() == typeof(bool)
 				? new ExplicitCastExpression(expression, expression.Type)
 				: expression;
 		}
@@ -145,8 +125,8 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		protected override Expression VisitBinary(BinaryExpression binaryExpression)
 		{
 			if (binaryExpression.NodeType == ExpressionType.Add &&
-				binaryExpression.Left.Type == typeof(string) &&
-				binaryExpression.Right.Type == typeof(string))
+			    binaryExpression.Left.Type == typeof(string) &&
+			    binaryExpression.Right.Type == typeof(string))
 			{
 				Sql.Append("(");
 				Visit(binaryExpression.Left);
@@ -178,6 +158,5 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		{
 			throw new NotImplementedException();
 		}
-		 
 	}
 }
