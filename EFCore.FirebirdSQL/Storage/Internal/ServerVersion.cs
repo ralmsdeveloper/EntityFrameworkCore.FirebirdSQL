@@ -50,7 +50,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public bool SupportIdentityIncrement => Version.Major >= 3;
 
-		public int ObjectLengthName => Version.Major >= 3 ? 64 : 31;
+		public int ObjectLengthName => Version.Major < 3 || Version.Major >= 4  ? 64 : 31;
     }
 
 }
