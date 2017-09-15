@@ -63,8 +63,8 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
             }
  
             cx.SaveChanges();
-
-            var AuthorsUpdate1 = cx.Author.Find((long)4); 
+			 
+			var AuthorsUpdate1 = cx.Author.Find((long)4); 
             Console.WriteLine($"Before *** {AuthorsUpdate1.FirstName}");
             cx.Attach(AuthorsUpdate1);
             AuthorsUpdate1.FirstName = $"Author Modified {Guid.NewGuid()}";

@@ -38,22 +38,32 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
 	public class FbConventionSetBuilder : RelationalConventionSetBuilder
 	{
-		private static ISqlGenerationHelper _sqlGenerationHelper;
+		private readonly ISqlGenerationHelper _sqlGenerationHelper;
 		private static IFbOptions _options;
 
-		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies,IFbOptions options, ISqlGenerationHelper sqlGenerationHelper)
+		public FbConventionSetBuilder(
+			RelationalConventionSetBuilderDependencies dependencies,
+			IFbOptions options,
+			ISqlGenerationHelper sqlGenerationHelper)
 			: base(dependencies)
 		{
 			_sqlGenerationHelper = sqlGenerationHelper;
 			_options = options;
 		}
 
-		public static ConventionSet Build()
+		public override ConventionSet AddConventions(ConventionSet conventionSet)
 		{
-			var typeMapper = new FbTypeMapper(new RelationalTypeMapperDependencies());
-			var dependencies = new RelationalConventionSetBuilderDependencies(typeMapper, null, null);
-			return new FbConventionSetBuilder(dependencies,_options, _sqlGenerationHelper)
-				.AddConventions(new CoreConventionSetBuilder(new CoreConventionSetBuilderDependencies(typeMapper)).CreateConventionSet());
+			base.AddConventions(conventionSet);
+
+			var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
+			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
+
+			ReplaceConvention(conventionSet.PropertyAddedConventions,
+				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
+			ReplaceConvention(conventionSet.PropertyFieldChangedConventions,
+				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
+
+			return conventionSet;
 		}
 	}
 }
