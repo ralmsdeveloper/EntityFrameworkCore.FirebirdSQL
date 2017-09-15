@@ -28,21 +28,15 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -50,21 +44,15 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 {
 	public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 	{
-		private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
 		private IFbOptions _options { get; set; }
-		public FbMigrationsSqlGenerator(
-			MigrationsSqlGeneratorDependencies dependencies,
-			IFbOptions options)
+		public FbMigrationsSqlGenerator(MigrationsSqlGeneratorDependencies dependencies, IFbOptions options)
 			: base(dependencies)
 		{
 			_options = options;
 		}
 
-		protected override void Generate(MigrationOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		protected override void Generate(MigrationOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
 			if (operation is FbCreateDatabaseOperation createDatabaseOperation)
 			{
 				Generate(createDatabaseOperation, model, builder);
@@ -88,11 +76,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 			base.Generate(operation, model, builder);
 		}
 
-		protected override void Generate(
-		   CreateTableOperation operation,
-		   IModel model,
-		   MigrationCommandListBuilder builder,
-		   bool terminate)
+		protected override void Generate( CreateTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate)
 		{
 			base.Generate(operation, model, builder, false);
 			if (terminate)
@@ -158,18 +142,16 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
 		protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			//https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
 			var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
 			var alterBase = $"ALTER TABLE {identifier} DROP {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
-			builder.Append(alterBase).Append(Dependencies.SqlGenerationHelper.StatementTerminator);
+			builder.Append(alterBase)
+				   .Append(Dependencies.SqlGenerationHelper.StatementTerminator);
+
 			EndStatement(builder);
 		}
 
 		protected override void Generate(AlterColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-			//https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
 			var type = operation.ColumnType.ToUpper();
 			if (operation.ColumnType == null)
 			{
@@ -286,30 +268,10 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
 		protected override void Generate(RenameTableOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
 			throw new NotImplementedException("The rename table feature is not yet implemented.");
-
-			// Correct method imo, but require GetCreateTable to be improved (or the triggers will be missing)
-			/*
-            var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Name, operation.Schema);
-            
-            createTableSyntax = createTableSyntax?.Replace(operation.Name, operation.NewName) ?? throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.Schema)}'");
-
-            builder.Append(createTableSyntax);
-
-            builder
-                .Append("INSERT INTO")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName, operation.Schema))
-                .Append(" SELECT * FROM ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name, operation.NewSchema));
-
-            EndStatement(builder);
-             */
 		}
 
-		protected override void Generate(CreateIndexOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder, bool terminate)
+		protected override void Generate(CreateIndexOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate)
 		{
 			var method = (string)operation[FbAnnotationNames.Prefix];
 
@@ -320,23 +282,20 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 				builder.Append("UNIQUE ");
 			}
 
-			builder
-				.Append("INDEX ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-				.Append(" ON ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
+			builder.Append("INDEX ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+			       .Append(" ON ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
 
 			if (method != null)
 			{
-				builder
-					.Append(" USING ")
-					.Append(method);
+				builder.Append(" USING ")
+				       .Append(method);
 			}
 
-			builder
-				.Append(" (")
-				.Append(ColumnList(operation.Columns))
-				.Append(")");
+			builder.Append(" (")
+			       .Append(ColumnList(operation.Columns))
+			       .Append(")");
 
 			if (terminate)
 			{
@@ -345,111 +304,73 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 			}
 		}
 
-		protected override void Generate(
-			CreateIndexOperation operation,
-			[CanBeNull] IModel model,
-			MigrationCommandListBuilder builder)
+		protected override void Generate( CreateIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
 			Generate(operation, model, builder, true);
 		}
 
 		protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
 			throw new NotImplementedException("This feature is not yet implemented.");
 		}
 
 		public virtual void Generate(FbCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
 			var stringConnection = operation.connectionStrBuilder.ToString();
 			FbConnection.CreateDatabase(stringConnection);
 		}
 
 		public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
 			FbConnection.ClearAllPools();
 			FbConnection.DropDatabase(operation.ConnectionStringBuilder.ToString());
 		}
 
 		protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
-			builder
-				.Append("ALTER TABLE ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" DROP CONSTRAINT ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-				.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+			builder.Append("ALTER TABLE ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+			       .Append(" DROP CONSTRAINT ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+			       .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
 			EndStatement(builder);
 		}
 
-		protected override void Generate(
-			RenameColumnOperation operation,
-			[CanBeNull] IModel model,
-			MigrationCommandListBuilder builder)
+		protected override void Generate(RenameColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
 			builder.Append("ALTER TABLE ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" ALTER ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-				.Append(" TO ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+			       .Append(" ALTER ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+			       .Append(" TO ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
 
 			EndStatement(builder);
 		}
 
 		protected override void ColumnDefinition(
-			[CanBeNull] string schema,
+			string schema,
 			string table,
 			string name,
 			Type clrType,
-			[CanBeNull] string type,
-			[CanBeNull] bool? unicode,
-			[CanBeNull] int? maxLength,
+			string type,
+			bool? unicode,
+			int? maxLength,
 			bool rowVersion,
 			bool nullable,
-			[CanBeNull] object defaultValue,
-			[CanBeNull] string defaultValueSql,
-			[CanBeNull] string computedColumnSql,
+			object defaultValue,
+			string defaultValueSql,
+			string computedColumnSql,
 			IAnnotatable annotatable,
-			[CanBeNull] IModel model,
+			IModel model,
 			MigrationCommandListBuilder builder)
 		{
-			Check.NotEmpty(name, nameof(name));
-			Check.NotNull(annotatable, nameof(annotatable));
-			Check.NotNull(clrType, nameof(clrType));
-			Check.NotNull(builder, nameof(builder));
-
-			var matchType = type;
-			var matchLen = "";
-			var match = TypeRe.Match(type ?? "-");
-			if (match.Success)
-			{
-				matchType = match.Groups[1].Value.ToUpper();
-				if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
-					matchLen = match.Groups[2].Value;
-			}
-
 			var Identity = false;
 			var valueGenerationStrategy = annotatable[FbAnnotationNames.ValueGenerationStrategy] as FbValueGenerationStrategy?;
 			if ((valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
 			{
-				switch (matchType)
+				switch (type)
 				{
 					case "INTEGER":
 					case "BIGINT":
@@ -464,7 +385,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 			string onUpdateSql = null;
 			if (valueGenerationStrategy == FbValueGenerationStrategy.ComputedColumn)
 			{
-				switch (matchType)
+				switch (type)
 				{
 					case "DATETIME":
 					case "TIMESTAMP":
@@ -475,10 +396,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 				}
 			}
 
-			builder
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
-				.Append(" ")
-				.Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
+			builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
+			       .Append(" ")
+			       .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
 
 			if (!nullable && Identity)
 			{
@@ -494,23 +414,20 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
 				if (defaultValueSql != null)
 				{
-					builder
-						.Append(" DEFAULT ")
-						.Append(defaultValueSql);
+					builder.Append(" DEFAULT ")
+					       .Append(defaultValueSql);
 				}
 				else if (defaultValue != null)
 				{
 					var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
-					builder
-						.Append(" DEFAULT ")
-						.Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
+					builder.Append(" DEFAULT ")
+					       .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
 				}
 
 				if (onUpdateSql != null)
 				{
-					builder
-						.Append(" ON UPDATE ")
-						.Append(onUpdateSql);
+					builder.Append(" ON UPDATE ")
+					       .Append(onUpdateSql);
 				}
 			}
 
@@ -518,47 +435,35 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
 		protected override void DefaultValue(object defaultValue, string defaultValueSql, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(builder, nameof(builder));
-
 			if (defaultValueSql != null)
 			{
-				builder
-					.Append(" DEFAULT ")
-					.Append(defaultValueSql);
+				builder.Append(" DEFAULT ")
+				       .Append(defaultValueSql);
 			}
 			else if (defaultValue != null)
 			{
 				var typeMapping = Dependencies.TypeMapper.GetMapping(defaultValue.GetType());
-				builder
-					.Append(" DEFAULT ")
-					.Append(typeMapping.GenerateSqlLiteral(defaultValue));
+				builder.Append(" DEFAULT ")
+				       .Append(typeMapping.GenerateSqlLiteral(defaultValue));
 			}
 		}
 
-		protected override void Generate(DropForeignKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		protected override void Generate(DropForeignKeyOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
-			builder
-				.Append("ALTER TABLE ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" DROP CONSTRAINT ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-				.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+			builder.Append("ALTER TABLE ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+			       .Append(" DROP CONSTRAINT ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+			       .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
 			EndStatement(builder);
 		}
 
-		protected override void Generate(AddPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		protected override void Generate(AddPrimaryKeyOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
-			builder
-				.Append("ALTER TABLE ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" ADD ");
+			builder.Append("ALTER TABLE ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+			       .Append(" ADD ");
 
 			PrimaryKeyConstraint(operation, model, builder);
 			builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
@@ -566,59 +471,27 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 			EndStatement(builder);
 		}
 
-		protected override void Generate(DropPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		protected override void Generate(DropPrimaryKeyOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
-			builder
-				.Append("ALTER TABLE ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-				.Append(" DROP CONSTRAINT ")
-				.Append(operation.Name);
+			builder.Append("ALTER TABLE ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+			       .Append(" DROP CONSTRAINT ")
+			       .Append(operation.Name);
 
 			EndStatement(builder);
 		}
 
-		public virtual void Rename(
-			[CanBeNull] string schema,
-			string name,
-			string newName,
-			string type,
-			MigrationCommandListBuilder builder)
+		public virtual void Rename(string schema, string name, string newName, string type, MigrationCommandListBuilder builder)
 		{
-			Check.NotEmpty(name, nameof(name));
-			Check.NotEmpty(newName, nameof(newName));
-			Check.NotEmpty(type, nameof(type));
-			Check.NotNull(builder, nameof(builder));
-
-			builder
-				.Append("ALTER ")
-				.Append(type)
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
-				.Append(" TO ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
-		}
-
-		public virtual void Transfer(
-			string newSchema,
-			[CanBeNull] string schema,
-			string name,
-			string type,
-			MigrationCommandListBuilder builder)
-		{
-			Check.NotEmpty(newSchema, nameof(newSchema));
-			Check.NotEmpty(name, nameof(name));
-			Check.NotNull(type, nameof(type));
-			Check.NotNull(builder, nameof(builder));
-
-			//more implementation for RULE
-		}
+			builder.Append("ALTER ")
+			       .Append(type)
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
+			       .Append(" TO ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
+		} 
 
 		protected override void ForeignKeyAction(ReferentialAction referentialAction, MigrationCommandListBuilder builder)
-		{
-			Check.NotNull(builder, nameof(builder));
-
+		{ 
 			if (referentialAction == ReferentialAction.Restrict)
 				builder.Append("NO ACTION");
 			else
@@ -626,34 +499,26 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
 		}
 
-		protected override void ForeignKeyConstraint(
-			AddForeignKeyOperation operation,
-			IModel model,
-			MigrationCommandListBuilder builder)
-		{
-			Check.NotNull(operation, nameof(operation));
-			Check.NotNull(builder, nameof(builder));
-
+		protected override void ForeignKeyConstraint(AddForeignKeyOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{  
 			if (operation.Name != null)
 			{
-				builder
-					.Append("CONSTRAINT ")
-					.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-					.Append(" ");
+				builder.Append("CONSTRAINT ")
+				       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				       .Append(" ");
 			}
 
-			builder
-				.Append("FOREIGN KEY (")
-				.Append(ColumnList(operation.Columns))
-				.Append(") REFERENCES ")
-				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.PrincipalTable, operation.PrincipalSchema));
+			builder.Append("FOREIGN KEY (")
+			       .Append(ColumnList(operation.Columns))
+			       .Append(") REFERENCES ")
+			       .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.PrincipalTable,
+			                                                                  operation.PrincipalSchema));
 
 			if (operation.PrincipalColumns != null)
 			{
-				builder
-					.Append(" (")
-					.Append(ColumnList(operation.PrincipalColumns))
-					.Append(")");
+				builder.Append(" (")
+				       .Append(ColumnList(operation.PrincipalColumns))
+				       .Append(")");
 			}
 
 			if (operation.OnUpdate != ReferentialAction.NoAction)
