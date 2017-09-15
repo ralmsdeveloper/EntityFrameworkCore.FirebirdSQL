@@ -374,7 +374,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 					if (propragation == ModificationCommands.Count)
 						break;
 
-					var modifications = ModificationCommands[commandIndex++];
+					var modifications = ModificationCommands[commandIndex];
 					if (!relationalReader.Read())
 						throw new DbUpdateConcurrencyException(
 							RelationalStrings.UpdateConcurrencyException(1, 0),
@@ -382,6 +382,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
 					modifications.PropagateResults(bufferFactory.Create(dataReader));
 					dataReader.NextResult();
+					commandIndex++;
 				}
 			}
 			catch (DbUpdateException)
