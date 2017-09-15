@@ -3,9 +3,9 @@
 // project root for license information. 
 
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
+ *                    EntityFrameworkCore.FirebirdSQL
  *     
- *              https://www.firebirdsql.org/en/net-provider/ 
+*
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -15,8 +15,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -36,7 +36,7 @@
 // http://www.firebirdfaq.org/faq174/
 // https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
 // Credit Query Schema Table:
-// Jean Ressouche: https://raw.githubusercontent.com/souchprod/FirebirdSql.EntityFrameworkCore.Firebird/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
+// Jean Ressouche: https://raw.githubusercontent.com/souchprod/EntityFrameworkCore.FirebirdSQL/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
 
 using System;
 using System.Collections.Generic;
@@ -99,7 +99,7 @@ WHERE
                         WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
                         WHEN 2 THEN 'DECIMAL'
                         END
-                    WHEN 27 THEN 'DOUBLE'
+                    WHEN 27 THEN 'DOUBLE PRECISION'
                     WHEN 35 THEN 'TIMESTAMP'
                     WHEN 37 THEN
                         IIF (COALESCE(f.RDB$COMPUTED_SOURCE,'')<>'',

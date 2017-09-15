@@ -13,13 +13,13 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         {
             public FbDbType? fbDbType { get; protected set; }
 
-            internal FbTypeMapping([NotNull] string storeType, [NotNull] Type clrType, FbDbType?  FbDbTypeTemp = null)
+            internal FbTypeMapping(string storeType, Type clrType, FbDbType?  FbDbTypeTemp = null)
                 : base(storeType, clrType, unicode: false, size: null, dbType: null)
             { 
              fbDbType = FbDbTypeTemp;
             }
 
-            protected override void ConfigureParameter([NotNull] DbParameter parameter)
+            protected override void ConfigureParameter(DbParameter parameter)
             {
                 if (fbDbType.HasValue)
                     ((FbParameter)parameter).FbDbType = fbDbType.Value;

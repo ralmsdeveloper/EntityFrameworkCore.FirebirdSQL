@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
+namespace EntityFrameworkCore.FirebirdSQL.Test
 {
     class Program
     {
@@ -41,7 +41,9 @@ namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
                 });
                 cx.SaveChanges();
             }
-             
+            var obj = cx.Author.Find((long)1);
+            cx.Author.Remove(obj);
+            cx.SaveChanges();
             ////fifty rows
             for (int i = 0; i < 50; i++)
             {

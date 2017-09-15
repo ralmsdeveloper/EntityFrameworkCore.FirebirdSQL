@@ -1,7 +1,7 @@
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
+ *                    EntityFrameworkCore.FirebirdSQL
  *     
- *              https://www.firebirdsql.org/en/net-provider/ 
+*
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -11,8 +11,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -36,28 +36,28 @@ namespace Microsoft.EntityFrameworkCore
 
     public static class FbMetadataExtensions
     {
-        public static FbPropertyAnnotations Firebird([NotNull] this IMutableProperty property)
+        public static FbPropertyAnnotations Firebird(this IMutableProperty property)
             => (FbPropertyAnnotations)Firebird((IProperty)property);
         
-        public static IFbPropertyAnnotations Firebird([NotNull] this IProperty property)
+        public static IFbPropertyAnnotations Firebird(this IProperty property)
             => new FbPropertyAnnotations(Check.NotNull(property, nameof(property)));
         
-        public static FbEntityTypeAnnotations Firebird([NotNull] this IMutableEntityType entityType)
+        public static FbEntityTypeAnnotations Firebird(this IMutableEntityType entityType)
             => (FbEntityTypeAnnotations)Firebird((IEntityType)entityType);
         
-        public static IFbEntityTypeAnnotations Firebird([NotNull] this IEntityType entityType)
+        public static IFbEntityTypeAnnotations Firebird(this IEntityType entityType)
             => new FbEntityTypeAnnotations(Check.NotNull(entityType, nameof(entityType)));
         
-        public static FbKeyAnnotations Firebird([NotNull] this IMutableKey key)
+        public static FbKeyAnnotations Firebird(this IMutableKey key)
             => (FbKeyAnnotations)Firebird((IKey)key);
         
-        public static IFbKeyAnnotations Firebird([NotNull] this IKey key)
+        public static IFbKeyAnnotations Firebird(this IKey key)
             => new FbKeyAnnotations(Check.NotNull(key, nameof(key)));
         
-        public static FbModelAnnotations Firebird([NotNull] this IMutableModel model)
+        public static FbModelAnnotations Firebird(this IMutableModel model)
             => (FbModelAnnotations)Firebird((IModel)model);
         
-        public static IFbModelAnnotations Firebird([NotNull] this IModel model)
+        public static IFbModelAnnotations Firebird(this IModel model)
             => new FbModelAnnotations(Check.NotNull(model, nameof(model)));
     }
 }

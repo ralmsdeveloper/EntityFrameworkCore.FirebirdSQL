@@ -1,7 +1,7 @@
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
+ *                    EntityFrameworkCore.FirebirdSQL
  *     
- *              https://www.firebirdsql.org/en/net-provider/ 
+*
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -11,8 +11,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -51,17 +51,17 @@ namespace Microsoft.EntityFrameworkCore.Migrations
     public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
     {
         private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
-        private readonly IFbOptions _options;
-
-        public FbMigrationsSqlGenerator(
-            [NotNull] MigrationsSqlGeneratorDependencies dependencies,
-            [NotNull] IFbOptions options)
+	    private IFbOptions _options { get; set; }  
+		public FbMigrationsSqlGenerator(
+            MigrationsSqlGeneratorDependencies dependencies,
+            IFbOptions options)
             : base(dependencies)
         {
-            _options = options;
+	 
+			_options = options;
         }
 
-        protected override void Generate([NotNull] MigrationOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
+        protected override void Generate(MigrationOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -70,7 +70,15 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                 Generate(createDatabaseOperation, model, builder);
                 builder.EndCommand();
-                return;
+	        
+	            using (var connection = new FbConnection(createDatabaseOperation.connectionStrBuilder.ToString()))
+	            {
+		            
+
+					connection.Open(); 
+	            }
+
+					return;
             }
 
             var dropDatabaseOperation = operation as FbDropDatabaseOperation;
@@ -295,7 +303,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
              */
 		}
 
-        protected override void Generate([NotNull] CreateIndexOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder, bool terminate)
+        protected override void Generate(CreateIndexOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder, bool terminate)
         {
             var method = (string)operation[FbAnnotationNames.Prefix];
 
@@ -332,9 +340,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         }
 
         protected override void Generate(
-            [NotNull] CreateIndexOperation operation,
+            CreateIndexOperation operation,
             [CanBeNull] IModel model,
-            [NotNull] MigrationCommandListBuilder builder)
+            MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -382,9 +390,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         }
 
         protected override void Generate(
-            [NotNull] RenameColumnOperation operation,
+            RenameColumnOperation operation,
             [CanBeNull] IModel model,
-            [NotNull] MigrationCommandListBuilder builder)
+            MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -401,9 +409,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
         protected override void ColumnDefinition(
             [CanBeNull] string schema,
-            [NotNull] string table,
-            [NotNull] string name,
-            [NotNull] Type clrType,
+            string table,
+            string name,
+            Type clrType,
             [CanBeNull] string type,
             [CanBeNull] bool? unicode,
             [CanBeNull] int? maxLength,
@@ -412,9 +420,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             [CanBeNull] object defaultValue,
             [CanBeNull] string defaultValueSql,
             [CanBeNull] string computedColumnSql,
-            [NotNull] IAnnotatable annotatable,
+            IAnnotatable annotatable,
             [CanBeNull] IModel model,
-            [NotNull] MigrationCommandListBuilder builder)
+            MigrationCommandListBuilder builder)
         {
             Check.NotEmpty(name, nameof(name));
             Check.NotNull(annotatable, nameof(annotatable));
@@ -521,7 +529,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             }
         }
 
-        protected override void Generate([NotNull] DropForeignKeyOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
+        protected override void Generate(DropForeignKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -536,7 +544,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             EndStatement(builder);
         }
 
-        protected override void Generate([NotNull] AddPrimaryKeyOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
+        protected override void Generate(AddPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -552,7 +560,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             EndStatement(builder);
         }
 
-        protected override void Generate([NotNull] DropPrimaryKeyOperation operation, [CanBeNull] IModel model, [NotNull] MigrationCommandListBuilder builder)
+        protected override void Generate(DropPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));
@@ -568,10 +576,10 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 
         public virtual void Rename(
             [CanBeNull] string schema,
-            [NotNull] string name,
-            [NotNull] string newName,
-            [NotNull] string type,
-            [NotNull] MigrationCommandListBuilder builder)
+            string name,
+            string newName,
+            string type,
+            MigrationCommandListBuilder builder)
         {
             Check.NotEmpty(name, nameof(name));
             Check.NotEmpty(newName, nameof(newName));
@@ -587,11 +595,11 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         }
 
         public virtual void Transfer(
-            [NotNull] string newSchema,
+            string newSchema,
             [CanBeNull] string schema,
-            [NotNull] string name,
-            [NotNull] string type,
-            [NotNull] MigrationCommandListBuilder builder)
+            string name,
+            string type,
+            MigrationCommandListBuilder builder)
         {
             Check.NotEmpty(newSchema, nameof(newSchema));
             Check.NotEmpty(name, nameof(name));
@@ -613,9 +621,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         }
 
         protected override void ForeignKeyConstraint(
-            [NotNull] AddForeignKeyOperation operation,
+            AddForeignKeyOperation operation,
             [CanBeNull] IModel model,
-            [NotNull] MigrationCommandListBuilder builder)
+            MigrationCommandListBuilder builder)
         {
             Check.NotNull(operation, nameof(operation));
             Check.NotNull(builder, nameof(builder));

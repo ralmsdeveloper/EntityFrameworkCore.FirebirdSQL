@@ -1,7 +1,7 @@
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
+ *                    EntityFrameworkCore.FirebirdSQL
  *     
- *              https://www.firebirdsql.org/en/net-provider/ 
+*
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -11,8 +11,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -41,7 +41,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
     internal static class Check
     {
         [ContractAnnotation("value:null => halt")]
-        public static T NotNull<T>([NoEnumeration] T value, [InvokerParameterName] [NotNull] string parameterName)
+        public static T NotNull<T>([NoEnumeration] T value, [InvokerParameterName] string parameterName)
         {
             if (ReferenceEquals(value, null))
             {
@@ -56,8 +56,8 @@ namespace Microsoft.EntityFrameworkCore.Utilities
         [ContractAnnotation("value:null => halt")]
         public static T NotNull<T>(
             [NoEnumeration] T value,
-            [InvokerParameterName] [NotNull] string parameterName,
-            [NotNull] string propertyName)
+            [InvokerParameterName] string parameterName,
+            string propertyName)
         {
             if (ReferenceEquals(value, null))
             {
@@ -71,7 +71,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
         }
 
         [ContractAnnotation("value:null => halt")]
-        public static IReadOnlyList<T> NotEmpty<T>(IReadOnlyList<T> value, [InvokerParameterName] [NotNull] string parameterName)
+        public static IReadOnlyList<T> NotEmpty<T>(IReadOnlyList<T> value, [InvokerParameterName] string parameterName)
         {
             NotNull(value, parameterName);
 
@@ -86,7 +86,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
         }
 
         [ContractAnnotation("value:null => halt")]
-        public static string NotEmpty(string value, [InvokerParameterName] [NotNull] string parameterName)
+        public static string NotEmpty(string value, [InvokerParameterName] string parameterName)
         {
             Exception e = null;
             if (ReferenceEquals(value, null))
@@ -108,7 +108,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
             return value;
         }
 
-        public static string NullButNotEmpty(string value, [InvokerParameterName] [NotNull] string parameterName)
+        public static string NullButNotEmpty(string value, [InvokerParameterName] string parameterName)
         {
             if (!ReferenceEquals(value, null)
                 && value.Length == 0)
@@ -121,7 +121,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
             return value;
         }
 
-        public static IReadOnlyList<T> HasNoNulls<T>(IReadOnlyList<T> value, [InvokerParameterName] [NotNull] string parameterName)
+        public static IReadOnlyList<T> HasNoNulls<T>(IReadOnlyList<T> value, [InvokerParameterName] string parameterName)
             where T : class
         {
             NotNull(value, parameterName);
@@ -136,7 +136,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
             return value;
         }
 
-        public static T IsDefined<T>(T value, [InvokerParameterName] [NotNull] string parameterName)
+        public static T IsDefined<T>(T value, [InvokerParameterName] string parameterName)
             where T : struct
         {
             if (!Enum.IsDefined(typeof(T), value))
@@ -149,7 +149,7 @@ namespace Microsoft.EntityFrameworkCore.Utilities
             return value;
         }
 
-        public static Type ValidEntityType(Type value, [InvokerParameterName] [NotNull] string parameterName)
+        public static Type ValidEntityType(Type value, [InvokerParameterName] string parameterName)
         {
             if (!value.GetTypeInfo().IsClass)
             {

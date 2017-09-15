@@ -1,6 +1,6 @@
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
- *              https://www.firebirdsql.org/en/net-provider/ 
+ *                    EntityFrameworkCore.FirebirdSQL
+*
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
  *     agreement is hereby granted, provided that the above copyright notice
@@ -9,8 +9,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -31,7 +31,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
-using FirebirdSql.EntityFrameworkCore.Firebird.Utilities;
+using EntityFrameworkCore.FirebirdSQL.Utilities;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
@@ -51,9 +51,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public FbDatabaseCreator(
-            [NotNull] RelationalDatabaseCreatorDependencies dependencies,
-            [NotNull] IFbRelationalConnection connection,
-            [NotNull] IRawSqlCommandBuilder rawSqlCommandBuilder)
+            RelationalDatabaseCreatorDependencies dependencies,
+            IFbRelationalConnection connection,
+            IRawSqlCommandBuilder rawSqlCommandBuilder)
             : base(dependencies)
         {
             _connection = connection;
@@ -64,6 +64,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public override void Create()
         {
+		
             using (var masterConnection = _connection.CreateMasterConnection())
             {
                 Dependencies.MigrationCommandExecutor

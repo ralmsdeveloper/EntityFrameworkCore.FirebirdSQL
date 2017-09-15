@@ -60,7 +60,7 @@ namespace JetBrains.Annotations
     /// Indicates that the value of the marked element could never be <c>null</c>.
     /// </summary>
     /// <example><code>
-    /// [NotNull] object Foo() {
+    /// object Foo() {
     ///   return null; // Warning: Possible 'null' assignment
     /// }
     /// </code></example>
@@ -119,7 +119,7 @@ namespace JetBrains.Annotations
         /// <param name="formatParameterName">
         /// Specifies which parameter of an annotated method should be treated as format-string
         /// </param>
-        public StringFormatMethodAttribute([NotNull] string formatParameterName)
+        public StringFormatMethodAttribute(string formatParameterName)
         {
             FormatParameterName = formatParameterName;
         }
@@ -135,7 +135,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
     internal sealed class ValueProviderAttribute : Attribute
     {
-        public ValueProviderAttribute([NotNull] string name)
+        public ValueProviderAttribute(string name)
         {
             Name = name;
         }
@@ -200,7 +200,7 @@ namespace JetBrains.Annotations
     internal sealed class NotifyPropertyChangedInvocatorAttribute : Attribute
     {
         public NotifyPropertyChangedInvocatorAttribute() { }
-        public NotifyPropertyChangedInvocatorAttribute([NotNull] string parameterName)
+        public NotifyPropertyChangedInvocatorAttribute(string parameterName)
         {
             ParameterName = parameterName;
         }
@@ -255,10 +255,10 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     internal sealed class ContractAnnotationAttribute : Attribute
     {
-        public ContractAnnotationAttribute([NotNull] string contract)
+        public ContractAnnotationAttribute(string contract)
           : this(contract, false) { }
 
-        public ContractAnnotationAttribute([NotNull] string contract, bool forceFullStates)
+        public ContractAnnotationAttribute(string contract, bool forceFullStates)
         {
             Contract = contract;
             ForceFullStates = forceFullStates;
@@ -328,7 +328,7 @@ namespace JetBrains.Annotations
     [BaseTypeRequired(typeof(Attribute))]
     internal sealed class BaseTypeRequiredAttribute : Attribute
     {
-        public BaseTypeRequiredAttribute([NotNull] Type baseType)
+        public BaseTypeRequiredAttribute(Type baseType)
         {
             BaseType = baseType;
         }
@@ -431,7 +431,7 @@ namespace JetBrains.Annotations
     internal sealed class PublicAPIAttribute : Attribute
     {
         public PublicAPIAttribute() { }
-        public PublicAPIAttribute([NotNull] string comment)
+        public PublicAPIAttribute(string comment)
         {
             Comment = comment;
         }
@@ -469,7 +469,7 @@ namespace JetBrains.Annotations
     internal sealed class MustUseReturnValueAttribute : Attribute
     {
         public MustUseReturnValueAttribute() { }
-        public MustUseReturnValueAttribute([NotNull] string justification)
+        public MustUseReturnValueAttribute(string justification)
         {
             Justification = justification;
         }
@@ -598,7 +598,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class AspMvcAreaMasterLocationFormatAttribute : Attribute
     {
-        public AspMvcAreaMasterLocationFormatAttribute([NotNull] string format)
+        public AspMvcAreaMasterLocationFormatAttribute(string format)
         {
             Format = format;
         }
@@ -610,7 +610,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class AspMvcAreaPartialViewLocationFormatAttribute : Attribute
     {
-        public AspMvcAreaPartialViewLocationFormatAttribute([NotNull] string format)
+        public AspMvcAreaPartialViewLocationFormatAttribute(string format)
         {
             Format = format;
         }
@@ -622,7 +622,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class AspMvcAreaViewLocationFormatAttribute : Attribute
     {
-        public AspMvcAreaViewLocationFormatAttribute([NotNull] string format)
+        public AspMvcAreaViewLocationFormatAttribute(string format)
         {
             Format = format;
         }
@@ -645,7 +645,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class AspMvcPartialViewLocationFormatAttribute : Attribute
     {
-        public AspMvcPartialViewLocationFormatAttribute([NotNull] string format)
+        public AspMvcPartialViewLocationFormatAttribute(string format)
         {
             Format = format;
         }
@@ -657,7 +657,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class AspMvcViewLocationFormatAttribute : Attribute
     {
-        public AspMvcViewLocationFormatAttribute([NotNull] string format)
+        public AspMvcViewLocationFormatAttribute(string format)
         {
             Format = format;
         }
@@ -676,7 +676,7 @@ namespace JetBrains.Annotations
     internal sealed class AspMvcActionAttribute : Attribute
     {
         public AspMvcActionAttribute() { }
-        public AspMvcActionAttribute([NotNull] string anonymousProperty)
+        public AspMvcActionAttribute(string anonymousProperty)
         {
             AnonymousProperty = anonymousProperty;
         }
@@ -694,7 +694,7 @@ namespace JetBrains.Annotations
     internal sealed class AspMvcAreaAttribute : Attribute
     {
         public AspMvcAreaAttribute() { }
-        public AspMvcAreaAttribute([NotNull] string anonymousProperty)
+        public AspMvcAreaAttribute(string anonymousProperty)
         {
             AnonymousProperty = anonymousProperty;
         }
@@ -713,7 +713,7 @@ namespace JetBrains.Annotations
     internal sealed class AspMvcControllerAttribute : Attribute
     {
         public AspMvcControllerAttribute() { }
-        public AspMvcControllerAttribute([NotNull] string anonymousProperty)
+        public AspMvcControllerAttribute(string anonymousProperty)
         {
             AnonymousProperty = anonymousProperty;
         }
@@ -816,7 +816,7 @@ namespace JetBrains.Annotations
     internal sealed class HtmlElementAttributesAttribute : Attribute
     {
         public HtmlElementAttributesAttribute() { }
-        public HtmlElementAttributesAttribute([NotNull] string name)
+        public HtmlElementAttributesAttribute(string name)
         {
             Name = name;
         }
@@ -828,7 +828,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property)]
     internal sealed class HtmlAttributeValueAttribute : Attribute
     {
-        public HtmlAttributeValueAttribute([NotNull] string name)
+        public HtmlAttributeValueAttribute(string name)
         {
             Name = name;
         }
@@ -963,7 +963,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     internal sealed class AspChildControlTypeAttribute : Attribute
     {
-        public AspChildControlTypeAttribute([NotNull] string tagName, [NotNull] Type controlType)
+        public AspChildControlTypeAttribute(string tagName, Type controlType)
         {
             TagName = tagName;
             ControlType = controlType;
@@ -987,7 +987,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     internal sealed class AspRequiredAttributeAttribute : Attribute
     {
-        public AspRequiredAttributeAttribute([NotNull] string attribute)
+        public AspRequiredAttributeAttribute(string attribute)
         {
             Attribute = attribute;
         }
@@ -1010,7 +1010,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class RazorImportNamespaceAttribute : Attribute
     {
-        public RazorImportNamespaceAttribute([NotNull] string name)
+        public RazorImportNamespaceAttribute(string name)
         {
             Name = name;
         }
@@ -1022,7 +1022,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class RazorInjectionAttribute : Attribute
     {
-        public RazorInjectionAttribute([NotNull] string type, [NotNull] string fieldName)
+        public RazorInjectionAttribute(string type, string fieldName)
         {
             Type = type;
             FieldName = fieldName;
@@ -1037,7 +1037,7 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     internal sealed class RazorDirectiveAttribute : Attribute
     {
-        public RazorDirectiveAttribute([NotNull] string directive)
+        public RazorDirectiveAttribute(string directive)
         {
             Directive = directive;
         }

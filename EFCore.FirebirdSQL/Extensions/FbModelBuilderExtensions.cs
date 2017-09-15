@@ -1,7 +1,7 @@
 /*                 
- *            FirebirdSql.EntityFrameworkCore.Firebird
+ *                    EntityFrameworkCore.FirebirdSQL
  *     
- *              https://www.firebirdsql.org/en/net-provider/ 
+*
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -11,8 +11,8 @@
  *     The contents of this file are subject to the Initial
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
- *     License. You may obtain a copy of the License at
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
+ *     License.
+*
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -46,7 +46,7 @@ namespace Microsoft.EntityFrameworkCore
         /// <param name="modelBuilder"> The model builder. </param>
         /// <returns> The same builder instance so that multiple calls can be chained. </returns>
         public static ModelBuilder ForFbUseIdentityColumns(
-            [NotNull] this ModelBuilder modelBuilder)
+            this ModelBuilder modelBuilder)
         {
             Check.NotNull(modelBuilder, nameof(modelBuilder)); 
             var property = modelBuilder.Model; 
@@ -55,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore
         }
 
         public static ModelBuilder ForFbUseComputedColumns(
-            [NotNull] this ModelBuilder modelBuilder)
+            this ModelBuilder modelBuilder)
         {
             Check.NotNull(modelBuilder, nameof(modelBuilder)); 
             var property = modelBuilder.Model; 

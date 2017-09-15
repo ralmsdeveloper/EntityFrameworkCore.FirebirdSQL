@@ -16,8 +16,8 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly IndentedStringBuilder _commandTextBuilder = new IndentedStringBuilder();
 
         public FbCommandBuilder(
-            [NotNull] IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
-            [NotNull] IRelationalTypeMapper typeMapper)
+            IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
+            IRelationalTypeMapper typeMapper)
         {
             Check.NotNull(logger, nameof(logger));
             Check.NotNull(typeMapper, nameof(typeMapper));
@@ -38,9 +38,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 ParameterBuilder.Parameters);
 
         protected virtual IRelationalCommand BuildCore(
-            [NotNull] IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
-            [NotNull] string commandText,
-            [NotNull] IReadOnlyList<IRelationalParameter> parameters)
+            IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
+            string commandText,
+            IReadOnlyList<IRelationalParameter> parameters)
             => new FirebirdRelationalCommand(
                 logger, commandText, parameters);
 

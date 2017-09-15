@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+ 
 
-namespace FirebirdSql.EntityFrameworkCore.Firebird.Test
+namespace EntityFrameworkCore.FirebirdSQL.Test
 {
     public class Context : DbContext
     {
