@@ -29,7 +29,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.Utilities;
 using System;
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 {

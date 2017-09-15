@@ -31,7 +31,7 @@ using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {

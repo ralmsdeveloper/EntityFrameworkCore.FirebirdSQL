@@ -24,7 +24,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -42,10 +42,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
             IRelationalTypeMapper typeMapper)
         {
-            Check.NotNull(logger, nameof(logger));
-            Check.NotNull(typeMapper, nameof(typeMapper));
-
-            _logger = logger;
+			_logger = logger;
             _typeMapper = typeMapper;
         }
 

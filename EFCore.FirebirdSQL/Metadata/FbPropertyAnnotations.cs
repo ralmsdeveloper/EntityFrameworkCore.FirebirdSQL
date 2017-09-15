@@ -28,7 +28,7 @@
  */
 
 using System;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -50,7 +50,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 		public virtual FbValueGenerationStrategy? ValueGenerationStrategy
 		{
 			get { return GetFbValueGenerationStrategy(fallbackToModel: true); }
-			[param: CanBeNull]
+			
 			set { SetValueGenerationStrategy(value); }
 		}
 

@@ -1,7 +1,7 @@
 /*                 
  *                    EntityFrameworkCore.FirebirdSQL
  *     
-*
+ *
  *              
  *     Permission to use, copy, modify, and distribute this software and its
  *     documentation for any purpose, without fee, and without a written
@@ -12,7 +12,7 @@
  *     Developer's Public License Version 1.0 (the "License");
  *     you may not use this file except in compliance with the
  *     License.
-*
+ *
  *
  *     Software distributed under the License is distributed on
  *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -27,15 +27,12 @@
  *                  All Rights Reserved.
  */
 
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
+using EntityFrameworkCore.FirebirdSQL.Utilities; 
 
 namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
 {
     public interface IFbOptions : ISingletonOptions
     {
-        FbConnectionSettings ConnectionSettings { get; }
-
-        string GetCreateTable(ISqlGenerationHelper sqlGenerationHelper, string schema, string table);
-    }
+		FbSettings Settings { get; }
+	}
 }

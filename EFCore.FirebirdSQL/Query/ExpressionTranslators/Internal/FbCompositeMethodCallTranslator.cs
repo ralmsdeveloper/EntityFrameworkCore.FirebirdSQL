@@ -22,7 +22,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 {

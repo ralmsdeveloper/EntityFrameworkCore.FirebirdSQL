@@ -26,7 +26,7 @@
 
 using System.Data.Common;
 using System.Threading.Tasks; 
-using JetBrains.Annotations;
+
 using System.Data;
 using System.Threading;
 using System;
@@ -60,8 +60,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         }
 
         public override bool IsMultipleActiveResultSetsEnabled => true;
-
-        [NotNull]
+		 
         public override async Task<IDbContextTransaction> BeginTransactionAsync(
             IsolationLevel isolationLevel,
             CancellationToken cancellationToken = default(CancellationToken))

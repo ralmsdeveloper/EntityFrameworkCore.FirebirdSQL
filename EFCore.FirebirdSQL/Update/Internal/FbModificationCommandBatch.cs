@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
@@ -63,7 +63,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			ISqlGenerationHelper sqlGenerationHelper, 
 			IFbUpdateSqlGenerator updateSqlGenerator,
 			IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
-			[CanBeNull] int? maxBatchSize)
+			int? maxBatchSize)
 			: base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
 		{
 			if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
@@ -177,7 +177,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 				sbExecuteBlock.Append(parameters);
 				sbExecuteBlock.Append(") ");
 			}
-			sbExecuteBlock.AppendLine($"RETURNS (AffectedRows BIGINT) AS BEGIN");
+			sbExecuteBlock.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
 			sbExecuteBlock.Append("AffectedRows=0;");
 			sbExecuteBlock.Append(sbCommands);
 			sbExecuteBlock.AppendLine("END;");

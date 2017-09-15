@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities; 
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -50,21 +50,14 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			_typeMapperRelational = typeMapper;
 		}
 
-		public override ResultSetMapping AppendInsertOperation(
-		   StringBuilder commandStringBuilder,
-		   ModificationCommand command,
-		   int commandPosition)
+		public override ResultSetMapping AppendInsertOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
 		{
-			Check.NotNull(command, nameof(command));
 			return AppendBlockInsertOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
 		}
 
 
-		public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
-			int commandPosition)
+		public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
-			Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-			Check.NotEmpty(modificationCommands, nameof(modificationCommands));
 			commandStringBuilder.Clear();
 			var commaAppend = string.Empty;
 			for (var i = 0; i < modificationCommands.Count; i++)
@@ -161,9 +154,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 		public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
 			int commandPosition)
 		{
-
-			Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-			Check.NotEmpty(modificationCommands, nameof(modificationCommands));
+			 
 			commandStringBuilder.Clear();
 			var commaAppend = string.Empty;
 			for (var i = 0; i < modificationCommands.Count; i++)
@@ -204,13 +195,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			}
 		}
 
-		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
-		   int commandPosition)
+		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
-			Check.NotNull(commandStringBuilder, nameof(commandStringBuilder));
-			Check.NotEmpty(modificationCommands, nameof(modificationCommands));
-			var name = modificationCommands[0].TableName;
-
+			 
+			var name = modificationCommands[0].TableName; 
 			for (var i = 0; i < modificationCommands.Count; i++)
 			{
 				var operations = modificationCommands[i].ColumnModifications;

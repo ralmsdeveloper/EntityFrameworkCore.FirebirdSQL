@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {

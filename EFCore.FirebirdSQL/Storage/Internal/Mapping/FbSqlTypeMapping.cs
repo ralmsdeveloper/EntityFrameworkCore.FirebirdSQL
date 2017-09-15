@@ -1,5 +1,5 @@
 ﻿using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -19,9 +19,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
             IRelationalTypeMapper typeMapper)
         {
-            Check.NotNull(logger, nameof(logger));
-            Check.NotNull(typeMapper, nameof(typeMapper));
-
             _logger = logger;
             ParameterBuilder = new RelationalParameterBuilder(typeMapper);
         }

@@ -29,7 +29,7 @@
 
 using System;
 using System.Data.Common;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
@@ -43,7 +43,7 @@ namespace Microsoft.EntityFrameworkCore
         public static DbContextOptionsBuilder UseFirebird(
             this DbContextOptionsBuilder optionsBuilder,
             string connectionString,
-            [CanBeNull] Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
+            Action<FbDbContextOptionsBuilder> FbOptionsAction = null)
         { 
             var extension = GetOrCreateExtension(optionsBuilder).WithConnectionString(connectionString);
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);            
@@ -54,10 +54,9 @@ namespace Microsoft.EntityFrameworkCore
         public static DbContextOptionsBuilder UseFirebird(
             this DbContextOptionsBuilder optionsBuilder,
             DbConnection connection,
-            [CanBeNull] Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
+            Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
         {
-            Check.NotNull(optionsBuilder, nameof(optionsBuilder));
-            Check.NotNull(connection, nameof(connection)); 
+             
             var extension = GetOrCreateExtension(optionsBuilder).WithConnection(connection);
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension); 
             fbOptionsAction?.Invoke(new FbDbContextOptionsBuilder(optionsBuilder)); 
@@ -67,7 +66,7 @@ namespace Microsoft.EntityFrameworkCore
 		public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(
 			this DbContextOptionsBuilder<TContext> optionsBuilder,
 			string connectionString,
-			[CanBeNull] Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
+			Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
 			where TContext : DbContext
 		{
 			return (DbContextOptionsBuilder<TContext>)UseFirebird(
@@ -77,7 +76,7 @@ namespace Microsoft.EntityFrameworkCore
 		public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(
 			this DbContextOptionsBuilder<TContext> optionsBuilder,
 			DbConnection connection,
-			[CanBeNull] Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
+			Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
 			where TContext : DbContext
 		{
 			return (DbContextOptionsBuilder<TContext>)UseFirebird(

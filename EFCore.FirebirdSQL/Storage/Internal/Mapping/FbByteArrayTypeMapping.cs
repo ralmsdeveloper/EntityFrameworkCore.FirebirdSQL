@@ -27,7 +27,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Text;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
@@ -48,7 +48,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         /// <param name="size"> The size of data the property is configured to store, or null if no size is configured. </param>
         public FbByteArrayTypeMapping(
             string storeType,
-            [CanBeNull] DbType? dbType = System.Data.DbType.Binary,
+            DbType? dbType = System.Data.DbType.Binary,
             int? size = null)
             : base(storeType, dbType, size)
         {

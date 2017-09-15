@@ -25,7 +25,7 @@
 using System;
 using System.Data;
 using System.Text;
-using JetBrains.Annotations;
+
 using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
 

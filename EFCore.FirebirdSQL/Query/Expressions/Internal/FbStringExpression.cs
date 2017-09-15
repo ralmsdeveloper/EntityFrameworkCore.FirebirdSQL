@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using System;
@@ -41,11 +41,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 
         public FbSubStringExpression(Expression subjectExpression, Expression fromExpression, Expression forExpression)
         {
-            Check.NotNull(subjectExpression, nameof(subjectExpression));
-            Check.NotNull(fromExpression, nameof(fromExpression));
-            Check.NotNull(forExpression, nameof(forExpression));
-
-            SubjectExpression = subjectExpression;
+			SubjectExpression = subjectExpression;
             FromExpression = fromExpression;
             ForExpression = forExpression;
         }
@@ -61,8 +57,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 
         protected override Expression Accept(ExpressionVisitor visitor)
         {
-            Check.NotNull(visitor, nameof(visitor));
-
             var specificVisitor = visitor as IFbExpressionVisitor;
 
             return specificVisitor != null

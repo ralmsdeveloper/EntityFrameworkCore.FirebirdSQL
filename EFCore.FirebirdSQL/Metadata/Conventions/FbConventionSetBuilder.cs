@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -38,34 +38,22 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
 	public class FbConventionSetBuilder : RelationalConventionSetBuilder
 	{
-		private readonly ISqlGenerationHelper _sqlGenerationHelper;
+		private static ISqlGenerationHelper _sqlGenerationHelper;
 		private static IFbOptions _options;
 
-		public FbConventionSetBuilder(
-			RelationalConventionSetBuilderDependencies dependencies,
-			IFbOptions options,
-			ISqlGenerationHelper sqlGenerationHelper)
+		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies,IFbOptions options, ISqlGenerationHelper sqlGenerationHelper)
 			: base(dependencies)
 		{
 			_sqlGenerationHelper = sqlGenerationHelper;
 			_options = options;
 		}
 
-		public override ConventionSet AddConventions(ConventionSet conventionSet)
+		public static ConventionSet Build()
 		{
-			Check.NotNull(conventionSet, nameof(conventionSet));
-
-			base.AddConventions(conventionSet);
-
-			var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
-			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
-
-			ReplaceConvention(conventionSet.PropertyAddedConventions,
-				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
-			ReplaceConvention(conventionSet.PropertyFieldChangedConventions,
-				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
-
-			return conventionSet;
+			var typeMapper = new FbTypeMapper(new RelationalTypeMapperDependencies());
+			var dependencies = new RelationalConventionSetBuilderDependencies(typeMapper, null, null);
+			return new FbConventionSetBuilder(dependencies,_options, _sqlGenerationHelper)
+				.AddConventions(new CoreConventionSetBuilder(new CoreConventionSetBuilderDependencies(typeMapper)).CreateConventionSet());
 		}
 	}
 }

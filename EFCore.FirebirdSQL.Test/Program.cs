@@ -44,6 +44,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
             var obj = cx.Author.Find((long)1);
             cx.Author.Remove(obj);
             cx.SaveChanges();
+
             ////fifty rows
             for (int i = 0; i < 50; i++)
             {
@@ -60,32 +61,10 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
                             }
                 });
             }
-
-            //four rows
-            for (int i = 0; i < 1; i++)
-            {
-                cx.Book.Add(new Book
-                {
-                    AuthorId = 1,
-                    Title = $"Test Book {i}!"
-                });
-            }
-
-
-            //Five rows
-            for (int i = 0; i < 1; i++)
-            {
-                cx.Test.Add(new Test
-                {
-                    Id = Guid.NewGuid(),
-                    Description = $"Test Guid {i}!"
-                });
-            } 
-
-            //////Save all
+ 
             cx.SaveChanges();
 
-            var AuthorsUpdate1 = cx.Author.Find((long)1); 
+            var AuthorsUpdate1 = cx.Author.Find((long)4); 
             Console.WriteLine($"Before *** {AuthorsUpdate1.FirstName}");
             cx.Attach(AuthorsUpdate1);
             AuthorsUpdate1.FirstName = $"Author Modified {Guid.NewGuid()}";
@@ -99,8 +78,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
             AuthorsUpdate3.FirstName = $"Author Modified {Guid.NewGuid()}";
 
             cx.SaveChanges();
-            var y = cx.Author.Include(p => p.Books).Where(p => p.LastName.Trim()!="A")
-                .ToList();
+            var y = cx.Author.Include(p => p.Books).Where(p => p.LastName.Trim()!="A").ToList();
             var Authors = cx.Author.AsNoTracking()
                             .Include(p => p.Books).Where(p=>p.AuthorId<10)
                              .ToList();

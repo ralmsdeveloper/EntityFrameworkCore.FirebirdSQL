@@ -22,7 +22,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore.Storage;

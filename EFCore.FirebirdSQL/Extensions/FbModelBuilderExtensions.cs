@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 
@@ -48,16 +48,13 @@ namespace Microsoft.EntityFrameworkCore
         public static ModelBuilder ForFbUseIdentityColumns(
             this ModelBuilder modelBuilder)
         {
-            Check.NotNull(modelBuilder, nameof(modelBuilder)); 
             var property = modelBuilder.Model; 
             property.Firebird().ValueGenerationStrategy = FbValueGenerationStrategy.IdentityColumn; 
             return modelBuilder;
         }
 
-        public static ModelBuilder ForFbUseComputedColumns(
-            this ModelBuilder modelBuilder)
+        public static ModelBuilder ForFbUseComputedColumns(this ModelBuilder modelBuilder)
         {
-            Check.NotNull(modelBuilder, nameof(modelBuilder)); 
             var property = modelBuilder.Model; 
             property.Firebird().ValueGenerationStrategy = FbValueGenerationStrategy.ComputedColumn; 
             return modelBuilder;

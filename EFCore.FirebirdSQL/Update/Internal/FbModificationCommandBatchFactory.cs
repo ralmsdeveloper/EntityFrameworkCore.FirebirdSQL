@@ -28,7 +28,7 @@
  */
 
 using System.Linq;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -51,12 +51,6 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
             IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
             IDbContextOptions options)
         {
-            Check.NotNull(commandBuilderFactory, nameof(commandBuilderFactory));
-            Check.NotNull(sqlGenerationHelper, nameof(sqlGenerationHelper));
-            Check.NotNull(updateSqlGenerator, nameof(updateSqlGenerator));
-            Check.NotNull(valueBufferFactoryFactory, nameof(valueBufferFactoryFactory));
-            Check.NotNull(options, nameof(options));
-
             _commandBuilderFactory = commandBuilderFactory;
             _sqlGenerationHelper = sqlGenerationHelper;
             _updateSqlGenerator = updateSqlGenerator;

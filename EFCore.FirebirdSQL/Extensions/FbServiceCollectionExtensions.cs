@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -55,8 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddEntityFrameworkFirebird(this IServiceCollection serviceCollection)
         {
-            Check.NotNull(serviceCollection, nameof(serviceCollection));
-
             var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
                  .TryAdd<IRelationalDatabaseCreator, FbDatabaseCreator>()
                  .TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>()

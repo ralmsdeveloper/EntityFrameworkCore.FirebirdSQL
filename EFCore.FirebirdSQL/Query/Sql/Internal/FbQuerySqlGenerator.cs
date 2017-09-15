@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -65,8 +65,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 
 		protected override void GenerateTop(SelectExpression selectExpression)
 		{
-			Check.NotNull(selectExpression, nameof(selectExpression));
-
 			if (selectExpression.Limit != null)
 			{
 				Sql.AppendLine().Append("FIRST ");
@@ -143,7 +141,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 
 		public virtual Expression VisitSubString(FbSubStringExpression sbString)
 		{
-			Check.NotNull(sbString, nameof(sbString));
 			Sql.Append(" SUBSTRING(");
 			Visit(sbString.SubjectExpression);
 			Sql.Append(" FROM ");

@@ -29,7 +29,7 @@
 
 using System;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
@@ -41,9 +41,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
         
         public FbRegexpExpression(Expression match, Expression pattern)
         {
-            Check.NotNull(match, nameof(match));
-            Check.NotNull(pattern, nameof(pattern));
-
             Match = match;
             Pattern = pattern;
         }
@@ -58,8 +55,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Expressions.Internal
 
         protected override Expression Accept(ExpressionVisitor visitor)
         {
-            Check.NotNull(visitor, nameof(visitor));
-
             var specificVisitor = visitor as IFbExpressionVisitor;
 
             return specificVisitor != null

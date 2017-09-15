@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 
 namespace Microsoft.EntityFrameworkCore.Infrastructure

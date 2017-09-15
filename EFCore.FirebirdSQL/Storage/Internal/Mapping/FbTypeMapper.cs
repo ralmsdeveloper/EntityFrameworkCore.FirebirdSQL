@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 using FirebirdSql.Data.FirebirdClient;
@@ -261,8 +261,6 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 		/// </summary>
 		public override RelationalTypeMapping FindMapping(Type clrType)
 		{
-			Check.NotNull(clrType, nameof(clrType));
-
 			clrType = clrType.UnwrapNullableType().UnwrapEnumType();
 
 			return clrType == typeof(string)

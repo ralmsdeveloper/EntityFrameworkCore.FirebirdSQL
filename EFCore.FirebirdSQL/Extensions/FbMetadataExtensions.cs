@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 
@@ -40,24 +40,24 @@ namespace Microsoft.EntityFrameworkCore
             => (FbPropertyAnnotations)Firebird((IProperty)property);
         
         public static IFbPropertyAnnotations Firebird(this IProperty property)
-            => new FbPropertyAnnotations(Check.NotNull(property, nameof(property)));
+            => new FbPropertyAnnotations(property);
         
         public static FbEntityTypeAnnotations Firebird(this IMutableEntityType entityType)
             => (FbEntityTypeAnnotations)Firebird((IEntityType)entityType);
         
         public static IFbEntityTypeAnnotations Firebird(this IEntityType entityType)
-            => new FbEntityTypeAnnotations(Check.NotNull(entityType, nameof(entityType)));
+            => new FbEntityTypeAnnotations(entityType);
         
         public static FbKeyAnnotations Firebird(this IMutableKey key)
             => (FbKeyAnnotations)Firebird((IKey)key);
         
         public static IFbKeyAnnotations Firebird(this IKey key)
-            => new FbKeyAnnotations(Check.NotNull(key, nameof(key)));
+            => new FbKeyAnnotations(key);
         
         public static FbModelAnnotations Firebird(this IMutableModel model)
             => (FbModelAnnotations)Firebird((IModel)model);
         
         public static IFbModelAnnotations Firebird(this IModel model)
-            => new FbModelAnnotations(Check.NotNull(model, nameof(model)));
+            => new FbModelAnnotations(model);
     }
 }

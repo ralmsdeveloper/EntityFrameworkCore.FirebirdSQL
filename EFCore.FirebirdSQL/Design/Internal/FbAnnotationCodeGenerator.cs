@@ -22,7 +22,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -43,10 +43,6 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
 
         public override string GenerateFluentApi(IIndex index, IAnnotation annotation, string language)
         {
-            Check.NotNull(index, nameof(index));
-            Check.NotNull(annotation, nameof(annotation));
-            Check.NotNull(language, nameof(language));
-
             return null;
         }
     }

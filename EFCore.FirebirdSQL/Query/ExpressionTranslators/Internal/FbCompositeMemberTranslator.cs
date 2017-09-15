@@ -23,7 +23,7 @@
  */
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
 {

@@ -22,9 +22,8 @@
  *                  All Rights Reserved.
  */
 
-using System.Text;
-using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Utilities; 
+using System;
+using System.Text; 
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal; 
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
@@ -33,69 +32,42 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 	{
 		private readonly IFbOptions _options;
 
-		public FbSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies,
-			IFbOptions options)
+		public FbSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies, IFbOptions options)
 			: base(dependencies)
 		{
 			_options = options;
 		}
 
-	 
 		public override string EscapeIdentifier(string identifier)
 		{
-			return Check.NotEmpty(identifier, nameof(identifier));
-		} 
- 
+			return identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName));
+		}
+
 		public override void EscapeIdentifier(StringBuilder builder, string identifier)
 		{
-			Check.NotEmpty(identifier, nameof(identifier));
-			builder.Append(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
+			builder.Append(identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName)));
 		}
-		 
+
 		public override string DelimitIdentifier(string identifier)
 		{
-			return
-				$"\"{EscapeIdentifier(Check.NotEmpty(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName), nameof(identifier)))}\"";
+			return $"\"{EscapeIdentifier(identifier)}\"";
 		}
 
-		 
 		public override void DelimitIdentifier(StringBuilder builder, string identifier)
 		{
-			Check.NotEmpty(identifier, nameof(identifier));
 			builder.Append('"');
-			EscapeIdentifier(builder, identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
+			EscapeIdentifier(builder, identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName)));
 			builder.Append('"');
 		}
 
-		//
-		// Summary:
-		//     Generates a valid parameter name for the given candidate name.
-		//
-		// Parameters:
-		//   name:
-		//     The candidate name for the parameter.
-		//
-		// Returns:
-		//     A valid name based on the candidate name.
 		public override string GenerateParameterName(string name)
 		{
-			return $"@{name.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName)}";
+			return $"@{name.Substring(0, Math.Min(name.Length, _options.Settings.ObjectLengthName))}";
 		}
 
-
-		//
-		// Summary:
-		//     Writes a valid parameter name for the given candidate name.
-		//
-		// Parameters:
-		//   builder:
-		//     The System.Text.StringBuilder to write generated string to.
-		//
-		//   name:
-		//     The candidate name for the parameter.
 		public override void GenerateParameterName(StringBuilder builder, string name)
 		{
-			builder.Append("@").Append(name.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
+			builder.Append("@").Append(name.Substring(0, Math.Min(name.Length, _options.Settings.ObjectLengthName)));
 		}
 	}
 }

@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Utilities;
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
@@ -44,31 +44,31 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
 		///     directly from your code. This API may change or be removed in future releases.
 		/// </summary>
-		public virtual bool ToSchema([CanBeNull] string name)
+		public virtual bool ToSchema(string name)
 		{
-			return SetSchema(Check.NullButNotEmpty(name, nameof(name)));
+			return SetSchema(name);
 		}
 
 		/// <summary>
 		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
 		///     directly from your code. This API may change or be removed in future releases.
 		/// </summary>
-		public virtual bool ToTable([CanBeNull] string name)
+		public virtual bool ToTable(string name)
 		{
-			return SetTableName(Check.NullButNotEmpty(name, nameof(name)));
+			return SetTableName(name);
 		}
 
 		/// <summary>
 		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
 		///     directly from your code. This API may change or be removed in future releases.
 		/// </summary>
-		public virtual bool ToTable([CanBeNull] string name, [CanBeNull] string schema)
+		public virtual bool ToTable(string name, string schema)
 		{
 			var originalTable = TableName;
-			if (!SetTableName(Check.NullButNotEmpty(name, nameof(name))))
+			if (!SetTableName(name))
 				return false;
 
-			if (!SetSchema(Check.NullButNotEmpty(schema, nameof(schema))))
+			if (!SetSchema(schema))
 			{
 				SetTableName(originalTable);
 				return false;

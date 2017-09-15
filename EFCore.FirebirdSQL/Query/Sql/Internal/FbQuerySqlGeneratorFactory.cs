@@ -22,7 +22,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -37,8 +37,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
         }
 
         public override IQuerySqlGenerator CreateDefault(SelectExpression selectExpression)
-            => new FbQuerySqlGenerator(
-                Dependencies,
-                Check.NotNull(selectExpression, nameof(selectExpression)));
+            => new FbQuerySqlGenerator(Dependencies,selectExpression);
     }
 }

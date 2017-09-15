@@ -26,7 +26,7 @@
  *                              
  *                  All Rights Reserved.
  */
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -50,7 +50,6 @@ namespace Microsoft.EntityFrameworkCore
         public static PropertyBuilder UseFbIdentityColumn(
             this PropertyBuilder propertyBuilder)
         {
-            Check.NotNull(propertyBuilder, nameof(propertyBuilder));
 
             GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
 

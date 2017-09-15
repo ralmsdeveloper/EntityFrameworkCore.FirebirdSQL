@@ -27,7 +27,7 @@
  *                  All Rights Reserved.
  */
 
-using JetBrains.Annotations;
+
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {
@@ -73,31 +73,31 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public new virtual bool ColumnName([CanBeNull] string value) => SetColumnName(value);
+        public new virtual bool ColumnName(string value) => SetColumnName(value);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public new virtual bool ColumnType([CanBeNull] string value) => SetColumnType(value);
+        public new virtual bool ColumnType(string value) => SetColumnType(value);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public new virtual bool DefaultValueSql([CanBeNull] string value) => SetDefaultValueSql(value);
+        public new virtual bool DefaultValueSql(string value) => SetDefaultValueSql(value);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public new virtual bool ComputedColumnSql([CanBeNull] string value) => SetComputedColumnSql(value);
+        public new virtual bool ComputedColumnSql(string value) => SetComputedColumnSql(value);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public new virtual bool DefaultValue([CanBeNull] object value) => SetDefaultValue(value);
+        public new virtual bool DefaultValue(object value) => SetDefaultValue(value);
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used

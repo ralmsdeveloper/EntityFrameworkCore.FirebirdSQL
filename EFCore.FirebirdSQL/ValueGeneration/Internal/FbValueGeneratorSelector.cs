@@ -28,7 +28,7 @@
  */
 
 using System;
-using JetBrains.Annotations;
+
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -50,10 +50,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
 
         public override ValueGenerator Create(IProperty property, IEntityType entityType)
         {
-            Check.NotNull(property, nameof(property));
-            Check.NotNull(entityType, nameof(entityType));
-
-            var ret = property.ClrType.UnwrapNullableType() == typeof(Guid)
+			var ret = property.ClrType.UnwrapNullableType() == typeof(Guid)
                 ? property.ValueGenerated == ValueGenerated.Never
                   || property.Firebird().DefaultValueSql != null
                     ? (ValueGenerator)new TemporaryGuidValueGenerator()
