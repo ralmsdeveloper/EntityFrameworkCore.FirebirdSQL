@@ -40,39 +40,25 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 			_options = options;
 		}
 
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+	 
 		public override string EscapeIdentifier(string identifier)
 		{
 			return Check.NotEmpty(identifier, nameof(identifier));
-		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		} 
+ 
 		public override void EscapeIdentifier(StringBuilder builder, string identifier)
 		{
 			Check.NotEmpty(identifier, nameof(identifier));
 			builder.Append(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName));
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		public override string DelimitIdentifier(string identifier)
 		{
 			return
 				$"\"{EscapeIdentifier(Check.NotEmpty(identifier.MaxLength(_options.ConnectionSettings.ServerVersion.ObjectLengthName), nameof(identifier)))}\"";
 		}
 
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		public override void DelimitIdentifier(StringBuilder builder, string identifier)
 		{
 			Check.NotEmpty(identifier, nameof(identifier));

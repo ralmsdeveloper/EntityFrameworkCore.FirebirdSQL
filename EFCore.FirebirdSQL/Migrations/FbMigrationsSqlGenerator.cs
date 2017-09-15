@@ -48,214 +48,220 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Migrations
 {
-    public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
-    {
-        private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
-	    private IFbOptions _options { get; set; }  
+	public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
+	{
+		private static readonly Regex TypeRe = new Regex(@"([a-z0-9]+)\s*?(?:\(\s*(\d+)?\s*\))?", RegexOptions.IgnoreCase);
+		private IFbOptions _options { get; set; }
 		public FbMigrationsSqlGenerator(
-            MigrationsSqlGeneratorDependencies dependencies,
-            IFbOptions options)
-            : base(dependencies)
-        {
-	 
+			MigrationsSqlGeneratorDependencies dependencies,
+			IFbOptions options)
+			: base(dependencies)
+		{
 			_options = options;
-        }
+		}
 
-        protected override void Generate(MigrationOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(MigrationOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            if (operation is FbCreateDatabaseOperation createDatabaseOperation)
-            {
-                Generate(createDatabaseOperation, model, builder);
-                builder.EndCommand();
-	        
-	            using (var connection = new FbConnection(createDatabaseOperation.connectionStrBuilder.ToString()))
-	            {
-		            
+			if (operation is FbCreateDatabaseOperation createDatabaseOperation)
+			{
+				Generate(createDatabaseOperation, model, builder);
+				builder.EndCommand();
 
-					connection.Open(); 
-	            }
+				using (var connection = new FbConnection(createDatabaseOperation.connectionStrBuilder.ToString()))
+				{
+					connection.Open();
+				}
+				return;
+			}
 
-					return;
-            }
+			var dropDatabaseOperation = operation as FbDropDatabaseOperation;
+			if (dropDatabaseOperation is FbDropDatabaseOperation)
+			{
+				Generate(dropDatabaseOperation, model, builder);
+				builder.EndCommand();
+				return;
+			}
 
-            var dropDatabaseOperation = operation as FbDropDatabaseOperation;
-            if (dropDatabaseOperation is FbDropDatabaseOperation)
-            {
-                Generate(dropDatabaseOperation, model, builder);
-                builder.EndCommand();
-                return;
-            }
+			base.Generate(operation, model, builder);
+		}
 
-            base.Generate(operation, model, builder);
-        }
+		protected override void Generate(
+		   CreateTableOperation operation,
+		   IModel model,
+		   MigrationCommandListBuilder builder,
+		   bool terminate)
+		{
+			base.Generate(operation, model, builder, false);
+			if (terminate)
+			{
+				builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+				EndStatement(builder);
+			}
 
-        protected override void Generate(
-           CreateTableOperation operation,
-           IModel model,
-           MigrationCommandListBuilder builder,
-           bool terminate)
-        {
-            base.Generate(operation, model, builder, false);
-            if (terminate)
-            {
-                builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                EndStatement(builder);
-            }
+			if (_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
+				return;
 
-            //https://firebirdsql.org/manual/generatorguide-rowids.html
-            //If the version of FirebirdSQL is less than 3,
-            //generate auto increment per trigger!
-            if (!_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
-            {
-                foreach (var column in operation.Columns.Where(p => !p.IsNullable))
-                {
-                    var colAnnotation = (IAnnotation)column.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy);
-                    if (colAnnotation != null)
-                    {
-                        var valueGenerationStrategy = colAnnotation.Value as FbValueGenerationStrategy?;
-                        if (valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn
-                                                    && string.IsNullOrWhiteSpace(column.DefaultValueSql)
-                                                    && column.DefaultValue == null)
-                        {
-                            //Creation Generator
-                            var nameGenerator = $"{column.Table}_{column.Name}";
-                            builder.Append("CREATE GENERATOR ")
-                                   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
-                                   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                            EndStatement(builder);
+			foreach (var column in operation.Columns.Where(p => !p.IsNullable))
+			{
+				var colAnnotation = (IAnnotation)column.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy);
+				if (colAnnotation == null)
+					continue;
 
-                            builder.Append($"CREATE OR ALTER TRIGGER ")
-                                   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
-                                   .Append(" FOR ")
-                                   .AppendLine(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Table))
-                                   .AppendLine("ACTIVE BEFORE INSERT POSITION 0 AS BEGIN")
-                                   .Append($"    IF(new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} IS NULL) THEN")
-                                   .Append($"       new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} ")
-                                   .AppendLine($"= GEN_ID({Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator)},1);")
-                                   .AppendLine("END;");
+				var valueGenerationStrategy = colAnnotation.Value as FbValueGenerationStrategy?;
+				if (valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn
+					&& string.IsNullOrWhiteSpace(column.DefaultValueSql)
+					&& column.DefaultValue == null)
+				{
 
-                            EndStatement(builder);
+					var nameSequence = $"{column.Table}_{column.Name}";
+					builder.AppendLine("EXECUTE BLOCK");
+					builder.AppendLine("AS");
+					builder.AppendLine("BEGIN");
+					builder.Append("if (not exists(select 1 from rdb$generators where rdb$generator_name = '");
+					builder.Append(nameSequence);
+					builder.Append("')) then");
+					builder.AppendLine();
+					builder.AppendLine("begin");
+					builder.AppendLine("\n");
+					builder.Append("execute statement 'create sequence ");
+					builder.Append(nameSequence);
+					builder.Append("';");
+					builder.AppendLine();
+					builder.AppendLine("end");
+					builder.AppendLine("END");
 
-                        }
-                    }
-                }
-            }
-        }
 
-        protected override void Generate(AddUniqueConstraintOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            base.Generate(operation, model, builder);
-        }
+					var nameGenerator = $"{column.Table}_{column.Name}";
+					builder.Append("CREATE GENERATOR ")
+						   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
+						   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+					EndStatement(builder);
 
-        protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            //https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
-            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
-            var alterBase = $"ALTER TABLE {identifier} DROP {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
-            builder.Append(alterBase).Append(Dependencies.SqlGenerationHelper.StatementTerminator);
-            EndStatement(builder);
-        }
+					builder.Append("CREATE OR ALTER TRIGGER ")
+						   .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator))
+						   .Append(" FOR ")
+						   .AppendLine(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Table))
+						   .AppendLine("ACTIVE BEFORE INSERT POSITION 0 AS BEGIN")
+						   .Append($"    IF(new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} IS NULL) THEN")
+						   .Append($"       new.{Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name)} ")
+						   .AppendLine($"= GEN_ID({Dependencies.SqlGenerationHelper.DelimitIdentifier(nameGenerator)},1);")
+						   .AppendLine("END;");
 
-        protected override void Generate(AlterColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-            //https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
-            var type = operation.ColumnType.ToUpper();
-            if (operation.ColumnType == null)
-            {
-                var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
+					EndStatement(builder);
 
-                type = property != null
-                    ? Dependencies.TypeMapper.GetMapping(property).StoreType
-                    : Dependencies.TypeMapper.GetMapping(operation.ClrType).StoreType;
-            }
-            var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
-            builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
-            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+				}
+			}
+		}
 
-            builder.Append(" TYPE ")
-                   .Append(type)
-                   .Append(operation.IsNullable ? "" : " NOT NULL")
-                   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+		protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			//https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
+			var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
+			var alterBase = $"ALTER TABLE {identifier} DROP {Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name)}";
+			builder.Append(alterBase).Append(Dependencies.SqlGenerationHelper.StatementTerminator);
+			EndStatement(builder);
+		}
 
-            if (!type.StartsWith("BLOB", StringComparison.Ordinal))
-            {
-                builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
-                builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+		protected override void Generate(AlterColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
+			//https://firebirdsql.org/refdocs/langrefupd15-alter-table.html
+			var type = operation.ColumnType.ToUpper();
+			if (operation.ColumnType == null)
+			{
+				var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
 
-                if (operation.DefaultValue != null)
-                {
-                    var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
-                    builder.Append(" SET DEFAULT ")
-                        .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
-                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                }
-                else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
-                {
-                    builder.Append(" SET DEFAULT ")
-                        .Append(operation.DefaultValueSql)
-                        .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
-                }
-                else
-                {
-                    builder.Append(" DROP DEFAULT;");
-                }
-            }
+				type = property != null
+					? Dependencies.TypeMapper.GetMapping(property).StoreType
+					: Dependencies.TypeMapper.GetMapping(operation.ClrType).StoreType;
+			}
+			var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
+			builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
+			builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
 
-            EndStatement(builder);
-        }
+			builder.Append(" TYPE ")
+				   .Append(type)
+				   .Append(operation.IsNullable ? "" : " NOT NULL")
+				   .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
-        protected override void Generate(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            throw new NotImplementedException("The create sequence feature is not yet implemented.");
-        }
+			if (!type.StartsWith("BLOB", StringComparison.Ordinal))
+			{
+				builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
+				builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
 
-        protected override void Generate(RenameIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+				if (operation.DefaultValue != null)
+				{
+					var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
+					builder.Append(" SET DEFAULT ")
+						.Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+						.AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+				}
+				else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
+				{
+					builder.Append(" SET DEFAULT ")
+						.Append(operation.DefaultValueSql)
+						.AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+				}
+				else
+				{
+					builder.Append(" DROP DEFAULT;");
+				}
+			}
 
-            if (operation.NewName != null)
-            {
-                var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
+			EndStatement(builder);
+		}
 
-                if (createTableSyntax == null)
-                    throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
+		protected override void Generate(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			throw new NotImplementedException("The create sequence feature is not yet implemented.");
+		}
 
-                var indexDefinitionRe = new Regex($"^\\s*((?:UNIQUE\\s)?KEY\\s)?{operation.Name}?(.*)$", RegexOptions.Multiline);
-                var match = indexDefinitionRe.Match(createTableSyntax);
+		protected override void Generate(RenameIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-                string newIndexDefinition;
-                if (match.Success)
-                    newIndexDefinition = match.Groups[1].Value + Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName) + " " + match.Groups[2].Value.Trim().TrimEnd(',');
-                else
-                    throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
+			if (operation.NewName != null)
+			{
+				var createTableSyntax = _options.GetCreateTable(Dependencies.SqlGenerationHelper, operation.Table, operation.Schema);
 
-                builder
-                    .Append("ALTER TABLE ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                    .Append(" DROP INDEX ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                EndStatement(builder);
+				if (createTableSyntax == null)
+					throw new InvalidOperationException($"Could not find the CREATE TABLE DDL for the table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}'");
 
-                builder
-                    .Append("ALTER TABLE ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                    .Append(" ADD ")
-                    .Append(newIndexDefinition)
-                    .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+				var indexDefinitionRe = new Regex($"^\\s*((?:UNIQUE\\s)?KEY\\s)?{operation.Name}?(.*)$", RegexOptions.Multiline);
+				var match = indexDefinitionRe.Match(createTableSyntax);
 
-                EndStatement(builder);
-            }
-        }
+				string newIndexDefinition;
+				if (match.Success)
+					newIndexDefinition = match.Groups[1].Value + Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName) + " " + match.Groups[2].Value.Trim().TrimEnd(',');
+				else
+					throw new InvalidOperationException($"Could not find column definition for table: '{Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema)}' column: {operation.Name}");
 
-        protected override void Generate(RenameSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
+				builder
+					.Append("ALTER TABLE ")
+					.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+					.Append(" DROP INDEX ")
+					.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+					.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+				EndStatement(builder);
+
+				builder
+					.Append("ALTER TABLE ")
+					.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+					.Append(" ADD ")
+					.Append(newIndexDefinition)
+					.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+
+				EndStatement(builder);
+			}
+		}
+
+		protected override void Generate(RenameSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
 			builder.AppendLine("EXECUTE BLOCK")
 			.AppendLine("AS")
 			.AppendLine("DECLARE val INT = 0;")
@@ -279,9 +285,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 		}
 
 		protected override void Generate(RenameTableOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
 			throw new NotImplementedException("The rename table feature is not yet implemented.");
 
@@ -303,366 +309,366 @@ namespace Microsoft.EntityFrameworkCore.Migrations
              */
 		}
 
-        protected override void Generate(CreateIndexOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder, bool terminate)
-        {
-            var method = (string)operation[FbAnnotationNames.Prefix];
+		protected override void Generate(CreateIndexOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder, bool terminate)
+		{
+			var method = (string)operation[FbAnnotationNames.Prefix];
 
-            builder.Append("CREATE ");
+			builder.Append("CREATE ");
 
-            if (operation.IsUnique)
-            {
-                builder.Append("UNIQUE ");
-            }
+			if (operation.IsUnique)
+			{
+				builder.Append("UNIQUE ");
+			}
 
-            builder
-                .Append("INDEX ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .Append(" ON ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
+			builder
+				.Append("INDEX ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.Append(" ON ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
 
-            if (method != null)
-            {
-                builder
-                    .Append(" USING ")
-                    .Append(method);
-            }
+			if (method != null)
+			{
+				builder
+					.Append(" USING ")
+					.Append(method);
+			}
 
-            builder
-                .Append(" (")
-                .Append(ColumnList(operation.Columns))
-                .Append(")");
+			builder
+				.Append(" (")
+				.Append(ColumnList(operation.Columns))
+				.Append(")");
 
-            if (terminate)
-            {
-                builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
-                EndStatement(builder);
-            }
-        }
+			if (terminate)
+			{
+				builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+				EndStatement(builder);
+			}
+		}
 
-        protected override void Generate(
-            CreateIndexOperation operation,
-            [CanBeNull] IModel model,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(
+			CreateIndexOperation operation,
+			[CanBeNull] IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            Generate(operation, model, builder, true);
-        }
+			Generate(operation, model, builder, true);
+		}
 
-        protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            throw new NotImplementedException("This feature is not yet implemented.");
-        }
+			throw new NotImplementedException("This feature is not yet implemented.");
+		}
 
-        public virtual void Generate(FbCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-            var stringConnection = operation.connectionStrBuilder.ToString();
-            FbConnection.CreateDatabase(stringConnection);            
-        }
+		public virtual void Generate(FbCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
+			var stringConnection = operation.connectionStrBuilder.ToString();
+			FbConnection.CreateDatabase(stringConnection);
+		}
 
-        public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
-            FbConnection.ClearAllPools(); 
-            FbConnection.DropDatabase(operation.ConnectionStringBuilder.ToString());
-        }
+		public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
+			FbConnection.ClearAllPools();
+			FbConnection.DropDatabase(operation.ConnectionStringBuilder.ToString());
+		}
 
-        protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            builder
-                .Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP CONSTRAINT ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+			builder
+				.Append("ALTER TABLE ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" DROP CONSTRAINT ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
-            EndStatement(builder);
-        }
+			EndStatement(builder);
+		}
 
-        protected override void Generate(
-            RenameColumnOperation operation,
-            [CanBeNull] IModel model,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(
+			RenameColumnOperation operation,
+			[CanBeNull] IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            builder.Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" ALTER ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .Append(" TO ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
+			builder.Append("ALTER TABLE ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" ALTER ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.Append(" TO ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.NewName));
 
-            EndStatement(builder);
-        }
+			EndStatement(builder);
+		}
 
-        protected override void ColumnDefinition(
-            [CanBeNull] string schema,
-            string table,
-            string name,
-            Type clrType,
-            [CanBeNull] string type,
-            [CanBeNull] bool? unicode,
-            [CanBeNull] int? maxLength,
-            bool rowVersion,
-            bool nullable,
-            [CanBeNull] object defaultValue,
-            [CanBeNull] string defaultValueSql,
-            [CanBeNull] string computedColumnSql,
-            IAnnotatable annotatable,
-            [CanBeNull] IModel model,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotEmpty(name, nameof(name));
-            Check.NotNull(annotatable, nameof(annotatable));
-            Check.NotNull(clrType, nameof(clrType));
-            Check.NotNull(builder, nameof(builder));
+		protected override void ColumnDefinition(
+			[CanBeNull] string schema,
+			string table,
+			string name,
+			Type clrType,
+			[CanBeNull] string type,
+			[CanBeNull] bool? unicode,
+			[CanBeNull] int? maxLength,
+			bool rowVersion,
+			bool nullable,
+			[CanBeNull] object defaultValue,
+			[CanBeNull] string defaultValueSql,
+			[CanBeNull] string computedColumnSql,
+			IAnnotatable annotatable,
+			[CanBeNull] IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotEmpty(name, nameof(name));
+			Check.NotNull(annotatable, nameof(annotatable));
+			Check.NotNull(clrType, nameof(clrType));
+			Check.NotNull(builder, nameof(builder));
 
-            var matchType = type;
-            var matchLen = "";
-            var match = TypeRe.Match(type ?? "-");
-            if (match.Success)
-            {
-                matchType = match.Groups[1].Value.ToUpper();
-                if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
-                    matchLen = match.Groups[2].Value;
-            }
+			var matchType = type;
+			var matchLen = "";
+			var match = TypeRe.Match(type ?? "-");
+			if (match.Success)
+			{
+				matchType = match.Groups[1].Value.ToUpper();
+				if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
+					matchLen = match.Groups[2].Value;
+			}
 
-            var Identity = false;
-            var valueGenerationStrategy = annotatable[FbAnnotationNames.ValueGenerationStrategy] as FbValueGenerationStrategy?;
-            if ((valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
-            {
-                switch (matchType)
-                {
-                    case "INTEGER":
-                    case "BIGINT":
-                        Identity = true;
-                        break;
-                    case "DATETIME":
-                    case "TIMESTAMP":
-                        defaultValueSql = $"CURRENT_TIMESTAMP";
-                        break;
-                }
-            }
-            string onUpdateSql = null;
-            if (valueGenerationStrategy == FbValueGenerationStrategy.ComputedColumn)
-            {
-                switch (matchType)
-                {
-                    case "DATETIME":
-                    case "TIMESTAMP":
-                        if (string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
-                            defaultValueSql = $"CURRENT_TIMESTAMP";
-                        onUpdateSql = $"CURRENT_TIMESTAMP";
-                        break;
-                }
-            }
+			var Identity = false;
+			var valueGenerationStrategy = annotatable[FbAnnotationNames.ValueGenerationStrategy] as FbValueGenerationStrategy?;
+			if ((valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
+			{
+				switch (matchType)
+				{
+					case "INTEGER":
+					case "BIGINT":
+						Identity = true;
+						break;
+					case "DATETIME":
+					case "TIMESTAMP":
+						defaultValueSql = $"CURRENT_TIMESTAMP";
+						break;
+				}
+			}
+			string onUpdateSql = null;
+			if (valueGenerationStrategy == FbValueGenerationStrategy.ComputedColumn)
+			{
+				switch (matchType)
+				{
+					case "DATETIME":
+					case "TIMESTAMP":
+						if (string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
+							defaultValueSql = $"CURRENT_TIMESTAMP";
+						onUpdateSql = $"CURRENT_TIMESTAMP";
+						break;
+				}
+			}
 
-            builder
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
-                .Append(" ")
-                .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
+			builder
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
+				.Append(" ")
+				.Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
 
-            if (!nullable && Identity)
-            {
-                if (_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
-                    builder.Append(" GENERATED BY DEFAULT AS IDENTITY NOT NULL");
-                else
-                    builder.Append(" NOT NULL");
-            }
-            else
-            {
-                if (!nullable)
-                    builder.Append(" NOT NULL");
+			if (!nullable && Identity)
+			{
+				if (_options.ConnectionSettings.ServerVersion.SupportIdentityIncrement)
+					builder.Append(" GENERATED BY DEFAULT AS IDENTITY NOT NULL");
+				else
+					builder.Append(" NOT NULL");
+			}
+			else
+			{
+				if (!nullable)
+					builder.Append(" NOT NULL");
 
-                if (defaultValueSql != null)
-                {
-                    builder
-                        .Append(" DEFAULT ")
-                        .Append(defaultValueSql);
-                }
-                else if (defaultValue != null)
-                {
-                    var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
-                    builder
-                        .Append(" DEFAULT ")
-                        .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
-                }
+				if (defaultValueSql != null)
+				{
+					builder
+						.Append(" DEFAULT ")
+						.Append(defaultValueSql);
+				}
+				else if (defaultValue != null)
+				{
+					var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
+					builder
+						.Append(" DEFAULT ")
+						.Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
+				}
 
-                if (onUpdateSql != null)
-                {
-                    builder
-                        .Append(" ON UPDATE ")
-                        .Append(onUpdateSql);
-                }
-            }
+				if (onUpdateSql != null)
+				{
+					builder
+						.Append(" ON UPDATE ")
+						.Append(onUpdateSql);
+				}
+			}
 
-        }
+		}
 
-        protected override void DefaultValue(object defaultValue, string defaultValueSql, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(builder, nameof(builder));
+		protected override void DefaultValue(object defaultValue, string defaultValueSql, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(builder, nameof(builder));
 
-            if (defaultValueSql != null)
-            {
-                builder
-                    .Append(" DEFAULT ")
-                    .Append(defaultValueSql);
-            }
-            else if (defaultValue != null)
-            {
-                var typeMapping = Dependencies.TypeMapper.GetMapping(defaultValue.GetType());
-                builder
-                    .Append(" DEFAULT ")
-                    .Append(typeMapping.GenerateSqlLiteral(defaultValue));
-            }
-        }
+			if (defaultValueSql != null)
+			{
+				builder
+					.Append(" DEFAULT ")
+					.Append(defaultValueSql);
+			}
+			else if (defaultValue != null)
+			{
+				var typeMapping = Dependencies.TypeMapper.GetMapping(defaultValue.GetType());
+				builder
+					.Append(" DEFAULT ")
+					.Append(typeMapping.GenerateSqlLiteral(defaultValue));
+			}
+		}
 
-        protected override void Generate(DropForeignKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(DropForeignKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            builder
-                .Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP CONSTRAINT ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+			builder
+				.Append("ALTER TABLE ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" DROP CONSTRAINT ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+				.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
-            EndStatement(builder);
-        }
+			EndStatement(builder);
+		}
 
-        protected override void Generate(AddPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(AddPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            builder
-                .Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" ADD ");
+			builder
+				.Append("ALTER TABLE ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" ADD ");
 
-            PrimaryKeyConstraint(operation, model, builder);
-            builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+			PrimaryKeyConstraint(operation, model, builder);
+			builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
-            EndStatement(builder);
-        }
+			EndStatement(builder);
+		}
 
-        protected override void Generate(DropPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void Generate(DropPrimaryKeyOperation operation, [CanBeNull] IModel model, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            builder
-                .Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP CONSTRAINT ")
-                .Append(operation.Name);
+			builder
+				.Append("ALTER TABLE ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+				.Append(" DROP CONSTRAINT ")
+				.Append(operation.Name);
 
-            EndStatement(builder);
-        }
+			EndStatement(builder);
+		}
 
-        public virtual void Rename(
-            [CanBeNull] string schema,
-            string name,
-            string newName,
-            string type,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotEmpty(name, nameof(name));
-            Check.NotEmpty(newName, nameof(newName));
-            Check.NotEmpty(type, nameof(type));
-            Check.NotNull(builder, nameof(builder));
+		public virtual void Rename(
+			[CanBeNull] string schema,
+			string name,
+			string newName,
+			string type,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotEmpty(name, nameof(name));
+			Check.NotEmpty(newName, nameof(newName));
+			Check.NotEmpty(type, nameof(type));
+			Check.NotNull(builder, nameof(builder));
 
-            builder
-                .Append("ALTER ")
-                .Append(type)
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
-                .Append(" TO ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
-        }
+			builder
+				.Append("ALTER ")
+				.Append(type)
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
+				.Append(" TO ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
+		}
 
-        public virtual void Transfer(
-            string newSchema,
-            [CanBeNull] string schema,
-            string name,
-            string type,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotEmpty(newSchema, nameof(newSchema));
-            Check.NotEmpty(name, nameof(name));
-            Check.NotNull(type, nameof(type));
-            Check.NotNull(builder, nameof(builder));
+		public virtual void Transfer(
+			string newSchema,
+			[CanBeNull] string schema,
+			string name,
+			string type,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotEmpty(newSchema, nameof(newSchema));
+			Check.NotEmpty(name, nameof(name));
+			Check.NotNull(type, nameof(type));
+			Check.NotNull(builder, nameof(builder));
 
-            //more implementation for RULE
-        }
+			//more implementation for RULE
+		}
 
-        protected override void ForeignKeyAction(ReferentialAction referentialAction, MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(builder, nameof(builder));
+		protected override void ForeignKeyAction(ReferentialAction referentialAction, MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(builder, nameof(builder));
 
-            if (referentialAction == ReferentialAction.Restrict)
-                builder.Append("NO ACTION");
-            else
-                base.ForeignKeyAction(referentialAction, builder);
+			if (referentialAction == ReferentialAction.Restrict)
+				builder.Append("NO ACTION");
+			else
+				base.ForeignKeyAction(referentialAction, builder);
 
-        }
+		}
 
-        protected override void ForeignKeyConstraint(
-            AddForeignKeyOperation operation,
-            [CanBeNull] IModel model,
-            MigrationCommandListBuilder builder)
-        {
-            Check.NotNull(operation, nameof(operation));
-            Check.NotNull(builder, nameof(builder));
+		protected override void ForeignKeyConstraint(
+			AddForeignKeyOperation operation,
+			IModel model,
+			MigrationCommandListBuilder builder)
+		{
+			Check.NotNull(operation, nameof(operation));
+			Check.NotNull(builder, nameof(builder));
 
-            if (operation.Name != null)
-            {
-                builder
-                    .Append("CONSTRAINT ")
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-                    .Append(" ");
-            }
+			if (operation.Name != null)
+			{
+				builder
+					.Append("CONSTRAINT ")
+					.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+					.Append(" ");
+			}
 
-            builder
-                .Append("FOREIGN KEY (")
-                .Append(ColumnList(operation.Columns))
-                .Append(") REFERENCES ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.PrincipalTable, operation.PrincipalSchema));
+			builder
+				.Append("FOREIGN KEY (")
+				.Append(ColumnList(operation.Columns))
+				.Append(") REFERENCES ")
+				.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.PrincipalTable, operation.PrincipalSchema));
 
-            if (operation.PrincipalColumns != null)
-            {
-                builder
-                    .Append(" (")
-                    .Append(ColumnList(operation.PrincipalColumns))
-                    .Append(")");
-            }
+			if (operation.PrincipalColumns != null)
+			{
+				builder
+					.Append(" (")
+					.Append(ColumnList(operation.PrincipalColumns))
+					.Append(")");
+			}
 
-            if (operation.OnUpdate != ReferentialAction.NoAction)
-            {
-                builder.Append(" ON UPDATE ");
-                ForeignKeyAction(operation.OnUpdate, builder);
-            }
+			if (operation.OnUpdate != ReferentialAction.NoAction)
+			{
+				builder.Append(" ON UPDATE ");
+				ForeignKeyAction(operation.OnUpdate, builder);
+			}
 
-            if (operation.OnDelete != ReferentialAction.NoAction)
-            {
-                builder.Append(" ON DELETE ");
-                ForeignKeyAction(operation.OnDelete, builder);
-            }
-        }
+			if (operation.OnDelete != ReferentialAction.NoAction)
+			{
+				builder.Append(" ON DELETE ");
+				ForeignKeyAction(operation.OnDelete, builder);
+			}
+		}
 
-        protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
-    }
+		protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
+	}
 }
