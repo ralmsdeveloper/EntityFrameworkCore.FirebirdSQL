@@ -76,7 +76,7 @@ WHERE
         CASE F.RDB$FIELD_SUB_TYPE
         WHEN 0 THEN 'INTEGER'
         WHEN 1 THEN 'NUMERIC('  || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
-        WHEN 2 THEN 'DECIMAL'
+        WHEN 2 THEN 'DECIMAL(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
         END
     WHEN 9 THEN 'QUAD'
     WHEN 10 THEN 'FLOAT'
@@ -87,7 +87,7 @@ WHERE
         CASE F.RDB$FIELD_SUB_TYPE
         WHEN 0 THEN 'BIGINT'
         WHEN 1 THEN 'NUMERIC(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
-        WHEN 2 THEN 'DECIMAL'
+        WHEN 2 THEN 'DECIMAL(' || F.RDB$FIELD_PRECISION || ', ' || (-F.RDB$FIELD_SCALE) || ')'
         END
     WHEN 27 THEN 'DOUBLE PRECISION'
     WHEN 35 THEN 'TIMESTAMP'
@@ -170,15 +170,14 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
         public DatabaseModel Create(DbConnection connection, TableSelectionSet tableSelectionSet)
         {
             ResetState();
-            _connection = connection as FbConnection;
-            if (_connection.State != ConnectionState.Open)
-                _connection.Open();
+            _connection = (FbConnection)connection;
+            if (_connection?.State != ConnectionState.Open)
+                _connection?.Open();
 
             try
             {
-                _tableSelectionSet = tableSelectionSet;
-
-                _databaseModel.DatabaseName = _connection.Database;
+                _tableSelectionSet = tableSelectionSet; 
+                _databaseModel.DatabaseName = _connection?.Database;
                 _databaseModel.DefaultSchema = null;
                 GetTables();
                 GetColumns();
@@ -190,7 +189,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             finally
             {
                 FbConnection.ClearPool(_connection);
-                _connection.Dispose();
+                _connection?.Dispose();
             }
         }
          
@@ -206,12 +205,12 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                         Schema = null,
                         Name = rResult["RDB$RELATION_NAME"].ToString().Trim()
                     };
-                    Logger.Logger.LogDebug($"Creating: { rResult["RDB$RELATION_NAME"].ToString().Trim()} Model");
+                    Logger.Logger.LogDebug($"Creating => { rResult["RDB$RELATION_NAME"].ToString().Trim()} Model");
                     if (_tableSelectionSet.Allows(table.Schema, table.Name))
                     {
                         _databaseModel.Tables.Add(table);
                         _tables[TableKey(table)] = table;
-                    }
+                    } 
                 }
             }
         }
@@ -236,8 +235,9 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                         if (!string.IsNullOrEmpty(rResult["FIELD_DESCRIPTION"].ToString()))
                             column.AddAnnotation("Description", rResult["FIELD_DESCRIPTION"].ToString().Trim().Replace("\n", "; "));
 
-                        table.Value.Columns.Add(column);
-                    }
+                        table.Value.Columns.Add(column); 
+	                    Logger.Logger.LogDebug($"Creating Column: {column.Name.Trim()}, Type:{column.StoreType} to table => {column.Table.Name}");
+					}
             }
         }
          
@@ -248,17 +248,20 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 DatabasePrimaryKey index = null;
                 using (var command = new FbCommand(string.Format(GetPrimaryQuery, table.Key.Replace("\"", "")), _connection))
                 using (var rResult = command.ExecuteReader())
-                    while (rResult.Read())
-                    {
-                        if (index == null)
-                            index = new DatabasePrimaryKey
-                            {
-                                Table = table.Value,
-                                Name = rResult.GetString(0).Trim()
-                            };
-                        index.Columns.Add(table.Value.Columns.Single(y => y.Name == rResult.GetString(1).Trim()));
+                {
+					while (rResult.Read())
+					{
+						if (index == null)
+							index = new DatabasePrimaryKey
+							{
+								Table = table.Value,
+								Name = rResult.GetString(0).Trim()
+							};
+						index.Columns.Add(table.Value.Columns.Single(y => y.Name == rResult.GetString(1).Trim()));
 
-                    }
+					}
+				}
+                   
                 table.Value.PrimaryKey = index;
             }
         }
