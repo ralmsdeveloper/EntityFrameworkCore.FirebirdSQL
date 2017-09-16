@@ -64,7 +64,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EFCore.FirebirdSQL\EntityFrameworkCore.FirebirdSql.csproj">
+    <ProjectReference Include="..\EntityFrameworkCore.FirebirdSql\EntityFrameworkCore.FirebirdSql.csproj">
       <Project>{c725ac99-64c8-4cbf-b01f-094d5837bc58}</Project>
       <Name>EntityFrameworkCore.FirebirdSql</Name>
     </ProjectReference>

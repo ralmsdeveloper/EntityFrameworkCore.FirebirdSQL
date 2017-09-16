@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.FirebirdSql", "EFCore.FirebirdSQL\EntityFrameworkCore.FirebirdSql.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.FirebirdSql", "EntityFrameworkCore.FirebirdSql\EntityFrameworkCore.FirebirdSql.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSQL.Console.Test", "EFCore.FirebirdSQL.Test\EFCore.FirebirdSQL.Console.Test.csproj", "{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSQL.Console.Test", "EntityFrameworkCore.FirebirdSql.Test\EFCore.FirebirdSQL.Console.Test.csproj", "{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF35-BA86-4A02-AB92-97DEEDB8219F}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCore.FirebirdSQL.Samples", "EFCore.FirebirdSQL.Samples", "{331974B1-B109-487C-BCDF-85DA9B677C0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
