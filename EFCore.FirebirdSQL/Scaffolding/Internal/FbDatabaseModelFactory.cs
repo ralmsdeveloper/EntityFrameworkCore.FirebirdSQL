@@ -199,7 +199,6 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 GetPrimaryKeys();
                 GetIndexes();
                 GetConstraints();
-                Logger.Logger.LogDebug($"Finish :)");
                 return _databaseModel;
             }
             finally

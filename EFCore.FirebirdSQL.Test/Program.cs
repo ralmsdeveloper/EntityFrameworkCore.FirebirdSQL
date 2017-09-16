@@ -41,9 +41,7 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
                 });
                 cx.SaveChanges();
             }
-            var obj = cx.Author.Find((long)1);
-            cx.Author.Remove(obj);
-            cx.SaveChanges();
+   
 
             ////fifty rows
             for (int i = 0; i < 50; i++)
@@ -78,7 +76,13 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
             AuthorsUpdate3.FirstName = $"Author Modified {Guid.NewGuid()}";
 
             cx.SaveChanges();
-            var y = cx.Author.Include(p => p.Books).Where(p => p.LastName.Trim()!="A").ToList();
+
+
+	        var obj = cx.Author.Find((long)1);
+	        cx.Author.Remove(obj);
+	        cx.SaveChanges();
+
+			var y = cx.Author.Include(p => p.Books).Where(p => p.LastName.Trim()!="A").ToList();
             var Authors = cx.Author.AsNoTracking()
                             .Include(p => p.Books).Where(p=>p.AuthorId<10)
                              .ToList();
