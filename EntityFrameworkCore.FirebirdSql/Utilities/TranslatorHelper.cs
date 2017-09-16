@@ -1,4 +1,4 @@
-/*
+﻿/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
@@ -14,17 +14,21 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+//$Authors = Jiri Cincura (jiri@cincura.net), Rafael Almeida(ralms@ralms.net)
 
-namespace EntityFrameworkCore.FirebirdSql.Infrastructure
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
-    public class FbDbContextOptionsBuilder : RelationalDbContextOptionsBuilder<FbDbContextOptionsBuilder, FbOptionsExtension>
-    {
-        public FbDbContextOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
-            : base(optionsBuilder)
-        {
-        }  
-    }
+	public class TranslatorsHelper
+	{
+		public static IEnumerable<Type> GetTranslators<TInterface>()
+		{
+			return Assembly.GetExecutingAssembly().GetTypes()
+			               .Where(t => t.GetInterfaces().Any(i => i == typeof(TInterface)) && t.GetConstructors().Any(c => c.GetParameters().Length == 0));
+		}
+	}
 }

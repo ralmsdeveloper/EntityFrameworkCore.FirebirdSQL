@@ -14,37 +14,27 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal; 
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal; 
 
-namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
+namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 {
 	public class FbConventionSetBuilder : RelationalConventionSetBuilder
 	{
-		private readonly ISqlGenerationHelper _sqlGenerationHelper;
-		private static IFbOptions _options;
-
-		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies, IFbOptions options, ISqlGenerationHelper sqlGenerationHelper)
+		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies)
 			: base(dependencies)
-		{
-			_sqlGenerationHelper = sqlGenerationHelper;
-			_options = options;
-		}
+		{ }
 
+		 
 		public override ConventionSet AddConventions(ConventionSet conventionSet)
 		{
 			base.AddConventions(conventionSet);
 
 			var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
-			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
-
-			ReplaceConvention(conventionSet.PropertyAddedConventions,
-				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
-			ReplaceConvention(conventionSet.PropertyFieldChangedConventions,
-				(DatabaseGeneratedAttributeConvention) valueGenerationStrategyConvention);
+			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention); 
+			ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
+			ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
 
 			return conventionSet;
 		}

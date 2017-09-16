@@ -16,7 +16,7 @@
 
 namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
-	public enum FbErrorCode
+	public enum FbErrorCode : long
 	{
 		/* network_error */
 		FbErrorNetworkConnection = 335544721,

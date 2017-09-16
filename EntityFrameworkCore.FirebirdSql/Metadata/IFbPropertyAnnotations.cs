@@ -14,7 +14,9 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Metadata
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public interface IFbPropertyAnnotations : IRelationalPropertyAnnotations
     {

@@ -15,32 +15,31 @@
  */
 
 using System;
-
+using EntityFrameworkCore.FirebirdSql.Extensions;
+using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Metadata; 
 
-namespace Microsoft.EntityFrameworkCore.Metadata
+namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
 	public class FbPropertyAnnotations : RelationalPropertyAnnotations, IFbPropertyAnnotations
 	{
 		public FbPropertyAnnotations(IProperty property)
 			: base(property)
-		{
-		}
+		{ }
 
 		protected FbPropertyAnnotations(RelationalAnnotations annotations)
 			: base(annotations)
-		{
-		}
+		{ }
 
 		public virtual FbValueGenerationStrategy? ValueGenerationStrategy
 		{
-			get => GetFbValueGenerationStrategy(fallbackToModel: true); 
+			get => GetValueGenerationStrategy(fallbackToModel: true);
 			set => SetValueGenerationStrategy(value);
 		}
 
-		public virtual FbValueGenerationStrategy? GetFbValueGenerationStrategy(bool fallbackToModel)
+		public virtual FbValueGenerationStrategy? GetValueGenerationStrategy(bool fallbackToModel)
 		{
 			var value = (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy];
 
@@ -84,18 +83,16 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 				{
 					if (ShouldThrowOnInvalidConfiguration)
 					{
-						//Sugestion (Jiri Cincura)
 						throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.IdentityColumn)} for '{Property.Name}'.");
 					}
 
 					return false;
 				}
 
-				//Sugestion (Jiri Cincura)
 				if (value == FbValueGenerationStrategy.SequenceTrigger && !IsCompatibleSequenceTrigger(propertyType))
 				{
 					if (ShouldThrowOnInvalidConfiguration)
-					{ 
+					{
 						throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{Property.Name}'.");
 					}
 
@@ -108,7 +105,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 				return false;
 			}
 
-			if (!ShouldThrowOnConflict && ValueGenerationStrategy != value && value != null)
+			if (!ShouldThrowOnConflict
+				&& ValueGenerationStrategy != value
+				&& value != null)
 			{
 				ClearAllServerGeneratedValues();
 			}
@@ -118,7 +117,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 
 		protected virtual bool CanSetValueGenerationStrategy(FbValueGenerationStrategy? value)
 		{
-			if (GetFbValueGenerationStrategy(fallbackToModel: false) == value)
+			if (GetValueGenerationStrategy(fallbackToModel: false) == value)
 			{
 				return true;
 			}
@@ -143,18 +142,21 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 					throw new InvalidOperationException(RelationalStrings.ConflictingColumnServerGeneration(nameof(ValueGenerationStrategy), Property.Name, nameof(ComputedColumnSql)));
 				}
 			}
-			else if (value != null && (!CanSetDefaultValue(null) || !CanSetDefaultValueSql(null) || !CanSetComputedColumnSql(null)))
+			else if (value != null
+					 && (!CanSetDefaultValue(null)
+						 || !CanSetDefaultValueSql(null)
+						 || !CanSetComputedColumnSql(null)))
 			{
 				return false;
 			}
 
 			return true;
 		}
-		 
-		private static bool IsCompatibleIdentityColumn(Type type)
+
+		static bool IsCompatibleIdentityColumn(Type type)
 			=> type.IsInteger() || type == typeof(decimal);
 
-		private static bool IsCompatibleSequenceTrigger(Type type)
-			=> true; 
+		static bool IsCompatibleSequenceTrigger(Type type)
+			=> true;
 	}
 }

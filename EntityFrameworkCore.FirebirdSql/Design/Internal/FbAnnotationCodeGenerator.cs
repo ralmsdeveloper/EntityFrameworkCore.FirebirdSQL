@@ -14,10 +14,11 @@
  *
  */
 
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata; 
 
-namespace Microsoft.EntityFrameworkCore.Design.Internal
+namespace EntityFrameworkCore.FirebirdSql.Design.Internal
 {
     public class FbAnnotationCodeGenerator : AnnotationCodeGenerator
     {

@@ -14,7 +14,17 @@
  *
  */
 
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using EntityFrameworkCore.FirebirdSql.Internal;
+using EntityFrameworkCore.FirebirdSql.Metadata.Conventions;
+using EntityFrameworkCore.FirebirdSql.Migrations;
+using EntityFrameworkCore.FirebirdSql.Migrations.Internal;
+using EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal;
+using EntityFrameworkCore.FirebirdSql.Query.Sql.Internal;
+using EntityFrameworkCore.FirebirdSql.Storage.Internal;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
+using EntityFrameworkCore.FirebirdSql.Update.Internal;
+using EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Internal;

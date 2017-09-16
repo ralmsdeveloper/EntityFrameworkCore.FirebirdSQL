@@ -16,8 +16,9 @@
   
 using System.Data.Common; 
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbStringTypeMapping : StringTypeMapping
     {

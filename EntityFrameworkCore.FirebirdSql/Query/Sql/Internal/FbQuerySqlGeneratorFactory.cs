@@ -15,10 +15,10 @@
  */
 
 using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Query.Sql;
+using Microsoft.EntityFrameworkCore.Query.Sql.Internal; 
 
-namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGeneratorFactory : QuerySqlGeneratorFactoryBase
     {

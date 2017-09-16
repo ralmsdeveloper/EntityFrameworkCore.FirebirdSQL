@@ -14,14 +14,14 @@
  *
  */
 
+using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
-using Microsoft.EntityFrameworkCore.Scaffolding;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Scaffolding; 
+using Microsoft.EntityFrameworkCore.Storage;  
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.EntityFrameworkCore.Design.Internal
+namespace EntityFrameworkCore.FirebirdSql.Design.Internal
 {
     public class FbDesignTimeServices : IDesignTimeServices
     {

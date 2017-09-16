@@ -13,8 +13,10 @@
  * modified is included with the above copyright notice.
  *
  */
-  
-namespace Microsoft.EntityFrameworkCore.Storage
+
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace EntityFrameworkCore.FirebirdSql.Storage
 {
 	public class FbBoolTypeMapping : BoolTypeMapping
 	{

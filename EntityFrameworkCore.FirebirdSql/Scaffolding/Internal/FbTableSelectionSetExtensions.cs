@@ -15,8 +15,9 @@
  */
 
 using System;
+using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
+namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 {
 	internal static class FbTableSelectionSetExtensions
 	{

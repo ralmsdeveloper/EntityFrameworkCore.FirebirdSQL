@@ -16,9 +16,12 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal
+namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
 { 
     public class FbValueGenerationStrategyConvention : DatabaseGeneratedAttributeConvention, IModelInitializedConvention
     {

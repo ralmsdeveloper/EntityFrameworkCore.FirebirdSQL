@@ -17,8 +17,9 @@
 using System;
 using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage
+namespace EntityFrameworkCore.FirebirdSql.Storage
 { 
     public class FbDateTimeTypeMapping : DateTimeTypeMapping
     {

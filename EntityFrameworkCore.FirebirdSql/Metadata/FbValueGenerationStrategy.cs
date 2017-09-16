@@ -14,11 +14,11 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Metadata
+namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public enum FbValueGenerationStrategy
     {
-	    SequenceTrigger,
-	    IdentityColumn
+	    IdentityColumn,
+		SequenceTrigger
 	}
 }

@@ -22,8 +22,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics; 
 using Microsoft.EntityFrameworkCore.Internal; 
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbRelationalTransaction : RelationalTransaction
     {

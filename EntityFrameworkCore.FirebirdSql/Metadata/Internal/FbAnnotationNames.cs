@@ -14,12 +14,11 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Metadata.Internal
+namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
 {
     public static class FbAnnotationNames
     {
         public const string Prefix = "Fb:";
         public const string ValueGenerationStrategy = Prefix + "ValueGenerationStrategy";
-         
     }
 }

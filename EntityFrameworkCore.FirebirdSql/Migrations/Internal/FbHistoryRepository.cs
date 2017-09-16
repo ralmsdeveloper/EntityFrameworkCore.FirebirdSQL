@@ -14,22 +14,18 @@
  *
  */
 
-using System;
-using System.Text;
+//$Authors = Jiri Cincura (jiri@cincura.net), Rafael Almeida(ralms@ralms.net)
 
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
+using System;  
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Microsoft.EntityFrameworkCore.Migrations.Internal
+namespace EntityFrameworkCore.FirebirdSql.Migrations.Internal
 {
     public class FbHistoryRepository : HistoryRepository
     {
-
-        public FbHistoryRepository(
-            HistoryRepositoryDependencies dependencies)
+        public FbHistoryRepository(HistoryRepositoryDependencies dependencies)
             : base(dependencies)
         {
         }
@@ -42,37 +38,39 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
         }
 
         protected override string ExistsSql
-        {
-            get
-            {
-                var builder = new StringBuilder();
-                builder.Append("select 1 from rdb$relations where rdb$view_blr is null ")
-                       .Append("And (rdb$system_flag is null or rdb$system_flag = 0) ")
-                       .Append($"And RDB$RELATION_NAME='{TableName}';");  
-                return builder.ToString();
-            }
-        }
+		{
+			get
+			{
+				var escapedTableName = SqlGenerationHelper.EscapeLiteral(TableName);
+				return $@"
+SELECT COUNT(*)
+FROM rdb$relations r
+WHERE
+	COALESCE(r.rdb$system_flag, 0) = 0
+	AND
+	rdb$view_blr IS NULL
+	AND
+	rdb$relation_name = '{escapedTableName}'";
+			}
+		}
 
-        protected override bool InterpretExistsResult(object value) => value != null;
+		protected override bool InterpretExistsResult(object value) => value != DBNull.Value;
 
-        public override string GetCreateIfNotExistsScript()
-        {
-            return GetCreateScript();
-        }
+	    public override string GetCreateIfNotExistsScript() => GetCreateScript();
 
-        public override string GetBeginIfNotExistsScript(string migrationId)
-        {
-            throw new NotSupportedException("Not supported by Firebird EF Core");
-        }
+	    public override string GetBeginIfExistsScript(string migrationId)
+	    {
+		    throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+	    }
 
-        public override string GetBeginIfExistsScript(string migrationId)
-        {
-            throw new NotSupportedException("Not supported by Firebird EF Core");
-        }
+	    public override string GetBeginIfNotExistsScript(string migrationId)
+	    {
+		    throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+	    }
 
-        public override string GetEndIfScript()
-        {
-            throw new NotSupportedException("Not supported by Firebird EF Core");
-        }
-    }
+	    public override string GetEndIfScript()
+	    {
+		    throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+	    }
+	}
 }

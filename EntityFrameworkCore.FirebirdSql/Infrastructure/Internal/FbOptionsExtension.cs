@@ -13,16 +13,11 @@
  * modified is included with the above copyright notice.
  *
  */
-
- 
-
-using System;
-
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Utilities;
+  
+using Microsoft.EntityFrameworkCore.Infrastructure;  
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
+namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {
     public sealed class FbOptionsExtension : RelationalOptionsExtension
     {

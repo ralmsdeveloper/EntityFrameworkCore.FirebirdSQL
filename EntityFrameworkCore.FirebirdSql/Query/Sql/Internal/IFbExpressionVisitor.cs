@@ -15,15 +15,14 @@
  */
 
 using System.Linq.Expressions;
-
-using Microsoft.EntityFrameworkCore.Query.Expressions;
+using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public interface IFbExpressionVisitor
     {
-        Expression VisitRegexp(FbRegexpExpression regexpExpression);
-        Expression VisitSubString(FbSubStringExpression sbStringExpression);
+		Expression VisitExtract(FbExtractExpression extractExpression);
+		Expression VisitSubString(FbSubStringExpression sbStringExpression);
     }
 }

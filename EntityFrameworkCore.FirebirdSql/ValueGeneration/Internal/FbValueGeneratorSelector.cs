@@ -15,13 +15,12 @@
  */
 
 using System;
-
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using EntityFrameworkCore.FirebirdSql.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 
-namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
+namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {
     public class FbValueGeneratorSelector : RelationalValueGeneratorSelector
     {

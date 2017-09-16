@@ -13,8 +13,10 @@
  * modified is included with the above copyright notice.
  *
  */
- 
-namespace Microsoft.EntityFrameworkCore.Metadata
+
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public class FbKeyAnnotations : RelationalKeyAnnotations, IFbKeyAnnotations
     {

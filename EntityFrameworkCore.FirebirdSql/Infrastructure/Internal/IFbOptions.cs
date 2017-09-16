@@ -14,10 +14,10 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Utilities; 
-// ReSharper disable All
+using EntityFrameworkCore.FirebirdSql.Utilities;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
 
-namespace Microsoft.EntityFrameworkCore.Infrastructure.Internal
+namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {
     public interface IFbOptions : ISingletonOptions
     {

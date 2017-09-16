@@ -14,9 +14,10 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Metadata.Internal
-{
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
+{ 
     public static class FbInternalMetadataBuilderExtensions
     {
         public static FbModelBuilderAnnotations Firebird(this InternalModelBuilder builder,ConfigurationSource configurationSource)

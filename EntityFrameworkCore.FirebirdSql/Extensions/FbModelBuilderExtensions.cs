@@ -13,10 +13,11 @@
  * modified is included with the above copyright notice.
  *
  */
+ 
+using EntityFrameworkCore.FirebirdSql.Metadata;
+using Microsoft.EntityFrameworkCore;
 
-using Microsoft.EntityFrameworkCore.Metadata; 
-
-namespace Microsoft.EntityFrameworkCore
+namespace EntityFrameworkCore.FirebirdSql.Extensions
 { 
     public static class FbModelBuilderExtensions
     { 

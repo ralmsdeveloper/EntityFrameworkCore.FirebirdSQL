@@ -1,35 +1,22 @@
-// Copyright (c) .NET Foundation. All rights reserved.
+/*
+ *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
+ *
+ *                    EntityFrameworkCore.FirebirdSql
+ *
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+ * 
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ */
+
+ // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the 
 // project root for license information. 
-
-/*                 
- *                    EntityFrameworkCore.FirebirdSql
- *     
-*
- *              
- *     Permission to use, copy, modify, and distribute this software and its
- *     documentation for any purpose, without fee, and without a written
- *     agreement is hereby granted, provided that the above copyright notice
- *     and this paragraph and the following two paragraphs appear in all copies. 
- * 
- *     The contents of this file are subject to the Initial
- *     Developer's Public License Version 1.0 (the "License");
- *     you may not use this file except in compliance with the
- *     License.
-*
- *
- *     Software distributed under the License is distributed on
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
- *     express or implied.  See the License for the specific
- *     language governing rights and limitations under the License.
- *
- *      Credits: Rafael Almeida (ralms@ralms.net)
- *                              Sergipe-Brazil
- *               Jean Ressouche (jean.ressouche@souchprod.com)
- *                              Paris-France
- *                              
- *                  All Rights Reserved.
- */
 
 // Search reference
 // https://firebirdsql.org/refdocs/langrefupd20-select.html
@@ -48,8 +35,11 @@ using System.Data;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Scaffolding.Internal
+namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 {
     public class FbDatabaseModelFactory : IDatabaseModelFactory
     {
@@ -156,11 +146,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
 
         public FbDatabaseModelFactory(IDiagnosticsLogger<DbLoggerCategory.Scaffolding> loggerFactory)
         => Logger = loggerFactory;
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+		
         public virtual IDiagnosticsLogger<DbLoggerCategory.Scaffolding> Logger { get; }
 
         void ResetState()

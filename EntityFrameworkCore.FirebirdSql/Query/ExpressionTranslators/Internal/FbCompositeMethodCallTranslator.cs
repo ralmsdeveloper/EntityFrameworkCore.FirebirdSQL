@@ -14,43 +14,22 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
-{
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public class FbCompositeMethodCallTranslator : RelationalCompositeMethodCallTranslator
-    {
-	    private static readonly IMethodCallTranslator[] _methodCallTranslators =
-	    {
-		    new FbContainsOptimizedTranslator(),
-		    new FbConvertTranslator(),
-		    new FbDateAddTranslator(),
-		    new FbEndsWithOptimizedTranslator(),
-		    new FbMathTranslator(),
-		    new FbNewGuidTranslator(),
-		    new FbObjectToStringTranslator(),
-		    new FbRegexIsMatchTranslator(),
-		    new FbStartsWithOptimizedTranslator(),
-		    new FbStringIsNullOrWhiteSpaceTranslator(),
-		    new FbStringReplaceTranslator(),
-		    new FbStringSubstringTranslator(),
-		    new FbStringToLowerTranslator(),
-		    new FbStringToUpperTranslator(),
-		    new FbStringTrimTranslator()
-	    };
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using EntityFrameworkCore.FirebirdSql.Utilities;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-	    /// <summary>
-	    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-	    ///     directly from your code. This API may change or be removed in future releases.
-	    /// </summary>
-	    public FbCompositeMethodCallTranslator(
-		    RelationalCompositeMethodCallTranslatorDependencies dependencies)
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
+{ 
+    public sealed class FbCompositeMethodCallTranslator : RelationalCompositeMethodCallTranslator
+	{
+		static readonly List<Type> Translators = TranslatorsHelper.GetTranslators<IMethodCallTranslator>().ToList();
+
+	    public FbCompositeMethodCallTranslator(RelationalCompositeMethodCallTranslatorDependencies dependencies)
 		    : base(dependencies)
 	    {
-		    // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-		    AddTranslators(_methodCallTranslators);
+		    AddTranslators(Translators.Select(t => (IMethodCallTranslator)Activator.CreateInstance(t)));
 	    }
-    }
+	}
 }

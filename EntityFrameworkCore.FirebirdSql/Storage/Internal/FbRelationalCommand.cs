@@ -15,10 +15,13 @@
  *
  */
 
-using System.Collections.Generic;  
-using Microsoft.EntityFrameworkCore.Diagnostics; 
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FirebirdRelationalCommand : RelationalCommand
     {

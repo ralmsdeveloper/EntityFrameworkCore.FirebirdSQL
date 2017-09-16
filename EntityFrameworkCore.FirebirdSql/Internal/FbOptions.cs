@@ -14,12 +14,12 @@
  *
  */
 
-using System; 
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal; 
+using System;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
 using EntityFrameworkCore.FirebirdSql.Utilities;
 
-namespace Microsoft.EntityFrameworkCore.Internal
+namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     public class FbOptions : IFbOptions
     {

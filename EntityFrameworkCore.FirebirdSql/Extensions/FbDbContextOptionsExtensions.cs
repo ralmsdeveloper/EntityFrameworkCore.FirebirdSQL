@@ -16,10 +16,12 @@
 
 using System;
 using System.Data.Common;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using EntityFrameworkCore.FirebirdSql.Infrastructure;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
 
-namespace Microsoft.EntityFrameworkCore
+namespace EntityFrameworkCore.FirebirdSql.Extensions
 {
     public static class FbDbContextOptionsExtensions
     {

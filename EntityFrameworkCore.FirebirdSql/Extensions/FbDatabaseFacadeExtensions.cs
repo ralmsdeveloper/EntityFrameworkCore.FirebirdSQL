@@ -16,11 +16,11 @@
 
 using System;
 using System.Reflection;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
 
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-
-namespace Microsoft.EntityFrameworkCore
+namespace EntityFrameworkCore.FirebirdSql.Extensions
 {
     /// <summary>
     ///     FirebirdSQL specific extension methods for <see cref="DbContext.Database" />.

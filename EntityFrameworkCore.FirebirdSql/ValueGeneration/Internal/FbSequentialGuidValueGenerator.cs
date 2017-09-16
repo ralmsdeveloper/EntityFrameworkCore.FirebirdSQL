@@ -16,29 +16,23 @@
 
 using System;
 using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.ChangeTracking; 
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
-namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
+namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {
     public class FbSequentialGuidValueGenerator  : ValueGenerator<Guid>
-    {
+    { 
+        private readonly IFbOptions _options;
 
-        private readonly IFbOptions _options; 
-        public FbSequentialGuidValueGenerator(IFbOptions options)
-       =>  _options = options;
-        
+	    public FbSequentialGuidValueGenerator(IFbOptions options)
+	    {
+			_options = options;
+		} 
 
         private static readonly RandomNumberGenerator Rng = RandomNumberGenerator.Create();
-
-        /// <summary>
-        ///     Gets a value to be assigned to a property.
-        ///     Creates a GUID where the first 8 bytes are the current UTC date/time (in ticks)
-        ///     and the last 8 bytes are cryptographically random.  This allows for better performance
-        ///     in clustered index scenarios.
-        /// </summary>
-        /// <para>The change tracking entry of the entity for which the value is being generated.</para>
-        /// <returns> The value to be assigned to a property. </returns>
+		 
         public override Guid Next(EntityEntry entry)
         {
             var randomBytes = new byte[8];
@@ -55,11 +49,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration.Internal
             return new Guid(guidBytes);
 
         }
-
-        /// <summary>
-        ///     Gets a value indicating whether the values generated are temporary or permanent. This implementation
-        ///     always returns false, meaning the generated values will be saved to the database.
-        /// </summary>
+		 
         public override bool GeneratesTemporaryValues => false;
 
     }

@@ -23,8 +23,10 @@ using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Update;
 
-namespace Microsoft.EntityFrameworkCore.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
 	public class FbModificationCommandBatch : AffectedCountModificationCommandBatch
 	{
@@ -289,68 +291,65 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 				       secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
 		 
-		protected override void Consume(RelationalDataReader relationalReader)
-		{
-			if (relationalReader == null)
-			{
-				throw new ArgumentNullException(nameof(relationalReader));
-			} 
+		//protected override void Consume(RelationalDataReader relationalReader)
+		//{
+		//	if (relationalReader == null)
+		//	{
+		//		throw new ArgumentNullException(nameof(relationalReader));
+		//	} 
 
-			var dataReader = (FbDataReader)relationalReader.DbDataReader;
-			var commandIndex = 0;
-			try
-			{
-				for (;;)
-				{
-					while (commandIndex < CommandResultSet.Count  && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
-						commandIndex++;
+		//	var dataReader = (FbDataReader)relationalReader.DbDataReader;
+		//	var commandIndex = 0;
+		//	try
+		//	{
+		//		for (;;)
+		//		{
+		//			while (commandIndex < CommandResultSet.Count  && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+		//				commandIndex++;
 
-					var propragation = commandIndex;
-					while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
-						propragation++;
+		//			var propragation = commandIndex;
+		//			while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
+		//				propragation++;
 
-					while (commandIndex < propragation)
-					{
-						commandIndex++;
-						if (!dataReader.Read())
-							throw new DbUpdateConcurrencyException(
-								RelationalStrings.UpdateConcurrencyException(1, 0),
-								ModificationCommands[commandIndex].Entries
-							);
-					}
+		//			while (commandIndex < propragation)
+		//			{
+		//				commandIndex++;
+		//				if (!dataReader.Read())
+		//					throw new DbUpdateConcurrencyException(
+		//						RelationalStrings.UpdateConcurrencyException(1, 0),
+		//						ModificationCommands[commandIndex].Entries
+		//					);
+		//			}
 
-					//check if you've gone through all notifications
-					if (propragation == ModificationCommands.Count)
-						break;
+		//			//check if you've gone through all notifications
+		//			if (propragation == ModificationCommands.Count)
+		//				break;
 
-					var modifications = ModificationCommands[commandIndex];
-					if (!relationalReader.Read())
-						throw new DbUpdateConcurrencyException(
-							RelationalStrings.UpdateConcurrencyException(1, 0),
-							modifications.Entries);
+		//			var modifications = ModificationCommands[commandIndex];
+		//			if (!relationalReader.Read())
+		//				throw new DbUpdateConcurrencyException(
+		//					RelationalStrings.UpdateConcurrencyException(1, 0),
+		//					modifications.Entries);
 
-					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
-					modifications.PropagateResults(bufferFactory.Create(dataReader));
-					dataReader.NextResult();
-					commandIndex++;
-				}
-			}
-			catch (DbUpdateException)
-			{
-				throw;
-			}
-			catch (Exception ex)
-			{
-				throw new DbUpdateException(
-					RelationalStrings.UpdateStoreException,
-					ex,
-					ModificationCommands[commandIndex].Entries);
-			}
-		}
+		//			var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
+		//			modifications.PropagateResults(bufferFactory.Create(dataReader));
+		//			dataReader.NextResult();
+		//			commandIndex++;
+		//		}
+		//	}
+		//	catch (DbUpdateException)
+		//	{
+		//		throw;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		throw new DbUpdateException(RelationalStrings.UpdateStoreException,ex,ModificationCommands[commandIndex].Entries);
+		//	}
+		//}
 		 
-		protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return Task.Run(() => Consume(reader), cancellationToken);
-		}
+		//protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
+		//{
+		//	return Task.Run(() => Consume(reader), cancellationToken);
+		//}
 	}
 }

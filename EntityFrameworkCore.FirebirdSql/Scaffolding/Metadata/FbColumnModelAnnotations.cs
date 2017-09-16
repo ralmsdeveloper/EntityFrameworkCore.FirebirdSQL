@@ -13,10 +13,10 @@
  * modified is included with the above copyright notice.
  *
  */
+  
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
- 
-
-namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
+namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 {
     public class FbDatabaseColumnAnnotations
     {

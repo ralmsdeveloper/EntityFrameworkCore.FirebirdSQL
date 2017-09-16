@@ -19,10 +19,14 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Threading;
 using System;
+using EntityFrameworkCore.FirebirdSql.Extensions;
+using EntityFrameworkCore.FirebirdSql.Internal;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbRelationalConnection : RelationalConnection, IFbRelationalConnection
     { 

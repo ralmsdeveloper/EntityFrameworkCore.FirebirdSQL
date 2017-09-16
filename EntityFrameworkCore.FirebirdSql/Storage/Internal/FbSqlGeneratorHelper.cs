@@ -14,10 +14,12 @@
  *
  */
   
-using System.Text; 
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;  
+using System.Text;
+using EntityFrameworkCore.FirebirdSql.Extensions;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
 	public class FbSqlGenerationHelper : RelationalSqlGenerationHelper
 	{

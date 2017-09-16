@@ -16,8 +16,9 @@
 
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Update;
 
-namespace Microsoft.EntityFrameworkCore.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator
     {

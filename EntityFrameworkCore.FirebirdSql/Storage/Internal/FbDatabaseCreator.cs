@@ -16,13 +16,17 @@
  */
 
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using EntityFrameworkCore.FirebirdSql.Internal;
+using EntityFrameworkCore.FirebirdSql.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using FirebirdClientConnection = FirebirdSql.Data.FirebirdClient.FbConnection;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 { 
     public class FbDatabaseCreator : RelationalDatabaseCreator
     { 
@@ -67,7 +71,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 			{
 					  new FbCreateDatabaseOperation
 					  {
-						  connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
+						  ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
 					  }
 			};
 			return Dependencies.MigrationsSqlGenerator.Generate(operations);

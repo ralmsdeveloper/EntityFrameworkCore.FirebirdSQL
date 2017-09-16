@@ -15,9 +15,9 @@
  */
 
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.EntityFrameworkCore.Migrations.Operations; 
 
-
-namespace Microsoft.EntityFrameworkCore.Migrations.Operations
+namespace EntityFrameworkCore.FirebirdSql.Migrations.Operations
 {
     public class FbDropDatabaseOperation : MigrationOperation
     { 

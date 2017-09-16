@@ -21,13 +21,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
-{
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
+{ 
     public class FbDateAddTranslator : IMethodCallTranslator
     {
         private readonly Dictionary<MethodInfo, string> _methodInfoDatePartMapping = new Dictionary<MethodInfo, string>
@@ -45,14 +42,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddMinutes), new[] { typeof(double) }), "minute" },
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddSeconds), new[] { typeof(double) }), "second" },
         };
-
-        /// <summary>
-        ///     Translates the given method call expression.
-        /// </summary>
-        /// <param name="methodCallExpression">The method call expression.</param>
-        /// <returns>
-        ///     A SQL expression representing the translated MethodCallExpression.
-        /// </returns>
+		 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
             if (_methodInfoDatePartMapping.TryGetValue(methodCallExpression.Method, out var dateInfo))

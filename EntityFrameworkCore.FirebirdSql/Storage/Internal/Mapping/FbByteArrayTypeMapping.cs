@@ -15,7 +15,8 @@
  */
 
 using System; 
-using Microsoft.EntityFrameworkCore.Storage; 
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 { 
 	public class FbByteArrayTypeMapping : ByteArrayTypeMapping

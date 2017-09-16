@@ -14,12 +14,13 @@
  *
  */
 
-using System.Linq; 
+using System.Linq;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Storage; 
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Update;
 
-namespace Microsoft.EntityFrameworkCore.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public class FbModificationCommandBatchFactory : IModificationCommandBatchFactory
     {

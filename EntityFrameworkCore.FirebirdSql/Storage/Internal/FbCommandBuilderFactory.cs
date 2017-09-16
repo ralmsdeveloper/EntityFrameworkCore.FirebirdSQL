@@ -14,10 +14,12 @@
  *
  */
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Internal; 
- 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
 
     public class FbCommandBuilderFactory : IRelationalCommandBuilderFactory

@@ -14,33 +14,21 @@
  *
  */
 
-using System;
-using System.Collections.Generic;
+using System; 
 using System.Linq.Expressions;
-
+using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Query.Sql;
+using Microsoft.EntityFrameworkCore.Storage; 
 
-namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
-	/// <summary>
-	///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-	///     directly from your code. This API may change or be removed in future releases.
-	/// </summary>
 	public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
 	{
 		protected override string TypedTrueLiteral => "TRUE";
 		protected override string TypedFalseLiteral => "FALSE";
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
-		public FbQuerySqlGenerator(
-			QuerySqlGeneratorDependencies dependencies,
-			SelectExpression selectExpression)
+		
+		public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies,SelectExpression selectExpression)
 			: base(dependencies, selectExpression)
 		{
 		}
@@ -48,7 +36,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 		public override Expression VisitSelect(SelectExpression selectExpression)
 		{
 			base.VisitSelect(selectExpression);
-
 			//Fix Any()
 			if (selectExpression.Type == typeof(bool))
 				Sql.Append(" FROM RDB$DATABASE");
@@ -72,24 +59,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 				Visit(selectExpression.Offset);
 			}
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		
 		protected override void GenerateLimitOffset(SelectExpression selectExpression)
 		{
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
-		public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
-		{
-			return base.VisitSqlFunction(sqlFunctionExpression);
-		}
-
 
 		protected override void GenerateProjection(Expression projection)
 		{
@@ -127,25 +100,32 @@ namespace Microsoft.EntityFrameworkCore.Query.Sql.Internal
 			}
 
 			var expr = base.VisitBinary(binaryExpression);
-
 			return expr;
 		}
 
-		public virtual Expression VisitSubString(FbSubStringExpression sbString)
+		public virtual Expression VisitSubString(FbSubStringExpression substringExpression)
 		{
-			Sql.Append(" SUBSTRING(");
-			Visit(sbString.SubjectExpression);
+			Sql.Append("SUBSTRING(");
+			Visit(substringExpression.ValueExpression);
 			Sql.Append(" FROM ");
-			Visit(sbString.FromExpression);
-			Sql.Append(" FOR ");
-			Visit(sbString.ForExpression);
+			Visit(substringExpression.FromExpression);
+			if (substringExpression.ForExpression != null)
+			{
+				Sql.Append(" FOR ");
+				Visit(substringExpression.ForExpression);
+			}
 			Sql.Append(")");
-			return sbString;
+			return substringExpression;
 		}
 
-		public Expression VisitRegexp(FbRegexpExpression regexpExpression)
+		public virtual Expression VisitExtract(FbExtractExpression extractExpression)
 		{
-			throw new NotImplementedException();
-		}
+			Sql.Append("EXTRACT(");
+			Sql.Append(extractExpression.Part);
+			Sql.Append(" FROM ");
+			Visit(extractExpression.ValueExpression);
+			Sql.Append(")");
+			return extractExpression;
+		} 
 	}
 }

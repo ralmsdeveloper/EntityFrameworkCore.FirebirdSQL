@@ -17,13 +17,11 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
+
     public class FbStartsWithOptimizedTranslator : IMethodCallTranslator
     {
         private static readonly MethodInfo _methodStringOf
@@ -48,7 +46,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                 // Operation Simple With LIKE Sample (LIKE 'FIREBIRD%')
                 return new LikeExpression(
                     methodStartCall.Object,
-                    Expression.Constant(System.Text.RegularExpressions.Regex.Replace((string)constantPatternExpr.Value, @"([%_\\'])", @"\$1") + '%')
+                    Expression.Constant(System.Text.RegularExpressions.Regex.Replace((string)constantPatternExpr?.Value, @"([%_\\'])", @"\$1") + '%')
                 );
             } 
 

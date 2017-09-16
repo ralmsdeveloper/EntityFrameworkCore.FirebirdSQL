@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
 // ReSharper disable once CheckNamespace
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
-{
-
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
+{ 
     public class FbCommandBuilder : IRelationalCommandBuilder
     {
-        private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger;
-
+        private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger; 
         private readonly IndentedStringBuilder _commandTextBuilder = new IndentedStringBuilder();
 
         public FbCommandBuilder(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper typeMapper)

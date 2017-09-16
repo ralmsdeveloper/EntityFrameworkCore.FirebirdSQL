@@ -18,11 +18,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using EntityFrameworkCore.FirebirdSql.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal; 
+using Microsoft.EntityFrameworkCore.Storage; 
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {

@@ -17,21 +17,12 @@
 using System;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
-{
-	/// <summary>
-	///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-	///     directly from your code. This API may change or be removed in future releases.
-	/// </summary>
-	///   
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
+{ 
 	public class FbDateTimeNowTranslator : IMemberTranslator
-	{
-		// <summary>
-		//     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		//     directly from your code.This API may change or be removed in future releases.
-		// </summary>
+	{ 
 		public virtual Expression Translate(MemberExpression memberExpression)
 		{
 			if (memberExpression.Expression == null

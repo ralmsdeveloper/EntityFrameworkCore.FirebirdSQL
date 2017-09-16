@@ -14,9 +14,9 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
+namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 {
-    class FbDatabaseModelAnnotationNames
+    public class FbDatabaseModelAnnotationNames
     {
         public const string Prefix = "FbDatabaseModel:";
         public const string Expression = Prefix + nameof(Expression);

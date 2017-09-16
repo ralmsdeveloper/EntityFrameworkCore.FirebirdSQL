@@ -17,8 +17,9 @@
 using System;
 using System.Collections.Concurrent;   
 using FirebirdSql.Data.FirebirdClient;
+using FirebirdSql.Data.Services;
 using System.Data.Common;
-using System.Data;
+using System.Data; 
 
 namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
@@ -42,7 +43,7 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
 					using (var _connection = new FbConnection(csb.ConnectionString))
 					{
 						_connection.Open();
-						ServerVersion = FirebirdSql.Data.Services.FbServerProperties.ParseServerVersion(_connection.ServerVersion);
+						ServerVersion = FbServerProperties.ParseServerVersion(_connection.ServerVersion);
 					}
 				}
 				catch
@@ -65,7 +66,7 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
 				}
 				try
 				{
-					ServerVersion = FirebirdSql.Data.Services.FbServerProperties.ParseServerVersion(connection.ServerVersion);
+					ServerVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
 					return this;
 				}
 				finally

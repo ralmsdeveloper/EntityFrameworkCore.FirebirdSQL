@@ -14,14 +14,15 @@
  *
  */
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
-using System;
+using Microsoft.EntityFrameworkCore.Update;
+using EntityFrameworkCore.FirebirdSql.Storage.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
 
     public class FbBatchExecutor : IBatchExecutor

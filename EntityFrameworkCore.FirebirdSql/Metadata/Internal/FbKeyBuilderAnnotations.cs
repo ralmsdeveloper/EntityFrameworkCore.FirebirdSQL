@@ -14,7 +14,9 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Metadata.Internal
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
+namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
 {
     public class FbKeyBuilderAnnotations : FbKeyAnnotations
     {

@@ -14,33 +14,25 @@
  *
  */
 
+//$Authors = Jiri Cincura (jiri@cincura.net), Rafael Almeida(ralms@ralms.net)
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using EntityFrameworkCore.FirebirdSql.Utilities;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
-    {
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
-            : base(dependencies)
-        {
-            var FbTranslators = new List<IMemberTranslator>
-            {
-                new FbStringLengthTranslator(),
-                new FbDateTimeNowTranslator(),
-                new FbDateTimeDateComponentTranslator(),
-                new FbDateTimeDatePartComponentTranslator()
-            };
+	public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
+	{
+		static readonly List<Type> Translators = TranslatorsHelper.GetTranslators<IMemberTranslator>().ToList();
 
-            AddTranslators(FbTranslators);
-        }
-    }
+		public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
+			: base(dependencies)
+		{
+			AddTranslators(Translators.Select(t => (IMemberTranslator)Activator.CreateInstance(t)));
+		}
+	}
 }

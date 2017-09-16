@@ -14,7 +14,9 @@
  *
  */
 
-namespace Microsoft.EntityFrameworkCore.Scaffolding.Metadata
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+
+namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 {
     public static class FbDatabaseModelExtensions
     {

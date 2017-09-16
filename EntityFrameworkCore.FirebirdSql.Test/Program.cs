@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-namespace EntityFrameworkCore.FirebirdSql.Test
+using static System.Console;
+namespace EntityFrameworkCore.FirebirdSql.Console.Test
 {
     class Program
     {
@@ -12,9 +12,9 @@ namespace EntityFrameworkCore.FirebirdSql.Test
         {
             //Command Sample Scaffolding
             //Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=C:\FirebirdEFCore.FDB;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;Packet Size=8192;ServerType=0;" EntityFrameworkCore.FirebirdSql -OutputDir Models -Context "FirebirdDbContext" -DataAnnotations -force -verbose
-            Console.WriteLine("# Wait... ");
+            WriteLine("# Wait... ");
             var cx = new Context();
-            Console.WriteLine("# Deleting database...\n");
+            WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
             cx.Database.EnsureCreated();
 
@@ -63,7 +63,7 @@ namespace EntityFrameworkCore.FirebirdSql.Test
             cx.SaveChanges();
 			 
 			var AuthorsUpdate1 = cx.Author.Find((long)4); 
-            Console.WriteLine($"Before *** {AuthorsUpdate1.FirstName}");
+            WriteLine($"Before *** {AuthorsUpdate1.FirstName}");
             cx.Attach(AuthorsUpdate1);
             AuthorsUpdate1.FirstName = $"Author Modified {Guid.NewGuid()}";
              
@@ -87,16 +87,17 @@ namespace EntityFrameworkCore.FirebirdSql.Test
                             .Include(p => p.Books).Where(p=>p.AuthorId<10)
                              .ToList();
 
-            Console.WriteLine($"After *** {Authors.First().FirstName}");
+            WriteLine($"After *** {Authors.First().FirstName}");
             foreach (var item in Authors)
             {
-                Console.WriteLine($"Author #->{item.FirstName}  {item.LastName} ");
-                Console.WriteLine($"--------------BOOKS----------------");
+                WriteLine($"Author #->{item.FirstName}  {item.LastName} ");
+                WriteLine($"--------------BOOKS----------------");
                 foreach (var book in item.Books)
-                    Console.WriteLine($"Book: {book.Title}");
-                Console.WriteLine($"-----------------------------------");
+                    WriteLine($"Book: {book.Title}");
+
+                WriteLine($"-----------------------------------");
             }
-            Console.ReadKey();
+            ReadKey();
         }
     }
 }

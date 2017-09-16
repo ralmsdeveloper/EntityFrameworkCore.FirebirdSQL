@@ -17,17 +17,13 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class FbEndsWithOptimizedTranslator : IMethodCallTranslator
     {
-        private static readonly MethodInfo _methodInfo
-            = typeof(string).GetRuntimeMethod(nameof(string.EndsWith), new[] { typeof(string) });
+        private static readonly MethodInfo _methodInfo  = typeof(string).GetRuntimeMethod(nameof(string.EndsWith), new[] { typeof(string) });
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
@@ -55,8 +51,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
                     : Expression.OrElse(
                         endsWithExpression,
                         Expression.Equal(patternExpression, Expression.Constant(string.Empty)));
-            }
-
+            } 
             return null;
         }
     }

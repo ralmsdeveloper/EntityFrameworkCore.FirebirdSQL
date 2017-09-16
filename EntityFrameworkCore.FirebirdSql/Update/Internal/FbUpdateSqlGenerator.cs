@@ -18,20 +18,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities; 
+using EntityFrameworkCore.FirebirdSql.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;  
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal; 
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Update;
 
-namespace Microsoft.EntityFrameworkCore.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
     {
 		private readonly IRelationalTypeMapper _typeMapperRelational;
-		public FbUpdateSqlGenerator(
-			UpdateSqlGeneratorDependencies dependencies,
-			IRelationalTypeMapper typeMapper)
+		public FbUpdateSqlGenerator(UpdateSqlGeneratorDependencies dependencies, IRelationalTypeMapper typeMapper)
 			: base(dependencies)
 		{
 			_typeMapperRelational = typeMapper;
@@ -40,8 +39,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 		public override ResultSetMapping AppendInsertOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
 		{
 			return AppendBlockInsertOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
-		}
-
+		} 
 
 		public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
@@ -120,26 +118,19 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			}
 		}
 
-	    public override ResultSetMapping AppendUpdateOperation(
-		    StringBuilder commandStringBuilder,
-		    ModificationCommand command,
-		    int commandPosition)
+	    public override ResultSetMapping AppendUpdateOperation( StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
 	    {
 		   return AppendBlockUpdateOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
 	    }
 
 
-	    public override ResultSetMapping AppendDeleteOperation(
-		    StringBuilder commandStringBuilder,
-		    ModificationCommand command,
-		    int commandPosition)
+	    public override ResultSetMapping AppendDeleteOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
 	    {
 		  return AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
 		} 
 
 
-		public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands,
-			int commandPosition)
+		public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
 			 
 			commandStringBuilder.Clear();
@@ -171,14 +162,15 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
 		private void AppendWhereClauseCustom(StringBuilder commandStringBuilder, ColumnModification[] col)
 		{
-			if (!col.Any()) return;
+			if (!col.Any())
+				return;
+
 			commandStringBuilder.Append(" WHERE ");
 			foreach (var item in col)
 			{
-				commandStringBuilder
-					.Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
-					.Append("=")
-					.Append(item.Value);
+				commandStringBuilder.Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
+				                    .Append("=")
+				                    .Append(item.Value);
 			}
 		}
 
@@ -190,7 +182,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			{
 				var operations = modificationCommands[i].ColumnModifications;
 				var conditionsOperations = operations.Where(o => o.IsCondition).ToArray();
-				commandStringBuilder.Append($"DELETE FROM {SqlGenerationHelper.DelimitIdentifier(name)} ");
+
+				commandStringBuilder.Append("DELETE FROM ");
+				commandStringBuilder.Append(SqlGenerationHelper.DelimitIdentifier(name));
 				AppendWhereClauseCustom(commandStringBuilder, conditionsOperations);
 				commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
 				AppendUpdateOrDeleteOutputClause(commandStringBuilder);
@@ -201,10 +195,9 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
 		private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
 		{
-			//Increment of updates 
-			commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
-								.AppendLine("   AffectedRows=AffectedRows+1;");
 
+			commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
+								.AppendLine("   AffectedRows=AffectedRows+1;"); 
 
 		}
 
@@ -222,13 +215,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			}
 		}
 
-		protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name,
-			string schema, int commandPosition)
+		protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)
 		{
-
-			commandStringBuilder
-				.AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
-				.AppendLine("   SUSPEND;");
+			commandStringBuilder.AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
+			                    .AppendLine("   SUSPEND;");
 
 			return ResultSetMapping.LastInResultSet;
 		}
@@ -253,18 +243,20 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 				if (typeName == null)
 				{
 					if (property.ClrType == typeof(string))
-						typeName = _typeMapperRelational.StringMapper?.FindMapping(
-							property.IsUnicode() ?? propertyDefault?.IsUnicode() ?? true,
-							keyOrIndex: false,
-							maxLength: null).StoreType;
+					{
+						typeName = _typeMapperRelational.StringMapper?.FindMapping(property.IsUnicode()
+							?? propertyDefault?.IsUnicode()
+							?? true,false,null).StoreType;
+					}
+
 					else if (property.ClrType == typeof(byte[]))
-						typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(rowVersion: false, keyOrIndex: false, size: null).StoreType;
+						typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(false, false,null).StoreType;
 					else
 						typeName = _typeMapperRelational.FindMapping(property.ClrType).StoreType;
 				}
 			}
 			if (property.ClrType == typeof(byte[]) && typeName != null)
-				return property.IsNullable ? "varbinary(8)" : "binary(8)";
+				return "BLOB SUB_TYPE BINARY";
 
 			return typeName;
 		} 

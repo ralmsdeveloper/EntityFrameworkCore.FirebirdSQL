@@ -14,9 +14,9 @@
  *
  */
 
-using System; 
+using System;
 
-namespace Microsoft.EntityFrameworkCore.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Extensions
 {
     public static class FbStringExtension
 	{ 

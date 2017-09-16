@@ -17,30 +17,26 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
-{
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
+namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
+{ 
     public class FbContainsOptimizedTranslator : IMethodCallTranslator
     {
-        static readonly MethodInfo _methodInfo
-           = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
+		static readonly MethodInfo MethodInfo = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
 
-        public virtual Expression Translate(MethodCallExpression methodCallExpression)
-        {
-             return  methodCallExpression.Method.Equals(_methodInfo)
-                ? Expression.GreaterThan(
-                    new SqlFunctionExpression("POSITION", typeof(int), new[]
-                    {
-                     methodCallExpression.Arguments[0],
-                       methodCallExpression.Object
+	    public virtual Expression Translate(MethodCallExpression methodCallExpression)
+	    {
+		    if (!methodCallExpression.Method.Equals(MethodInfo))
+			    return null;
 
-                    }), Expression.Constant(0))
-                : null;
-        }
-            
-    }
+		    return Expression.GreaterThan(
+			    new SqlFunctionExpression("POSITION", typeof(int), new[]
+			    {
+				    methodCallExpression.Arguments[0],
+				    methodCallExpression.Object,
+			    }),
+			    Expression.Constant(0));
+	    }
+	}
 }

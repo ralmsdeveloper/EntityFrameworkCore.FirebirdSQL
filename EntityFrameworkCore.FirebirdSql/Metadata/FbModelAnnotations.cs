@@ -14,10 +14,10 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata; 
 
-namespace Microsoft.EntityFrameworkCore.Metadata
+namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public class FbModelAnnotations : RelationalModelAnnotations, IFbModelAnnotations
     {
