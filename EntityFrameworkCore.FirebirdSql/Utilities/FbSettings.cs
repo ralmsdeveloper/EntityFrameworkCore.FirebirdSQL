@@ -44,6 +44,7 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
 					{
 						_connection.Open();
 						ServerVersion = FbServerProperties.ParseServerVersion(_connection.ServerVersion);
+						_connection.Close();
 					}
 				}
 				catch

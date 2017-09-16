@@ -13,7 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
-
+  
 using Microsoft.EntityFrameworkCore.Scaffolding;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
     {
         public virtual string GenerateUseProvider(string connectionString, string language)
         {
-            return $".UseFirebid(\"{connectionString}\")";
+            return $".UseFirebird(@\"{connectionString}\")";
         }
     }
 }

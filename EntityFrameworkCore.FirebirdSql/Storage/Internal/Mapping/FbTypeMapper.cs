@@ -72,10 +72,11 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 				{ "BOOLEAN", _boolean },
 				{ "SMALLINT", _smallint },
 				{ "INTEGER", _integer },
-				{ "BIGINT", _binary },
+				{ "BIGINT", _bigint }, 
 				{ "CHAR", _char },
 				{ "VARCHAR", _varchar },
 				{ "BLOB SUB_TYPE TEXT", _clob },
+				{ "BLOB SUB_TYPE BINARY", _binary },
 				{ "FLOAT", _float },
 				{ "DOUBLE PRECISION", _double },
 				{ "DECIMAL", _decimal },
@@ -94,9 +95,10 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 				{ typeof(float), _float },
 				{ typeof(double), _double},
 				{ typeof(decimal), _decimal },
+				{ typeof(byte[]), _binary },
 				{ typeof(DateTime), _timeStamp },
 				{ typeof(TimeSpan), _time },
-				{ typeof(Guid), _guid },
+				{ typeof(Guid), _guid }
 			};
 
 			_disallowedMappings = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

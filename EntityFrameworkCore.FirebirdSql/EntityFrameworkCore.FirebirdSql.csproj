@@ -17,11 +17,11 @@
     <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL;Entity Framework Core;entity-framework-core;EF;Data;O/RM</PackageTags>
     <Description>FirebirdSQL database provider for Entity Framework Core.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>EntityFrameworkCore.FirebirdSQL</PackageId>
+    <PackageId>EntityFrameworkCore.FirebirdSql</PackageId>
     <Product>EntityFrameworkCore.FirebirdSQL</Product>
     <PackageProjectUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</PackageProjectUrl>
     <PackageIconUrl>https://firebirdsql.org/img/site/fb.jpg</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
   </PropertyGroup>
 

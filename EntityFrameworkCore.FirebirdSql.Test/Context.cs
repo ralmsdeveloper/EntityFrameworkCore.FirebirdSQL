@@ -1,11 +1,25 @@
-﻿  
+﻿/*
+ *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
+ *
+ *                    EntityFrameworkCore.FirebirdSql
+ *
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+ * 
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using EntityFrameworkCore.FirebirdSql.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
+using Microsoft.EntityFrameworkCore;  
 
 namespace EntityFrameworkCore.FirebirdSql.Console.Test
 {
@@ -16,14 +30,13 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
         public DbSet<Book> Book { get; set; } 
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {  
-
+        {   
             string connectionString =
             "User=SYSDBA;" +
-            "Password=#j@ms0ft;" +
+            "Password=masterkey;" +
             $"Database=localhost:{System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
             "DataSource=localhost;" +
-            "Port=2017;"+
+            "Port=3050;"+
             "Dialect=3;" +
             "Charset=NONE;" +
             "Role=;" +
@@ -33,10 +46,7 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
             "MaxPoolSize=50;" +
             "Packet Size=8192;" +
             "ServerType=0"; 
-            optionsBuilder.UseFirebird(connectionString);
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new TraceLoggerProvider());
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+            optionsBuilder.UseFirebird(connectionString);  
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {}
@@ -50,8 +60,9 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
         public string TestString { get; set; } 
 
         public DateTime TestDate { get; set; }
-         
-        public Guid TestGuid{ get; set; }
+
+	    [Column(TypeName = "CHAR(16)")]
+		public string TestGuid { get; set; }
 
 		public byte[] TestBytes { get; set; }
 
