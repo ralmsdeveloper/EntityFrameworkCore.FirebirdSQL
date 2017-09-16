@@ -45,7 +45,7 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 						TestString = "Rafael",
 						TestInt = i,
 						TestDate = DateTime.Now.AddMilliseconds(1),
-						TestGuid = Guid.NewGuid().ToString(),
+						TestGuid = Guid.NewGuid(),
 						TestBytes = System.Text.Encoding.UTF8.GetBytes("RAFAEL ALMEIDA"),
 						TestDecimal = i,
 						TestDouble = i,

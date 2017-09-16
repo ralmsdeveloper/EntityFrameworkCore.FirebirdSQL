@@ -30,12 +30,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         private readonly IRelationalValueBufferFactoryFactory _valueBufferFactoryFactory;
         private readonly IDbContextOptions _options;
 
-        public FbModificationCommandBatchFactory(
-            IRelationalCommandBuilderFactory commandBuilderFactory,
-            ISqlGenerationHelper sqlGenerationHelper,
-            IFbUpdateSqlGenerator updateSqlGenerator,
-            IRelationalValueBufferFactoryFactory valueBufferFactoryFactory,
-            IDbContextOptions options)
+        public FbModificationCommandBatchFactory(IRelationalCommandBuilderFactory commandBuilderFactory,ISqlGenerationHelper sqlGenerationHelper, IFbUpdateSqlGenerator updateSqlGenerator,IRelationalValueBufferFactoryFactory valueBufferFactoryFactory, IDbContextOptions options)
         {
             _commandBuilderFactory = commandBuilderFactory;
             _sqlGenerationHelper = sqlGenerationHelper;
@@ -46,13 +41,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
         public virtual ModificationCommandBatch Create()
         {
-            var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault(); 
-            return new FbModificationCommandBatch(
-                _commandBuilderFactory,
-                _sqlGenerationHelper,
-                _updateSqlGenerator,
-                _valueBufferFactoryFactory,
-                optionsExtension?.MaxBatchSize);
+            var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault();
+			return new FbModificationCommandBatch(_commandBuilderFactory,_sqlGenerationHelper,_updateSqlGenerator,_valueBufferFactoryFactory,optionsExtension?.MaxBatchSize);
         }
     }
 }

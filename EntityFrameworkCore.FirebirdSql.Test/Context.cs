@@ -60,9 +60,8 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
         public string TestString { get; set; } 
 
         public DateTime TestDate { get; set; }
-
-	    [Column(TypeName = "CHAR(16)")]
-		public string TestGuid { get; set; }
+		 
+		public Guid TestGuid { get; set; }
 
 		public byte[] TestBytes { get; set; }
 

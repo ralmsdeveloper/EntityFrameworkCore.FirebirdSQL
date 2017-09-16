@@ -20,16 +20,17 @@ using System.Linq;
 using System.Text;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;  
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Update;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
-    public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
-    {
+	public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
+	{
 		private readonly IRelationalTypeMapper _typeMapperRelational;
+
 		public FbUpdateSqlGenerator(UpdateSqlGeneratorDependencies dependencies, IRelationalTypeMapper typeMapper)
 			: base(dependencies)
 		{
@@ -39,7 +40,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		public override ResultSetMapping AppendInsertOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
 		{
 			return AppendBlockInsertOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
-		} 
+		}
 
 		public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
@@ -74,17 +75,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		}
 
 		private void AppendBlockVariable(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, string commaAppend)
-		{
-
+		{ 
 			foreach (var column in operations)
 			{
 				var _type = GetDataType(column.Property);
-				if (!_type.Equals("CHAR(16) CHARACTER SET OCTETS", StringComparison.InvariantCultureIgnoreCase))
-				{
-					commandStringBuilder.Append(commaAppend);
-					commandStringBuilder.Append($"{column.ParameterName}  {_type}=@{column.ParameterName}");
-					commaAppend = ",";
-				}
+
+				commandStringBuilder.Append(commaAppend);
+				commandStringBuilder.Append($"{column.ParameterName}  {_type}=@{column.ParameterName}");
+				commaAppend = ","; 
 			}
 		}
 
@@ -99,40 +97,29 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 						SqlGenerationHelper,
 						(sb, o, helper) =>
 						{
-							var property = GetDataType(o.Property);
-
 							if (o.IsWrite)
 							{
-								switch (property)
-								{
-									case "CHAR(16) CHARACTER SET OCTETS":
-										sb.Append($"CHAR_TO_UUID('{o.Value}')");
-										break;
-									default:
-										sb.Append(":").Append(o.ParameterName);
-										break;
-								}
+								sb.Append(":").Append(o.ParameterName); 
 							}
 						})
 					.Append(")");
 			}
 		}
 
-	    public override ResultSetMapping AppendUpdateOperation( StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
-	    {
-		   return AppendBlockUpdateOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
-	    }
+		public override ResultSetMapping AppendUpdateOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
+		{
+			return AppendBlockUpdateOperation(commandStringBuilder, new StringBuilder(), new[] { command }, commandPosition);
+		}
 
 
-	    public override ResultSetMapping AppendDeleteOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
-	    {
-		  return AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
-		} 
+		public override ResultSetMapping AppendDeleteOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
+		{
+			return AppendBlockDeleteOperation(commandStringBuilder, new[] { command }, commandPosition);
+		}
 
 
 		public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder headBlockStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
-		{
-			 
+		{ 
 			commandStringBuilder.Clear();
 			var commaAppend = string.Empty;
 			for (var i = 0; i < modificationCommands.Count; i++)
@@ -144,11 +131,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 				AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
 				commaAppend = ",";
 				commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
-				.AppendJoinUpadate(writeOperations,SqlGenerationHelper,(sb, o, helper) =>
-					{
-						if (o.IsWrite)
-							sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
-					});
+				.AppendJoinUpadate(writeOperations, SqlGenerationHelper, (sb, o, helper) =>
+					  {
+						  if (o.IsWrite)
+							  sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
+					  });
 				AppendWhereClauseCustom(commandStringBuilder, conditionsOperations);
 				commandStringBuilder.AppendLine(SqlGenerationHelper.StatementTerminator);
 				AppendUpdateOrDeleteOutputClause(commandStringBuilder);
@@ -166,15 +153,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			foreach (var item in col)
 			{
 				commandStringBuilder.Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
-				                    .Append("=")
-				                    .Append(item.Value);
+									.Append("=")
+									.Append(item.Value);
 			}
 		}
 
 		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
-			 
-			var name = modificationCommands[0].TableName; 
+
+			var name = modificationCommands[0].TableName;
 			for (var i = 0; i < modificationCommands.Count; i++)
 			{
 				var operations = modificationCommands[i].ColumnModifications;
@@ -194,11 +181,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 
 			commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
-								.AppendLine("   AffectedRows=AffectedRows+1;"); 
+								.AppendLine("   AffectedRows=AffectedRows+1;");
 
 		}
 
-		private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations,IReadOnlyList<ColumnModification> allOperations)
+		private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
 		{
 			if (allOperations.Count > 0 && allOperations[0] == operations[0])
 			{
@@ -211,7 +198,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)
 		{
 			commandStringBuilder.AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
-			                    .AppendLine("   SUSPEND;");
+								.AppendLine("   SUSPEND;");
 
 			return ResultSetMapping.LastInResultSet;
 		}
@@ -239,11 +226,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 					{
 						typeName = _typeMapperRelational.StringMapper?.FindMapping(property.IsUnicode()
 							?? propertyDefault?.IsUnicode()
-							?? true,false,null).StoreType;
+							?? true, false, null).StoreType;
 					}
 
 					else if (property.ClrType == typeof(byte[]))
-						typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(false, false,null).StoreType;
+						typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(false, false, null).StoreType;
 					else
 						typeName = _typeMapperRelational.FindMapping(property.ClrType).StoreType;
 				}
@@ -252,6 +239,6 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 				return "BLOB SUB_TYPE BINARY";
 
 			return typeName;
-		} 
+		}
 	}
 }

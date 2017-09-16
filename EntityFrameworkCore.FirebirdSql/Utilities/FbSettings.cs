@@ -34,6 +34,9 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
 
 		public FbSettings GetSettings(string connectionString)
 		{
+			if (ServerVersion != null)
+				return this;
+
 			var csb = new FbConnectionStringBuilder(connectionString);
 
 			return Settings.GetOrAdd(csb.ConnectionString, key =>
@@ -50,13 +53,16 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
 				catch
 				{
 					//
-				}
+				} 
 				return this;
 			});
 		}
 
 		public FbSettings GetSettings(DbConnection connection)
 		{
+			if (ServerVersion != null)
+				return this;
+
 			var csb = new FbConnectionStringBuilder(connection.ConnectionString); 
 
 			return Settings.GetOrAdd(csb.ConnectionString, key =>
