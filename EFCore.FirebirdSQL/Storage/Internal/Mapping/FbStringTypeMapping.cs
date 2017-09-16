@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -13,28 +13,34 @@
  * modified is included with the above copyright notice.
  *
  */
-
-using System;
-using System.Data;
-using System.Data.Common;
-
-using System.Collections.Concurrent;
+  
+using System.Data.Common; 
 using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FbStringTypeMapping : StringTypeMapping
     {
-        readonly FbDbType _fbDbType;
+		readonly FbDbType _fbDbType;
 
-        public FbStringTypeMapping(string storeType, FbDbType fbDbType, bool unicode = false,int? size=null)
-            : base(storeType)
-        {
-            _fbDbType = fbDbType;
-        }
+	    public FbStringTypeMapping(string storeType, FbDbType fbDbType, int? size = null)
+		    : base(storeType, unicode: true, size: size)
+	    {
+		    _fbDbType = fbDbType;
+	    }
 
-        protected override void ConfigureParameter(DbParameter parameter)
-            => ((FbParameter)parameter).FbDbType = _fbDbType;
-    }
+	    protected override void ConfigureParameter(DbParameter parameter)
+	    {
+		    ((FbParameter)parameter).FbDbType = _fbDbType;
+	    }
+
+	    protected override string GenerateNonNullSqlLiteral(object value)
+	    {
+			//Credit Jiri Cincura
+		    return IsUnicode
+			           ? $"_UTF8'{EscapeSqlLiteral((string)value)}'"
+			           : $"'{EscapeSqlLiteral((string)value)}'";
+	    }
+	}
  
 }

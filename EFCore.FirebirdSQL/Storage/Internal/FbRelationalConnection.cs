@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -15,8 +15,7 @@
  */
 
 using System.Data.Common;
-using System.Threading.Tasks; 
-
+using System.Threading.Tasks;  
 using System.Data;
 using System.Threading;
 using System;
@@ -26,8 +25,7 @@ using FirebirdSql.Data.FirebirdClient;
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
     public class FbRelationalConnection : RelationalConnection, IFbRelationalConnection
-    {
-        
+    { 
         public FbRelationalConnection(RelationalConnectionDependencies dependencies)
             : base(dependencies)
         {
@@ -51,17 +49,14 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         public override bool IsMultipleActiveResultSetsEnabled => true;
 		 
-        public override async Task<IDbContextTransaction> BeginTransactionAsync(
-            IsolationLevel isolationLevel,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (CurrentTransaction != null)
             {
                 throw new InvalidOperationException(RelationalStrings.TransactionAlreadyStarted);
             }
 
-            await OpenAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
+            await OpenAsync(cancellationToken: cancellationToken).ConfigureAwait(false); 
             return BeginTransactionWithNoPreconditions(isolationLevel, cancellationToken);
         }
 
@@ -70,25 +65,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             var dbTransaction = (DbConnection as FbConnection).BeginTransaction(isolationLevel);
 
             CurrentTransaction
-                = new FbRelationalTransaction(
-                    this,
-                    dbTransaction,
-                    Dependencies.TransactionLogger,
-                    transactionOwned: true);
+                = new FbRelationalTransaction( this, dbTransaction, Dependencies.TransactionLogger, transactionOwned: true);
 
-            Dependencies.TransactionLogger.TransactionStarted(
-                this,
-                dbTransaction,
-                CurrentTransaction.TransactionId,
-                DateTimeOffset.UtcNow);
-
+            Dependencies.TransactionLogger.TransactionStarted(this, dbTransaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
             return CurrentTransaction;
         }
-
-        /// <summary>
-        ///     Specifies an existing <see cref="DbTransaction" /> to be used for database operations.
-        /// </summary>
-        /// <param name="transaction"> The transaction to be used. </param>
+		 
         public override IDbContextTransaction UseTransaction(DbTransaction transaction)
         {
             if (transaction == null)
@@ -105,19 +87,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                     throw new InvalidOperationException(RelationalStrings.TransactionAlreadyStarted);
                 }
 
-                Open();
-
-                CurrentTransaction = new FbRelationalTransaction(
-                    this, 
-                    transaction, 
-                    Dependencies.TransactionLogger, 
-                    transactionOwned: false);
-
-                Dependencies.TransactionLogger.TransactionUsed(
-                    this, 
-                    transaction, 
-                    CurrentTransaction.TransactionId,
-                    DateTimeOffset.UtcNow);
+                Open(); 
+                CurrentTransaction = new FbRelationalTransaction(this, transaction, Dependencies.TransactionLogger, transactionOwned: false);
+                Dependencies.TransactionLogger.TransactionUsed(this, transaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
             }
 
             return CurrentTransaction;
@@ -128,9 +100,9 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
             if (CurrentTransaction == null)
             {
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
-            }
+            } 
 
-            await (CurrentTransaction as FbRelationalTransaction).CommitAsync().ConfigureAwait(false);
+            await ((FbRelationalTransaction) CurrentTransaction).CommitAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public virtual async Task RollbackTransactionAsync(CancellationToken cancellationToken=default(CancellationToken))
@@ -140,7 +112,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
             }
 
-            await (CurrentTransaction as FbRelationalTransaction).RollbackAsync().ConfigureAwait(false);
+            await ((FbRelationalTransaction) CurrentTransaction).RollbackAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

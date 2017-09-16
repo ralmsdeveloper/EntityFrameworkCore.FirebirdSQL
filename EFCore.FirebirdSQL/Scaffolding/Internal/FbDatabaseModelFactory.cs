@@ -3,7 +3,7 @@
 // project root for license information. 
 
 /*                 
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *     
 *
  *              
@@ -36,7 +36,7 @@
 // http://www.firebirdfaq.org/faq174/
 // https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
 // Credit Query Schema Table:
-// Jean Ressouche: https://raw.githubusercontent.com/souchprod/EntityFrameworkCore.FirebirdSQL/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
+// Jean Ressouche: https://raw.githubusercontent.com/souchprod/EntityFrameworkCore.FirebirdSql/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
 
 using System;
 using System.Collections.Generic;

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
  
 
-namespace EntityFrameworkCore.FirebirdSQL.Test
+namespace EntityFrameworkCore.FirebirdSql.Test
 {
     public class Context : DbContext
     {

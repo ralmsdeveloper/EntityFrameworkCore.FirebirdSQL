@@ -3,23 +3,28 @@
 **Attention! This repository will be merged with the [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/) repository, intent is to unite all our efforts.**
 **The same will be officially integrated with FirebirdSQL in a few days!**
 
+I want to thank Jiri Cincura for helping me see the growth of the project. 
+For striving to help by analyzing every part of the code!
 
 **Atenção! Este repositório será mesclado com o repositório [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/), a intenção é unir todos nossos esforços.**
 **O mesmo será integrado de forma Oficial com o FirebirdSQL em alguns dias!**
 
+Quero agradecer a Jiri Cincura por me ajudar a ver o crescimento do projeto. 
+Por se esforçar para ajudar, analisando cada parte do código!
+
 
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
-[![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL)
-[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/master/LICENSE) 
+[![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql)
+[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/master/LICENSE) 
 
 
 Provider               | Package name                              | Stable (`master` branch)    | On test (`dev` branch)
 -----------------------|-------------------------------------------|-----------------------------|-------------------------
-Firebird SQL           | `EntityFrameworkCore.FirebirdSQL` | [![NuGet](https://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSQL.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSQL/) |  [![NuGet](https://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSQL.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSQL/)
+Firebird SQL           | `EntityFrameworkCore.FirebirdSql` | [![NuGet](https://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSql.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSql/) |  [![NuGet](https://img.shields.io/nuget/v/EntityFrameworkCore.FirebirdSql.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/EntityFrameworkCore.FirebirdSql/)
 
 
-The EntityFrameworkCore.FirebirdSQL is an Entity Framework Core access provider for Firebird SQL, compatible with version 3.X and earlier versions 2.x.
+The EntityFrameworkCore.FirebirdSql is an Entity Framework Core access provider for Firebird SQL, compatible with version 3.X and earlier versions 2.x.
 
 Same uses the ADO.NET Library  [Firebird Client](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient)  written by friend Cincura.
 
@@ -94,14 +99,14 @@ IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
  //one
  cx.Blog.Add(new Blog
  {
-     Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"
+     Url = "https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql"
  });
  cx.SaveChanges();
  
  //Range
  var RangeBlog = new List<Blog>
  {
-      new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL"  },
+      new Blog{ Url="https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql"  },
       new Blog{ Url="https://github.com/ralmsdeveloper/"  },
       new Blog{ Url="https://blog.ralms.net"  },
       new Blog{ Url="https://ralms.net"  } 

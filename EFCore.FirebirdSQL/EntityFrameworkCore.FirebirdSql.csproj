@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>EntityFrameworkCore.FirebirdSQL</AssemblyName>
-    <RootNamespace>EntityFrameworkCore.FirebirdSQL</RootNamespace>
+    <AssemblyName>EntityFrameworkCore.FirebirdSql</AssemblyName>
+    <RootNamespace>EntityFrameworkCore.FirebirdSql</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>2.0.0.1</AssemblyVersion>
-    <FileVersion>2.0.0.1</FileVersion>
+    <DelaySign>False</DelaySign>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <Copyright>Copyright © Rafael Almeida</Copyright>
     <Company>Rafael Almeida</Company>
     <Authors>Rafael Almeida</Authors>
@@ -27,12 +27,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;DEBUG;EFCORE</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.11.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
+  <ItemGroup> 
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.11.0" /> 
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" /> 
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
   </ItemGroup>

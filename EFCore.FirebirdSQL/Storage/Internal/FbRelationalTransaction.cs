@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -18,8 +18,7 @@ using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
-
+using System.Threading.Tasks; 
 using Microsoft.EntityFrameworkCore.Diagnostics; 
 using Microsoft.EntityFrameworkCore.Internal; 
 using FirebirdSql.Data.FirebirdClient;
@@ -31,15 +30,10 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly IRelationalConnection _relationalConnection;
         private readonly DbTransaction _dbTransaction;
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> _logger;
-        private readonly bool _transactionOwned;
-
+        private readonly bool _transactionOwned; 
         private bool _connectionClosed;
 
-        public FbRelationalTransaction(
-            IRelationalConnection connection,
-            DbTransaction transaction,
-            IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger,
-            bool transactionOwned)
+        public FbRelationalTransaction(IRelationalConnection connection, DbTransaction transaction,IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger,bool transactionOwned)
             : base(connection, transaction, logger, transactionOwned)
         {
             if (connection.DbConnection != transaction.Connection)
@@ -60,34 +54,17 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             try
             {
-                (_dbTransaction as FbTransaction).Commit();
-
-                _logger.TransactionCommitted(
-                    _relationalConnection,
-                    _dbTransaction,
-                    TransactionId,
-                    startTime,
-                    stopwatch.Elapsed);
+                (_dbTransaction as FbTransaction)?.Commit();
+                _logger.TransactionCommitted( _relationalConnection,_dbTransaction,TransactionId,startTime,stopwatch.Elapsed);
             }
             catch (Exception e)
             {
-                _logger.TransactionError(
-                    _relationalConnection,
-                    _dbTransaction,
-                    TransactionId,
-                    nameof(CommitAsync),
-                    e,
-                    startTime,
-                    stopwatch.Elapsed);
+                _logger.TransactionError(_relationalConnection,_dbTransaction, TransactionId, nameof(CommitAsync),e, startTime,stopwatch.Elapsed);
                 throw;
-            }
-
+            } 
             ClearTransaction();
         }
-
-        /// <summary>
-        ///     Discards all changes made to the database in the current transaction.
-        /// </summary>
+		 
         public virtual async Task RollbackAsync(CancellationToken cancellationToken=default(CancellationToken))
         {
             var startTime = DateTimeOffset.UtcNow;
@@ -95,7 +72,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             try
             {
-                (_dbTransaction as FbTransaction).Rollback();
+                (_dbTransaction as FbTransaction)?.Rollback();
 
                 _logger.TransactionRolledBack(
                     _relationalConnection,
@@ -122,16 +99,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
         private void ClearTransaction()
         {
-            Debug.Assert(_relationalConnection.CurrentTransaction == null || _relationalConnection.CurrentTransaction == this);
-
             _relationalConnection.UseTransaction(null);
+	        if (_connectionClosed)
+				return;
 
-            if (!_connectionClosed)
-            {
-                _connectionClosed = true;
-
-                _relationalConnection.Close();
-            }
+	        _connectionClosed = true; 
+	        _relationalConnection.Close();
         }
 
     }

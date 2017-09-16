@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -13,26 +13,21 @@
  * modified is included with the above copyright notice.
  *
  */
-
-using System.Data;
-
-
+  
 namespace Microsoft.EntityFrameworkCore.Storage
 {
-    /// <summary>
-    ///     <para>
-    ///         Represents the mapping between a .NET <see cref="bool" /> type and a database type.
-    ///     </para>
-    ///     <para>
-    ///         This type is typically used by database providers (and other extensions). It is generally
-    ///         not used in application code.
-    ///     </para>
-    /// </summary>
-    public class FbBoolTypeMapping : BoolTypeMapping
-    {
-        public FbBoolTypeMapping() : base("BOOLEAN", System.Data.DbType.Boolean) { }
+	public class FbBoolTypeMapping : BoolTypeMapping
+	{
+		public const string TrueLiteral = "TRUE";
+		public const string FalseLiteral = "FALSE";
 
-        protected override string GenerateNonNullSqlLiteral(object value)
-            => (bool)value ? "TRUE" : "FALSE";
-    }
+		public FbBoolTypeMapping()
+			: base("BOOLEAN", System.Data.DbType.Boolean)
+		{ }
+
+		protected override string GenerateNonNullSqlLiteral(object value)
+		{
+			return (bool)value ? TrueLiteral : FalseLiteral;
+		}
+	}
 }

@@ -1,7 +1,8 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
- *
- *                    EntityFrameworkCore.FirebirdSQL
+ *							   Jiri Cincura	  (jiri@cincura.net)
+ *							   
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -15,201 +16,68 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
+using System.Collections.Generic; 
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using FirebirdClientConnection = FirebirdSql.Data.FirebirdClient.FbConnection;
 using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
-using EntityFrameworkCore.FirebirdSQL.Utilities;
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
-{
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
+{ 
     public class FbDatabaseCreator : RelationalDatabaseCreator
-    {
-        private readonly IFbRelationalConnection _connection;
-        private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
-        private TimeSpan _RetryDelay;
-        private TimeSpan _RetryTimeout;
+    { 
+	    readonly IFbRelationalConnection _connection;
+	    readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public FbDatabaseCreator(
-            RelationalDatabaseCreatorDependencies dependencies,
-            IFbRelationalConnection connection,
-            IRawSqlCommandBuilder rawSqlCommandBuilder)
-            : base(dependencies)
-        {
-            _connection = connection;
-            _rawSqlCommandBuilder = rawSqlCommandBuilder;
-            _RetryDelay = TimeSpan.FromMilliseconds(500);
-            _RetryTimeout = TimeSpan.FromMinutes(2);
-        }
-
-        public override void Create()
-        {
-		
-            using (var masterConnection = _connection.CreateMasterConnection())
-            {
-                Dependencies.MigrationCommandExecutor
-                            .ExecuteNonQuery(CreateCreateOperations(), masterConnection);
-            }
-            Exists(retryOnNotExists: true);
-        }
-
-        public override async Task CreateAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            using (var masterConnection = _connection.CreateMasterConnection())
-            {
-                await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(CreateCreateOperations(), masterConnection, cancellationToken).ConfigureAwait(false);
-                ClearPool();
-            }
-
-            await ExistsAsync(retryOnNotExists: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        protected override bool HasTables()
-            => (long)CreateHasTablesCommand().ExecuteScalar(Dependencies.Connection) != 0;
-
-        protected override Task<bool> HasTablesAsync(CancellationToken cancellationToken = default(CancellationToken))
-            => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(_connection,
-                async (connection, ct) => (long)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct).ConfigureAwait(false) != 0, cancellationToken);
-		
-        private IRelationalCommand CreateHasTablesCommand()
-            => _rawSqlCommandBuilder
-                .Build(@"select count(*) from rdb$relations where rdb$view_blr is null and (rdb$system_flag is null or rdb$system_flag = 0);");
-
-        private IReadOnlyList<MigrationCommand> CreateCreateOperations()
-        {
-            var operations = new MigrationOperation[]
-            {
-                new FbCreateDatabaseOperation
-                {
-                    connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString),
-                    Name = _connection.DbConnection.Database
-                }
-            };
-            return Dependencies.MigrationsSqlGenerator.Generate(operations);
-        }
-
-	    private IReadOnlyList<MigrationCommand> CreateDropOperations()
+	    public FbDatabaseCreator(RelationalDatabaseCreatorDependencies dependencies, IFbRelationalConnection connection, IRawSqlCommandBuilder rawSqlCommandBuilder)
+		    : base(dependencies)
 	    {
-		    var operations = new MigrationOperation[]
-		    {
-			    new FbDropDatabaseOperation
-			    {
-				    ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
-			    }
-		    };
-		    return Dependencies.MigrationsSqlGenerator.Generate(operations);
+		    _connection = connection;
+		    _rawSqlCommandBuilder = rawSqlCommandBuilder;
 	    }
 
-		public override bool Exists()
-            => Exists(retryOnNotExists: false);
+	    public override void Create()
+	    {
+		    Dependencies.MigrationCommandExecutor.ExecuteNonQuery(CreateDatabaseOperations(), _connection);
+	    }
 
-        private bool Exists(bool retryOnNotExists)
-            => Dependencies.ExecutionStrategyFactory.Create().Execute(DateTime.Now + _RetryTimeout, giveUp =>
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            if (_connection?.DbConnection?.State != System.Data.ConnectionState.Open)
-                                _connection.DbConnection.Open();
+	    public override void Delete()
+	    {
+		    FirebirdClientConnection.ClearPool((FirebirdClientConnection)_connection.DbConnection);
+		    FirebirdClientConnection.DropDatabase(_connection.ConnectionString);
+	    }
 
-                            _connection.DbConnection.Close();
-                            return true;
-                        }
-                        catch (FbException e)
-                        {
-                            if (!retryOnNotExists && DatabaseNotExist(e))
-                                return false;
+	    public override bool Exists()
+	    {
+		    try
+		    {
+			    _connection.Open();
+			    _connection.Close();
+				return true;
+		    }
+		    catch (FbException)
+		    {
+			    return false;
+		    } 
+	    }
 
-                            if (DateTime.Now > giveUp || !RetryOnExistsFailure(e))
-                                throw;
+		private IReadOnlyList<MigrationCommand> CreateDatabaseOperations()
+		{
+			var operations = new MigrationOperation[]
+			{
+					  new FbCreateDatabaseOperation
+					  {
+						  connectionStrBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
+					  }
+			};
+			return Dependencies.MigrationsSqlGenerator.Generate(operations);
+		} 
 
-                            Thread.Sleep(_RetryDelay);
-                        }
-                    }
-                });
+		protected override bool HasTables()
+		    => Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
 
-        public override Task<bool> ExistsAsync(CancellationToken cancellationToken = default(CancellationToken))
-            => ExistsAsync(retryOnNotExists: false, cancellationToken: cancellationToken);
-
-        private Task<bool> ExistsAsync(bool retryOnNotExists, CancellationToken cancellationToken)
-            => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(DateTime.UtcNow + _RetryTimeout, async (giveUp, ct) =>
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            await _connection.DbConnection.OpenAsync(ct).ConfigureAwait(false);
-                            _connection.DbConnection.Close();
-                            return true;
-                        }
-                        catch (FbException e)
-                        {
-                            if (!retryOnNotExists && DatabaseNotExist(e))
-                                return false;
-
-                            if (DateTime.UtcNow > giveUp || !RetryOnExistsFailure(e))
-                                throw;
-
-                            await Task.Delay(_RetryDelay, ct).ConfigureAwait(false);
-                        }
-                    }
-                }, cancellationToken);
-
-        private static bool DatabaseNotExist(FbException exception) => exception.ErrorCode == (int)FbErrorCode.FbErrorAccessFile;
-
-        private bool RetryOnExistsFailure(FbException exception)
-        {
-            if (exception.ErrorCode == (int)FbErrorCode.FbErrorNetworkConnection)
-            {
-                ClearPool();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public override void Delete()
-        {
-            ClearAllPools();
-            FbConnection.DropDatabase(_connection.ConnectionString); 
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public override async Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-	        await Dependencies.MigrationCommandExecutor
-			        .ExecuteNonQueryAsync(CreateDropOperations(), _connection, cancellationToken); 
-        }
-
-        private IReadOnlyList<MigrationCommand> CreateDropCommands()
-        {
-            var operations = new MigrationOperation[]
-            {
-                new FbDropDatabaseOperation { ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)}
-            };
-            return Dependencies.MigrationsSqlGenerator.Generate(operations);
-        }
-
-        private static void ClearAllPools() => FbConnection.ClearAllPools();
-        private void ClearPool() => FbConnection.ClearPool(_connection.DbConnection as FbConnection);
+	    IRelationalCommand CreateHasTablesCommand()
+		    => _rawSqlCommandBuilder
+			    .Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(r.rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
     }
 }

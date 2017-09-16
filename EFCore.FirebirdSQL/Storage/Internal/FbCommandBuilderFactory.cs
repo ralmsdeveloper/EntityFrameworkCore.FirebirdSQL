@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -15,10 +15,8 @@
  */
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
-
-// ReSharper disable once CheckNamespace
+using Microsoft.EntityFrameworkCore.Internal; 
+ 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
 
@@ -27,9 +25,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger;
         private readonly IRelationalTypeMapper _typeMapper;
 
-        public FbCommandBuilderFactory(
-            IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
-            IRelationalTypeMapper typeMapper)
+        public FbCommandBuilderFactory(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper typeMapper)
         {
 			_logger = logger;
             _typeMapper = typeMapper;
@@ -38,16 +34,11 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         public IRelationalParameterBuilder ParameterBuilder => throw new System.NotImplementedException();
 
         public IndentedStringBuilder Instance => throw new System.NotImplementedException();
-
-        
-
+		 
         public virtual IRelationalCommandBuilder Create() => CreateCore(_logger, _typeMapper);
 
-        protected virtual IRelationalCommandBuilder CreateCore(
-            IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
+        protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
             IRelationalTypeMapper relationalTypeMapper)
-            => new FbCommandBuilder(
-                logger,
-                relationalTypeMapper);
+            => new FbCommandBuilder(logger, relationalTypeMapper);
     }
 }

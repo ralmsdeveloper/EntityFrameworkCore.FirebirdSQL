@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -20,7 +20,7 @@ using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
 using System.Data;
 
-namespace EntityFrameworkCore.FirebirdSQL.Utilities
+namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
 	public class FbSettings
 	{

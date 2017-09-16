@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -27,10 +27,10 @@ namespace Microsoft.EntityFrameworkCore
             return modelBuilder;
         }
 
-        public static ModelBuilder ForFbUseComputedColumns(this ModelBuilder modelBuilder)
+        public static ModelBuilder ForFbUseTriggerColumns(this ModelBuilder modelBuilder)
         {
             var property = modelBuilder.Model; 
-            property.Firebird().ValueGenerationStrategy = FbValueGenerationStrategy.ComputedColumn; 
+            property.Firebird().ValueGenerationStrategy = FbValueGenerationStrategy.SequenceTrigger; 
             return modelBuilder;
         }
     }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EntityFrameworkCore.FirebirdSQL.Test
+namespace EntityFrameworkCore.FirebirdSql.Test
 {
     class Program
     {
@@ -11,14 +11,14 @@ namespace EntityFrameworkCore.FirebirdSQL.Test
         static void Main(string[] args)
         {
             //Command Sample Scaffolding
-            //Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=C:\FirebirdEFCore.FDB;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;Packet Size=8192;ServerType=0;" EntityFrameworkCore.FirebirdSQL -OutputDir Models -Context "FirebirdDbContext" -DataAnnotations -force -verbose
+            //Scaffold-DbContext "User=SYSDBA;Password=masterkey;Database=C:\FirebirdEFCore.FDB;DataSource=127.0.0.1;Port=3050;Dialect=3;Charset=UTF8;Role=;Connection lifetime=15;Pooling=true;Packet Size=8192;ServerType=0;" EntityFrameworkCore.FirebirdSql -OutputDir Models -Context "FirebirdDbContext" -DataAnnotations -force -verbose
             Console.WriteLine("# Wait... ");
             var cx = new Context();
             Console.WriteLine("# Deleting database...\n");
             cx.Database.EnsureDeleted();
             cx.Database.EnsureCreated();
 
-            //Sample (https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/issues/3)
+            //Sample (https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/issues/3)
             if (!cx.Author.Any())
             {
                 var autores = new List<Author>(){

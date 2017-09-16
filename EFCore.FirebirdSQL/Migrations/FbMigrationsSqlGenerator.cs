@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
- *                    EntityFrameworkCore.FirebirdSQL
+ *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -338,17 +338,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 				}
 			}
 			string onUpdateSql = null;
-			if (valueGenerationStrategy == FbValueGenerationStrategy.ComputedColumn)
+			if (valueGenerationStrategy == FbValueGenerationStrategy.SequenceTrigger)
 			{
-				switch (type)
-				{
-					case "DATETIME":
-					case "TIMESTAMP":
-						if (string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
-							defaultValueSql = $"CURRENT_TIMESTAMP";
-						onUpdateSql = $"CURRENT_TIMESTAMP";
-						break;
-				}
+				throw new NotImplementedException("Not implemented");
 			}
 
 			builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
