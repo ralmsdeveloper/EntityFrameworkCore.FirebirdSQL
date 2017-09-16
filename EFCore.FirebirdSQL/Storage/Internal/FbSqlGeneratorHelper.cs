@@ -16,7 +16,7 @@
 
 using System;
 using System.Text; 
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal; 
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;  
 
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
@@ -32,12 +32,12 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
 		public override string EscapeIdentifier(string identifier)
 		{
-			return identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName));
+			return identifier.MaxLength(_options.Settings.ObjectLengthName);
 		}
 
 		public override void EscapeIdentifier(StringBuilder builder, string identifier)
 		{
-			builder.Append(identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName)));
+			builder.Append(identifier.MaxLength(_options.Settings.ObjectLengthName));
 		}
 
 		public override string DelimitIdentifier(string identifier)
@@ -48,18 +48,18 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 		public override void DelimitIdentifier(StringBuilder builder, string identifier)
 		{
 			builder.Append('"');
-			EscapeIdentifier(builder, identifier.Substring(0, Math.Min(identifier.Length, _options.Settings.ObjectLengthName)));
+			EscapeIdentifier(builder, identifier.MaxLength(_options.Settings.ObjectLengthName));
 			builder.Append('"');
 		}
 
 		public override string GenerateParameterName(string name)
 		{
-			return $"@{name.Substring(0, Math.Min(name.Length, _options.Settings.ObjectLengthName))}";
+			return $"@{name.MaxLength(_options.Settings.ObjectLengthName)}";
 		}
 
 		public override void GenerateParameterName(StringBuilder builder, string name)
 		{
-			builder.Append("@").Append(name.Substring(0, Math.Min(name.Length, _options.Settings.ObjectLengthName)));
+			builder.Append("@").Append(name.MaxLength(_options.Settings.ObjectLengthName));
 		}
 	}
 }

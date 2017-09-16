@@ -14,22 +14,15 @@
  *
  */
 
+using System; 
+
 namespace Microsoft.EntityFrameworkCore.Storage.Internal
 {
-    public static class FirebirdStringExtension
-    {
-
-        /// <summary>
-        /// Receiver SubString MaxLength
-        /// </summary>
-        /// <param name="strInfo"></param>
-        /// <param name="maxLength"></param>
-        /// <returns></returns>
-        public static string MaxLength(this string strInfo, int maxLength)
-        {
-            if (strInfo.Length <= maxLength)
-                return strInfo;
-            return strInfo.Substring(0, maxLength);
+    public static class FbStringExtension
+	{ 
+        public static string MaxLength(this string src, int max)
+        { 
+            return src.Substring(0, Math.Min(src.Length,max));
         }
     }
 }
