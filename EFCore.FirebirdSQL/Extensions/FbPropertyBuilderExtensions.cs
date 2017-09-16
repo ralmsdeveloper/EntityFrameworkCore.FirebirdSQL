@@ -17,41 +17,20 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Metadata.Internal; 
 
 namespace Microsoft.EntityFrameworkCore
-{
-    /// <summary>
-    ///     FirebirdSQL specific extension methods for <see cref="PropertyBuilder" />.
-    /// </summary>
+{ 
+
     public static class FbPropertyBuilderExtensions
-    {
-
-        /// <summary>
-        ///     Configures the key property to use the FirebirdSQL IDENTITY feature to generate values for new entities,
-        ///     when targeting FirebirdSQL. This method sets the property to be <see cref="ValueGenerated.OnAdd" />.
-        /// </summary>
-        /// <param name="propertyBuilder"> The builder for the property being configured. </param>
-        /// <returns> The same builder instance so that multiple calls can be chained. </returns>
-        public static PropertyBuilder UseFbIdentityColumn(
-            this PropertyBuilder propertyBuilder)
+    { 
+        public static PropertyBuilder UseFbIdentityColumn(this PropertyBuilder propertyBuilder)
         {
-
             GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
-
             return propertyBuilder;
-        }
+        } 
 
-        /// <summary>
-        ///     Configures the key property to use the FirebirdSQL IDENTITY feature to generate values for new entities,
-        ///     when targeting FirebirdSQL. This method sets the property to be <see cref="ValueGenerated.OnAdd" />.
-        /// </summary>
-        /// <typeparam name="TProperty"> The type of the property being configured. </typeparam>
-        /// <param name="propertyBuilder"> The builder for the property being configured. </param>
-        /// <returns> The same builder instance so that multiple calls can be chained. </returns>
-        public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>(
-            this PropertyBuilder<TProperty> propertyBuilder)
+        public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
             => (PropertyBuilder<TProperty>)UseFbIdentityColumn((PropertyBuilder)propertyBuilder);
 
         private static FbPropertyBuilderAnnotations GetFbInternalBuilder(PropertyBuilder propertyBuilder)

@@ -14,12 +14,10 @@
  *
  */
 
-using System.Linq;
-
+using System.Linq; 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Storage; 
 
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {

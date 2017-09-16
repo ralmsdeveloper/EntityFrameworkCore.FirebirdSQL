@@ -27,10 +27,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 		private readonly ISqlGenerationHelper _sqlGenerationHelper;
 		private static IFbOptions _options;
 
-		public FbConventionSetBuilder(
-			RelationalConventionSetBuilderDependencies dependencies,
-			IFbOptions options,
-			ISqlGenerationHelper sqlGenerationHelper)
+		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies, IFbOptions options, ISqlGenerationHelper sqlGenerationHelper)
 			: base(dependencies)
 		{
 			_sqlGenerationHelper = sqlGenerationHelper;

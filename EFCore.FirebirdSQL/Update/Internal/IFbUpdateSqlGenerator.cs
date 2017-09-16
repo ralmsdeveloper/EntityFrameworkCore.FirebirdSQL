@@ -17,7 +17,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-
 namespace Microsoft.EntityFrameworkCore.Update.Internal
 {
     public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator

@@ -36,20 +36,12 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 
 		public virtual FbValueGenerationStrategy? ValueGenerationStrategy
 		{
-			get { return GetFbValueGenerationStrategy(fallbackToModel: true); }
-			
-			set { SetValueGenerationStrategy(value); }
+			get => GetFbValueGenerationStrategy(fallbackToModel: true); 
+			set => SetValueGenerationStrategy(value);
 		}
 
 		public virtual FbValueGenerationStrategy? GetFbValueGenerationStrategy(bool fallbackToModel)
 		{
-			if (GetDefaultValue(false) != null
-				|| GetDefaultValueSql(false) != null
-				|| GetComputedColumnSql(false) != null)
-			{
-				return null;
-			}
-
 			var value = (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy];
 
 			if (value != null)
@@ -74,10 +66,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 				return FbValueGenerationStrategy.IdentityColumn;
 			}
 
-			if (modelStrategy == FbValueGenerationStrategy.ComputedColumn
-				&& IsCompatibleIdentityColumn(Property.ClrType))
+			if (modelStrategy == FbValueGenerationStrategy.SequenceTrigger && IsCompatibleSequenceTrigger(Property.ClrType))
 			{
-				return FbValueGenerationStrategy.ComputedColumn;
+				return FbValueGenerationStrategy.SequenceTrigger;
 			}
 
 			return null;
@@ -93,7 +84,19 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 				{
 					if (ShouldThrowOnInvalidConfiguration)
 					{
-						throw new ArgumentException($"{Property.Name} {Property.DeclaringEntityType.DisplayName()} {propertyType.ShortDisplayName()}");
+						//Sugestion (Jiri Cincura)
+						throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.IdentityColumn)} for '{Property.Name}'.");
+					}
+
+					return false;
+				}
+
+				//Sugestion (Jiri Cincura)
+				if (value == FbValueGenerationStrategy.SequenceTrigger && !IsCompatibleSequenceTrigger(propertyType))
+				{
+					if (ShouldThrowOnInvalidConfiguration)
+					{ 
+						throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{Property.Name}'.");
 					}
 
 					return false;
@@ -105,9 +108,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 				return false;
 			}
 
-			if (!ShouldThrowOnConflict
-				&& ValueGenerationStrategy != value
-				&& value != null)
+			if (!ShouldThrowOnConflict && ValueGenerationStrategy != value && value != null)
 			{
 				ClearAllServerGeneratedValues();
 			}
@@ -149,97 +150,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 
 			return true;
 		}
-
-		protected override object GetDefaultValue(bool fallback)
-		{
-			if (fallback && ValueGenerationStrategy != null)
-			{
-				return null;
-			}
-			return base.GetDefaultValue(fallback);
-		}
-
-		protected override bool CanSetDefaultValue(object value)
-		{
-			if (ShouldThrowOnConflict)
-			{
-				if (ValueGenerationStrategy != null)
-				{
-					throw new InvalidOperationException(RelationalStrings.ConflictingColumnServerGeneration(nameof(DefaultValue), Property.Name, nameof(ValueGenerationStrategy)));
-				}
-			}
-			else if (value != null && !CanSetValueGenerationStrategy(null))
-			{
-				return false;
-			}
-
-			return base.CanSetDefaultValue(value);
-		}
-
-		protected override string GetDefaultValueSql(bool fallback)
-		{
-			if (fallback && ValueGenerationStrategy != null)
-			{
-				return null;
-			}
-
-			return base.GetDefaultValueSql(fallback);
-		}
-
-		protected override bool CanSetDefaultValueSql(string value)
-		{
-			if (ShouldThrowOnConflict)
-			{
-				if (ValueGenerationStrategy != null)
-				{
-					throw new InvalidOperationException(RelationalStrings.ConflictingColumnServerGeneration(nameof(DefaultValueSql), Property.Name, nameof(ValueGenerationStrategy)));
-				}
-			}
-			else if (value != null && !CanSetValueGenerationStrategy(null))
-			{
-				return false;
-			}
-
-			return base.CanSetDefaultValueSql(value);
-		}
-
-		protected override string GetComputedColumnSql(bool fallback)
-		{
-			if (fallback && ValueGenerationStrategy != null)
-			{
-				return null;
-			}
-
-			return base.GetComputedColumnSql(fallback);
-		}
-
-		protected override bool CanSetComputedColumnSql(string value)
-		{
-			if (ShouldThrowOnConflict)
-			{
-				if (ValueGenerationStrategy != null)
-				{
-					throw new InvalidOperationException(RelationalStrings.ConflictingColumnServerGeneration(nameof(ComputedColumnSql), Property.Name, nameof(ValueGenerationStrategy)));
-				}
-			}
-			else if (value != null && !CanSetValueGenerationStrategy(null))
-			{
-				return false;
-			}
-
-			return base.CanSetComputedColumnSql(value);
-		}
-
-		protected override void ClearAllServerGeneratedValues()
-		{
-			SetValueGenerationStrategy(null); 
-			base.ClearAllServerGeneratedValues();
-		}
-
+		 
 		private static bool IsCompatibleIdentityColumn(Type type)
-		{
-			return type.IsInteger() || type == typeof(DateTime);
-		}
+			=> type.IsInteger() || type == typeof(decimal);
 
+		private static bool IsCompatibleSequenceTrigger(Type type)
+			=> true; 
 	}
 }

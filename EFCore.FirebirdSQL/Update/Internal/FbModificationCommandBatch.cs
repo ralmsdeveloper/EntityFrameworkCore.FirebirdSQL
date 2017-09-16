@@ -17,8 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
+using System.Text; 
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
@@ -40,11 +39,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 		private readonly List<ModificationCommand> _blockDeleteCommands; 
 		private readonly StringBuilder _executeParameters;
 		private string _seperator;
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		public FbModificationCommandBatch(
 			IRelationalCommandBuilderFactory commandBuilderFactory,
 			ISqlGenerationHelper sqlGenerationHelper, 
@@ -65,20 +60,12 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			_blockUpdateCommands = new List<ModificationCommand>();
 			_blockDeleteCommands = new List<ModificationCommand>();
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+ 
 		protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator()
 		{
 			return (IFbUpdateSqlGenerator) base.UpdateSqlGenerator;
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+ 
 		protected override bool CanAddCommand(ModificationCommand modificationCommand)
 		{
 			if (ModificationCommands.Count >= _maxBatchSize)
@@ -93,21 +80,12 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			_countParameter += additionalParameterCount;
 			return true;
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+ 
 		protected override bool IsCommandTextValid()
 		{
 			return true;
 		}
-
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		protected override int GetParameterCount()
 		{
 			return _countParameter;
@@ -127,10 +105,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			return parameterCount;
 		}
 
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+ 
 		protected override void ResetCommandText()
 		{
 			base.ResetCommandText();
@@ -138,16 +113,12 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			_blockUpdateCommands.Clear();
 			_blockDeleteCommands.Clear();
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		protected override string GetCommandText()
 		{
 			var sbCommands = new StringBuilder();
 			var sbExecuteBlock = new StringBuilder();
-			_executeParameters.Clear();
+			_executeParameters.Clear(); 
 
 			//Commands Insert/Update/Delete
 			sbCommands.AppendLine(base.GetCommandText());
@@ -165,7 +136,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 				sbExecuteBlock.Append(") ");
 			}
 			sbExecuteBlock.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
-			sbExecuteBlock.Append("AffectedRows=0;");
+			sbExecuteBlock.AppendLine("AffectedRows=0;");
 			sbExecuteBlock.Append(sbCommands);
 			sbExecuteBlock.AppendLine("END;");
 			return sbExecuteBlock.ToString().Trim();
@@ -241,14 +212,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 
 			return stringBuilder.ToString();
 		}
-
-		/// <summary>
-		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
+		 
 		protected override void UpdateCachedCommandText(int commandPosition)
 		{
-			var newModificationCommand = ModificationCommands[commandPosition];
+			var newModificationCommand = ModificationCommands[commandPosition]; 
 
 			if (newModificationCommand.EntityState == EntityState.Added)
 			{
@@ -321,31 +288,25 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 			       && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
 				       secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
-
-
-		///// <summary>
-		///// Make the Datareader consummation
-		///// </summary>
-		///// <param name = "reader" ></ param >
+		 
 		protected override void Consume(RelationalDataReader relationalReader)
 		{
 			if (relationalReader == null)
 			{
 				throw new ArgumentNullException(nameof(relationalReader));
-			}
-			//Cast FbDataReader
-			var dataReader = (FbDataReader) relationalReader.DbDataReader;
+			} 
+
+			var dataReader = (FbDataReader)relationalReader.DbDataReader;
 			var commandIndex = 0;
 			try
 			{
 				for (;;)
 				{
-					while (commandIndex < CommandResultSet.Count
-					       && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+					while (commandIndex < CommandResultSet.Count  && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
 						commandIndex++;
+
 					var propragation = commandIndex;
-					while (propragation < ModificationCommands.Count &&
-					       !ModificationCommands[propragation].RequiresResultPropagation)
+					while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
 						propragation++;
 
 					while (commandIndex < propragation)
@@ -357,6 +318,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 								ModificationCommands[commandIndex].Entries
 							);
 					}
+
 					//check if you've gone through all notifications
 					if (propragation == ModificationCommands.Count)
 						break;
@@ -366,6 +328,7 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 						throw new DbUpdateConcurrencyException(
 							RelationalStrings.UpdateConcurrencyException(1, 0),
 							modifications.Entries);
+
 					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
 					modifications.PropagateResults(bufferFactory.Create(dataReader));
 					dataReader.NextResult();
@@ -384,17 +347,10 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
 					ModificationCommands[commandIndex].Entries);
 			}
 		}
-
-		/// <summary>
-		///     Method Async for Propagation DataReader
-		/// </summary>
-		/// <param name="reader"></param>
-		/// < param name="cancellationToken"></param>
-		/// <returns></returns>
-		protected override Task ConsumeAsync(RelationalDataReader reader,
-			CancellationToken cancellationToken = default(CancellationToken))
+		 
+		protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Task.Run(() => Consume(reader));
+			return Task.Run(() => Consume(reader), cancellationToken);
 		}
 	}
 }

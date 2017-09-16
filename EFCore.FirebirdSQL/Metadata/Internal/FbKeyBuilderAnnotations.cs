@@ -16,30 +16,12 @@
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class FbKeyBuilderAnnotations : FbKeyAnnotations
     {
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public FbKeyBuilderAnnotations(
-            InternalKeyBuilder internalBuilder,
-            ConfigurationSource configurationSource)
+        public FbKeyBuilderAnnotations( InternalKeyBuilder internalBuilder,ConfigurationSource configurationSource)
             : base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
         {
-        }
-
-#pragma warning disable 109
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public new virtual bool Name(string value) => SetName(value);
-
-#pragma warning restore 109
+        } 
+        public virtual bool Name(string value) => SetName(value); 
     }
 }

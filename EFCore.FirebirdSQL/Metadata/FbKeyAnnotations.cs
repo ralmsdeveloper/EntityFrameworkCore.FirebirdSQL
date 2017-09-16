@@ -13,9 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
-
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
+ 
 namespace Microsoft.EntityFrameworkCore.Metadata
 {
     public class FbKeyAnnotations : RelationalKeyAnnotations, IFbKeyAnnotations

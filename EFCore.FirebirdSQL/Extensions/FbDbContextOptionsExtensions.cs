@@ -16,12 +16,8 @@
 
 using System;
 using System.Data.Common;
-
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
-using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore
 {

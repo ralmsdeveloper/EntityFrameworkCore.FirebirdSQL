@@ -20,57 +20,51 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
-using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Migrations.Internal; 
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal; 
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Update;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Update.Internal; 
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class FbServiceCollectionExtensions
-    {
-        public static IServiceCollection AddEntityFrameworkFirebird(this IServiceCollection serviceCollection)
-        {
-            var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
-                 .TryAdd<IRelationalDatabaseCreator, FbDatabaseCreator>()
-                 .TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>()
-                 .TryAdd<IRelationalTypeMapper, FbTypeMapper>()
-                .TryAdd<IRelationalCommandBuilderFactory, FbCommandBuilderFactory>()
-                .TryAdd<ISqlGenerationHelper, FbSqlGenerationHelper>()
-                .TryAdd<IMigrationsAnnotationProvider, FbMigrationsAnnotationProvider>()
-                .TryAdd<IConventionSetBuilder, FbConventionSetBuilder>()
-                .TryAdd<IUpdateSqlGenerator>(p => p.GetService<IFbUpdateSqlGenerator>())
-                .TryAdd<IModificationCommandBatchFactory, FbModificationCommandBatchFactory>()
-                .TryAdd<IValueGeneratorSelector, FbValueGeneratorSelector>()
-                .TryAdd<IRelationalConnection>(p => p.GetService<IFbRelationalConnection>())
+	public static class FbServiceCollectionExtensions
+	{
+		public static IServiceCollection AddEntityFrameworkFirebird(this IServiceCollection serviceCollection)
+		{
+			var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
+				.TryAdd<IRelationalDatabaseCreator, FbDatabaseCreator>()
+				.TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>()
+				.TryAdd<IRelationalTypeMapper, FbTypeMapper>()
+				.TryAdd<IRelationalCommandBuilderFactory, FbCommandBuilderFactory>()
+				.TryAdd<ISqlGenerationHelper, FbSqlGenerationHelper>()
+				.TryAdd<IMigrationsAnnotationProvider, FbMigrationsAnnotationProvider>()
+				.TryAdd<IConventionSetBuilder, FbConventionSetBuilder>()
+				.TryAdd<IUpdateSqlGenerator>(p => p.GetService<IFbUpdateSqlGenerator>())
+				.TryAdd<IModificationCommandBatchFactory, FbModificationCommandBatchFactory>()
+				.TryAdd<IValueGeneratorSelector, FbValueGeneratorSelector>()
+				.TryAdd<IRelationalConnection>(p => p.GetService<IFbRelationalConnection>())
+				.TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
+				.TryAdd<IBatchExecutor, FbBatchExecutor>()
+				.TryAdd<IBatchExecutor, BatchExecutor>()
+				.TryAdd<IHistoryRepository, FbHistoryRepository>()
+				.TryAdd<IMemberTranslator, FbCompositeMemberTranslator>()
+				.TryAdd<ICompositeMethodCallTranslator, FbCompositeMethodCallTranslator>()
+				.TryAdd<IQuerySqlGeneratorFactory, FbQuerySqlGeneratorFactory>()
+				.TryAdd<ISingletonOptions, IFbOptions>(p => p.GetService<IFbOptions>())
+				.TryAddProviderSpecificServices(b => b
+					                                .TryAddSingleton<IFbOptions, FbOptions>()
+					                                .TryAddScoped<IFbUpdateSqlGenerator, FbUpdateSqlGenerator>()
+					                                .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>());
 
-                .TryAdd<IMigrationsSqlGenerator, FbMigrationsSqlGenerator>()
-               .TryAdd<IBatchExecutor, FbBatchExecutor>()
-                .TryAdd<IBatchExecutor, BatchExecutor>()
-
-                .TryAdd<IHistoryRepository, FbHistoryRepository>()
-                .TryAdd<IMemberTranslator, FbCompositeMemberTranslator>()
-                .TryAdd<ICompositeMethodCallTranslator, FbCompositeMethodCallTranslator>()
-                .TryAdd<IQuerySqlGeneratorFactory, FbQuerySqlGeneratorFactory>()
-                .TryAdd<ISingletonOptions, IFbOptions>(p => p.GetService<IFbOptions>())
-                .TryAddProviderSpecificServices(b => b
-                    .TryAddSingleton<IFbOptions, FbOptions>()
-                    .TryAddScoped<IFbUpdateSqlGenerator, FbUpdateSqlGenerator>()
-                    .TryAddScoped<IFbRelationalConnection, FbRelationalConnection>());
-
-            builder.TryAddCoreServices();
-
-            return serviceCollection;
-        }
-    }
+			builder.TryAddCoreServices(); 
+			return serviceCollection;
+		}
+	}
 }

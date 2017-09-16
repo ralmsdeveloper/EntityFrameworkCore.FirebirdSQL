@@ -16,27 +16,10 @@
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public static class FbAnnotationNames
     {
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public const string Prefix = "Fb:";
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public const string ValueGenerationStrategy = Prefix + "ValueGenerationStrategy";
-
-        //Future Implementation
-        //https://www.firebirdsql.org/en/sphinx-full-text-search/
-        public const string FullTextIndex = Prefix + "FullTextIndex";
          
     }
 }

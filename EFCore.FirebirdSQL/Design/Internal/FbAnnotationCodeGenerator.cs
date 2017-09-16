@@ -15,8 +15,7 @@
  */
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Metadata; 
 
 namespace Microsoft.EntityFrameworkCore.Design.Internal
 {

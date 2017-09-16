@@ -18,7 +18,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
 {
     public enum FbValueGenerationStrategy
     {
-        IdentityColumn,
-        ComputedColumn
-    }
+	    SequenceTrigger,
+	    IdentityColumn
+	}
 }

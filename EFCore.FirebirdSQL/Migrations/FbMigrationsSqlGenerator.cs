@@ -21,8 +21,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Storage; 
 using FirebirdSql.Data.FirebirdClient;
 
 namespace Microsoft.EntityFrameworkCore.Migrations
@@ -70,7 +69,8 @@ namespace Microsoft.EntityFrameworkCore.Migrations
 				EndStatement(builder);
 			}
 
-			if (_options.Settings.IsSupportIdentityIncrement && false)
+			// If Firebird Version > = 3 (Not User Trigger Sequence)
+			if (_options.Settings.IsSupportIdentityIncrement)
 				return;
 
 			foreach (var column in operation.Columns.Where(p => !p.IsNullable))

@@ -19,23 +19,14 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal
-{
-    /// <summary>
-    ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
+{ 
     public class FbValueGenerationStrategyConvention : DatabaseGeneratedAttributeConvention, IModelInitializedConvention
     {
         public override InternalPropertyBuilder Apply(InternalPropertyBuilder propertyBuilder, DatabaseGeneratedAttribute attribute, MemberInfo clrMember)
         {
             FbValueGenerationStrategy? valueGenerationStrategy = null;
             ValueGenerated valueGenerated = ValueGenerated.Never;
-            if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Computed)
-            {
-                valueGenerated = ValueGenerated.OnAddOrUpdate;
-                valueGenerationStrategy = FbValueGenerationStrategy.ComputedColumn;
-            }
-            else if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
+            if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
             {
                 valueGenerated = ValueGenerated.OnAdd;
                 valueGenerationStrategy = FbValueGenerationStrategy.IdentityColumn;
@@ -46,11 +37,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal
 
             return base.Apply(propertyBuilder, attribute, clrMember);
         }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+		 
         public virtual InternalModelBuilder Apply(InternalModelBuilder modelBuilder)
         {
             modelBuilder.Firebird(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);

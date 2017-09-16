@@ -14,25 +14,13 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Metadata; 
 
 namespace Microsoft.EntityFrameworkCore
-{
-    /// <summary>
-    ///     FirebirdSQL specific extension methods for <see cref="ModelBuilder" />.
-    /// </summary>
+{ 
     public static class FbModelBuilderExtensions
-    {
-        /// <summary>
-        ///     Configures the model to use the FirebirdSQL IDENTITY Compatibility FB.3 feature to generate values for key properties
-        ///     marked as <see cref="ValueGenerated.OnAdd" />, when targeting FirebirdSQL. This is the default
-        ///     behavior when targeting FirebirdSQL.
-        /// </summary>
-        /// <param name="modelBuilder"> The model builder. </param>
-        /// <returns> The same builder instance so that multiple calls can be chained. </returns>
-        public static ModelBuilder ForFbUseIdentityColumns(
-            this ModelBuilder modelBuilder)
+    { 
+        public static ModelBuilder ForFbUseIdentityColumns(this ModelBuilder modelBuilder)
         {
             var property = modelBuilder.Model; 
             property.Firebird().ValueGenerationStrategy = FbValueGenerationStrategy.IdentityColumn; 

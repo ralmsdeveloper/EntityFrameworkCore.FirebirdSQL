@@ -39,6 +39,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
 			var fbOptions = GetOptions(options);
 		}
 
+		//Sugestion CINCURA
 	    private FbOptionsExtension GetOptions(IDbContextOptions options)
 		    => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
 

@@ -20,8 +20,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Operations
 {
     public class FbCreateDatabaseOperation : MigrationOperation 
     {
-        public virtual string Name { get; set; }
-
+        public virtual string Name { get; set; } 
         public virtual FbConnectionStringBuilder connectionStrBuilder { get; set; } 
     }
 }
