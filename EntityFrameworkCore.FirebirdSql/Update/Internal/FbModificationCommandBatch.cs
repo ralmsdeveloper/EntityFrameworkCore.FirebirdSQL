@@ -290,66 +290,66 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			       && firstCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName).SequenceEqual(
 				       secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
-		 
-		//protected override void Consume(RelationalDataReader relationalReader)
-		//{
-		//	if (relationalReader == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(relationalReader));
-		//	} 
 
-		//	var dataReader = (FbDataReader)relationalReader.DbDataReader;
-		//	var commandIndex = 0;
-		//	try
-		//	{
-		//		for (;;)
-		//		{
-		//			while (commandIndex < CommandResultSet.Count  && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
-		//				commandIndex++;
+		protected override void Consume(RelationalDataReader relationalReader)
+		{
+			if (relationalReader == null)
+			{
+				throw new ArgumentNullException(nameof(relationalReader));
+			}
 
-		//			var propragation = commandIndex;
-		//			while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
-		//				propragation++;
+			var dataReader = (FbDataReader)relationalReader.DbDataReader;
+			var commandIndex = 0;
+			try
+			{
+				for (; ; )
+				{
+					while (commandIndex < CommandResultSet.Count && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+						commandIndex++;
 
-		//			while (commandIndex < propragation)
-		//			{
-		//				commandIndex++;
-		//				if (!dataReader.Read())
-		//					throw new DbUpdateConcurrencyException(
-		//						RelationalStrings.UpdateConcurrencyException(1, 0),
-		//						ModificationCommands[commandIndex].Entries
-		//					);
-		//			}
+					var propragation = commandIndex;
+					while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
+						propragation++;
 
-		//			//check if you've gone through all notifications
-		//			if (propragation == ModificationCommands.Count)
-		//				break;
+					while (commandIndex < propragation)
+					{
+						commandIndex++;
+						if (!dataReader.Read())
+							throw new DbUpdateConcurrencyException(
+								RelationalStrings.UpdateConcurrencyException(1, 0),
+								ModificationCommands[commandIndex].Entries
+							);
+					}
 
-		//			var modifications = ModificationCommands[commandIndex];
-		//			if (!relationalReader.Read())
-		//				throw new DbUpdateConcurrencyException(
-		//					RelationalStrings.UpdateConcurrencyException(1, 0),
-		//					modifications.Entries);
+					//check if you've gone through all notifications
+					if (propragation == ModificationCommands.Count)
+						break;
 
-		//			var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
-		//			modifications.PropagateResults(bufferFactory.Create(dataReader));
-		//			dataReader.NextResult();
-		//			commandIndex++;
-		//		}
-		//	}
-		//	catch (DbUpdateException)
-		//	{
-		//		throw;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		throw new DbUpdateException(RelationalStrings.UpdateStoreException,ex,ModificationCommands[commandIndex].Entries);
-		//	}
-		//}
-		 
-		//protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
-		//{
-		//	return Task.Run(() => Consume(reader), cancellationToken);
-		//}
+					var modifications = ModificationCommands[commandIndex];
+					if (!relationalReader.Read())
+						throw new DbUpdateConcurrencyException(
+							RelationalStrings.UpdateConcurrencyException(1, 0),
+							modifications.Entries);
+
+					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
+					modifications.PropagateResults(bufferFactory.Create(dataReader));
+					dataReader.NextResult();
+					commandIndex++;
+				}
+			}
+			catch (DbUpdateException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new DbUpdateException(RelationalStrings.UpdateStoreException, ex, ModificationCommands[commandIndex].Entries);
+			}
+		}
+
+		protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.Run(() => Consume(reader), cancellationToken);
+		}
 	}
 }

@@ -144,10 +144,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 				AppendBlockVariable(headBlockStringBuilder, writeOperations, commaAppend);
 				commaAppend = ",";
 				commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
-				.AppendJoinUpadate(
-					writeOperations,
-					SqlGenerationHelper,
-					(sb, o, helper) =>
+				.AppendJoinUpadate(writeOperations,SqlGenerationHelper,(sb, o, helper) =>
 					{
 						if (o.IsWrite)
 							sb.Append($"{SqlGenerationHelper.DelimitIdentifier(o.ColumnName)}=:{o.ParameterName} ");
@@ -201,17 +198,13 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 		}
 
-		private void AppendInsertOutputClause(
-			StringBuilder commandStringBuilder, 
-			IReadOnlyList<ColumnModification> operations,
-			IReadOnlyList<ColumnModification> allOperations)
+		private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations,IReadOnlyList<ColumnModification> allOperations)
 		{
 			if (allOperations.Count > 0 && allOperations[0] == operations[0])
 			{
-				commandStringBuilder
-					  .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
-					  .AppendLine("IF (ROW_COUNT > 0) THEN")
-					  .AppendLine("   SUSPEND;");
+				commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
+									.AppendLine("IF (ROW_COUNT > 0) THEN")
+									.AppendLine("   SUSPEND;");
 			}
 		}
 
