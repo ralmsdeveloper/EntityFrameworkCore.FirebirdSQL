@@ -22,12 +22,10 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
     {
         public FbEntityTypeAnnotations(IEntityType entityType)
             : base(entityType)
-        {
-        }
+        { }
 
         public FbEntityTypeAnnotations(RelationalAnnotations annotations)
             : base(annotations)
-        {
-        }
+        { }
     }
 }

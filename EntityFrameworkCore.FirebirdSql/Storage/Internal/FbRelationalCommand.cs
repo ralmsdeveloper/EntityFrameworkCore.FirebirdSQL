@@ -35,7 +35,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             return ExecuteAsync( connection, executeMethod, parameterValues)
                 .GetAwaiter()
                 .GetResult();
-        }
-         
+        } 
     }
 }

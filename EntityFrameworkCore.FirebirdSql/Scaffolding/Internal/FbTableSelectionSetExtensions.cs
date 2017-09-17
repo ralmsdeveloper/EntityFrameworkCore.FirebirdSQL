@@ -28,10 +28,8 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 				&& _tableSelectionSet.Tables.Count == 0))
 			{
 				return true;
-			}
-
-			var result = false;
-
+			} 
+			var result = false; 
 			foreach (var schemaSelection in _tableSelectionSet.Schemas)
 			{
 				if (EqualsWithQuotes(schemaSelection.Text, schemaName))

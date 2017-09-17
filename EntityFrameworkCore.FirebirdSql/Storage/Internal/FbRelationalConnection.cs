@@ -19,8 +19,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Threading;
 using System;
-using EntityFrameworkCore.FirebirdSql.Extensions;
-using EntityFrameworkCore.FirebirdSql.Internal;
+using EntityFrameworkCore.FirebirdSql.Extensions; 
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
@@ -58,19 +57,15 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             if (CurrentTransaction != null)
             {
                 throw new InvalidOperationException(RelationalStrings.TransactionAlreadyStarted);
-            }
-
-            await OpenAsync(cancellationToken: cancellationToken).ConfigureAwait(false); 
+            } 
+            await OpenAsync(cancellationToken).ConfigureAwait(false); 
             return BeginTransactionWithNoPreconditions(isolationLevel, cancellationToken);
         }
 
         private IDbContextTransaction BeginTransactionWithNoPreconditions(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var dbTransaction = (DbConnection as FbConnection).BeginTransaction(isolationLevel);
-
-            CurrentTransaction
-                = new FbRelationalTransaction( this, dbTransaction, Dependencies.TransactionLogger, transactionOwned: true);
-
+            var dbTransaction = ((FbConnection)DbConnection).BeginTransaction(isolationLevel); 
+            CurrentTransaction = new FbRelationalTransaction( this, dbTransaction, Dependencies.TransactionLogger,  true); 
             Dependencies.TransactionLogger.TransactionStarted(this, dbTransaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
             return CurrentTransaction;
         }
@@ -94,8 +89,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
                 Open(); 
                 CurrentTransaction = new FbRelationalTransaction(this, transaction, Dependencies.TransactionLogger, transactionOwned: false);
                 Dependencies.TransactionLogger.TransactionUsed(this, transaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
-            }
-
+            } 
             return CurrentTransaction;
         }
 
@@ -104,8 +98,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             if (CurrentTransaction == null)
             {
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
-            } 
-
+            }  
             await ((FbRelationalTransaction) CurrentTransaction).CommitAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -114,8 +107,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             if (CurrentTransaction == null)
             {
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
-            }
-
+            } 
             await ((FbRelationalTransaction) CurrentTransaction).RollbackAsync(cancellationToken).ConfigureAwait(false);
         }
     }

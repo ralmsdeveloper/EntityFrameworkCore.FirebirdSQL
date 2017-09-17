@@ -78,8 +78,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{ 
 			foreach (var column in operations)
 			{
-				var _type = GetDataType(column.Property);
-
+				var _type = GetDataType(column.Property); 
 				commandStringBuilder.Append(commaAppend);
 				commandStringBuilder.Append($"{column.ParameterName}  {_type}=@{column.ParameterName}");
 				commaAppend = ","; 
@@ -90,19 +89,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 			if (operations.Count > 0)
 			{
-				commandStringBuilder
-					.Append("(")
-					.AppendJoin(
-						operations,
-						SqlGenerationHelper,
-						(sb, o, helper) =>
-						{
-							if (o.IsWrite)
-							{
-								sb.Append(":").Append(o.ParameterName); 
-							}
-						})
-					.Append(")");
+				commandStringBuilder.Append("(")
+				                    .AppendJoin(operations,SqlGenerationHelper,(sb, o, helper) =>
+				                                {
+					                                if (o.IsWrite)
+					                                {
+						                                sb.Append(":").Append(o.ParameterName);
+					                                }
+				                                })
+				                    .Append(")");
 			}
 		}
 
@@ -159,8 +154,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		}
 
 		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
-		{
-
+		{ 
 			var name = modificationCommands[0].TableName;
 			for (var i = 0; i < modificationCommands.Count; i++)
 			{
@@ -178,8 +172,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		}
 
 		private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
-		{
-
+		{ 
 			commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
 								.AppendLine("   AffectedRows=AffectedRows+1;");
 

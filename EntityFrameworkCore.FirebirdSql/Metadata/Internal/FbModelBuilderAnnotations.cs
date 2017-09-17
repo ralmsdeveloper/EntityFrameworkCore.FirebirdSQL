@@ -22,8 +22,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
     {
         public FbModelBuilderAnnotations(InternalModelBuilder internalBuilder, ConfigurationSource configurationSource)
             : base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
-        {
-        }   
+        { }   
 
         public virtual bool ValueGenerationStrategy(FbValueGenerationStrategy? value) => SetValueGenerationStrategy(value);
     }

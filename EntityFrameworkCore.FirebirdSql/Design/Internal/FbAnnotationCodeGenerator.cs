@@ -24,8 +24,7 @@ namespace EntityFrameworkCore.FirebirdSql.Design.Internal
     {
         public FbAnnotationCodeGenerator(AnnotationCodeGeneratorDependencies dependencies)
             : base(dependencies)
-        {
-        }
+        { }
 
         public override bool IsHandledByConvention(IModel model, IAnnotation annotation)
         {

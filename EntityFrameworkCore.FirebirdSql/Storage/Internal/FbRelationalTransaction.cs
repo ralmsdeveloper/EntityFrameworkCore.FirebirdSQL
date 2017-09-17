@@ -41,8 +41,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             if (connection.DbConnection != transaction.Connection)
             {
                 throw new InvalidOperationException(RelationalStrings.TransactionAssociatedWithDifferentConnection);
-            }
-
+            } 
             _relationalConnection = connection;
             _dbTransaction = transaction;
             _logger = logger;
@@ -52,8 +51,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         public virtual async Task CommitAsync(CancellationToken cancellationToken=default(CancellationToken))
         {
             var startTime = DateTimeOffset.UtcNow;
-            var stopwatch = Stopwatch.StartNew();
-
+            var stopwatch = Stopwatch.StartNew(); 
             try
             {
                 (_dbTransaction as FbTransaction)?.Commit();
@@ -76,26 +74,13 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             {
                 (_dbTransaction as FbTransaction)?.Rollback();
 
-                _logger.TransactionRolledBack(
-                    _relationalConnection,
-                    _dbTransaction,
-                    TransactionId,
-                    startTime,
-                    stopwatch.Elapsed);
+                _logger.TransactionRolledBack(_relationalConnection,_dbTransaction,TransactionId, startTime, stopwatch.Elapsed);
             }
             catch (Exception e)
             {
-                _logger.TransactionError(
-                    _relationalConnection,
-                    _dbTransaction,
-                    TransactionId,
-                    nameof(RollbackAsync),
-                    e,
-                    startTime,
-                    stopwatch.Elapsed);
+                _logger.TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(RollbackAsync), e, startTime, stopwatch.Elapsed);
                 throw;
-            }
-
+            } 
             ClearTransaction();
         }
 
@@ -107,7 +92,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 
 	        _connectionClosed = true; 
 	        _relationalConnection.Close();
-        }
-
+        } 
     }
 }

@@ -24,12 +24,10 @@ using System.Data;
 namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
 	public class FbSettings
-	{
-
+	{ 
 		public Version ServerVersion;
 		public bool IsSupportIdentityIncrement => ServerVersion.Major >= 3;
-		public int ObjectLengthName => ServerVersion.Major == 3 ? 31 : 63;
-
+		public int ObjectLengthName => ServerVersion.Major == 3 ? 31 : 63; 
 		private static readonly ConcurrentDictionary<string, FbSettings> Settings = new ConcurrentDictionary<string, FbSettings>();
 
 		public FbSettings GetSettings(string connectionString)

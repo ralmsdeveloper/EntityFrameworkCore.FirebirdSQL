@@ -27,8 +27,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations.Internal
     {
         public FbHistoryRepository(HistoryRepositoryDependencies dependencies)
             : base(dependencies)
-        {
-        }
+        { }
 
         protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
         {

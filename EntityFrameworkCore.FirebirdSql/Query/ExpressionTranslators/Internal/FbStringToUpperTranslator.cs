@@ -19,8 +19,7 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbStringToUpperTranslator : ParameterlessInstanceMethodCallTranslator
-    {
-
+    { 
         public FbStringToUpperTranslator()
             : base(typeof(string), nameof(string.ToUpper), "UPPER")
         {

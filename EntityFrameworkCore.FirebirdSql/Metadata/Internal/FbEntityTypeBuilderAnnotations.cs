@@ -22,8 +22,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
 	{
 		public FbEntityTypeBuilderAnnotations(InternalEntityTypeBuilder internalBuilder, ConfigurationSource configurationSource)
 			: base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
-		{
-		}
+		{ }
 		 
 		public virtual bool ToTable(string name)
 		{

@@ -77,8 +77,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
         };
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
-        {
-
+        { 
             var method = methodCallExpression.Method;
             if (_supportedMethodTranslations.TryGetValue(method, out var sqlFunctionName))
             {

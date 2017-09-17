@@ -22,12 +22,10 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
     {
         public FbKeyAnnotations(IKey key)
             : base(key)
-        {
-        }
+        { }
 
         protected FbKeyAnnotations(RelationalAnnotations annotations)
             : base(annotations)
-        {
-        }
+        { }
     }
 }

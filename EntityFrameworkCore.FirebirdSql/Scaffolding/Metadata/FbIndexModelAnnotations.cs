@@ -27,14 +27,9 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 			_index = index;
 		}
 
-		/// <summary>
-		/// If the index contains an expression (rather than simple column references), the expression is contained here.
-		/// This is currently unsupported and will be ignored.
-		/// </summary>
 		public string Expression
 		{
-			get => _index[FbDatabaseModelAnnotationNames.Expression] as string;
-
+			get => _index[FbDatabaseModelAnnotationNames.Expression] as string; 
 			set => _index[FbDatabaseModelAnnotationNames.Expression] = value;
 		}
 	}

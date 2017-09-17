@@ -25,23 +25,15 @@ using EntityFrameworkCore.FirebirdSql.Storage.Internal;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
 using EntityFrameworkCore.FirebirdSql.Update.Internal;
 using EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Migrations.Internal; 
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal; 
-using Microsoft.EntityFrameworkCore.Query.Sql;
-using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore.Migrations; 
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators; 
+using Microsoft.EntityFrameworkCore.Query.Sql; 
+using Microsoft.EntityFrameworkCore.Storage; 
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.EntityFrameworkCore.Update.Internal; 
-using Microsoft.EntityFrameworkCore.ValueGeneration;
-using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+using Microsoft.EntityFrameworkCore.ValueGeneration; 
 
 namespace Microsoft.Extensions.DependencyInjection
 {

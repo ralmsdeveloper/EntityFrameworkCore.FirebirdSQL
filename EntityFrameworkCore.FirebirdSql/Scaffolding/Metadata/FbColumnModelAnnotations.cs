@@ -25,7 +25,6 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
         public FbDatabaseColumnAnnotations(DatabaseColumn column)
         { 
             _column = column;
-        }
- 
+        } 
     }
 }

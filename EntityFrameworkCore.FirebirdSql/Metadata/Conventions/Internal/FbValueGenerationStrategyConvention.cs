@@ -36,8 +36,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
             }
 
             propertyBuilder.ValueGenerated(valueGenerated, ConfigurationSource.Convention);
-            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
-
+            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy); 
             return base.Apply(propertyBuilder, attribute, clrMember);
         }
 		 

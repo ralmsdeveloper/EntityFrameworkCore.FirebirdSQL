@@ -20,10 +20,14 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 {
     public static class FbDatabaseModelExtensions
     {
-        public static FbDatabaseColumnAnnotations Firebird(this DatabaseColumn column)
-            => new FbDatabaseColumnAnnotations(column);
+		public static FbDatabaseColumnAnnotations Firebird(this DatabaseColumn column)
+		{
+			return new FbDatabaseColumnAnnotations(column);
+		}
 
-        public static FbIndexModelAnnotations Firebird(this DatabaseIndex index)
-            => new FbIndexModelAnnotations(index);
-    }
+		public static FbIndexModelAnnotations Firebird(this DatabaseIndex index)
+		{
+			return new FbIndexModelAnnotations(index);
+		}
+	}
 }

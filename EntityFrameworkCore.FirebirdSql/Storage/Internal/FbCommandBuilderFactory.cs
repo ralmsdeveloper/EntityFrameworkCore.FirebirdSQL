@@ -20,8 +20,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
-{
-
+{ 
     public class FbCommandBuilderFactory : IRelationalCommandBuilderFactory
     {
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger;
@@ -39,8 +38,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 		 
         public virtual IRelationalCommandBuilder Create() => CreateCore(_logger, _typeMapper);
 
-        protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
-            IRelationalTypeMapper relationalTypeMapper)
-            => new FbCommandBuilder(logger, relationalTypeMapper);
-    }
+		protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper relationalTypeMapper)
+		{
+			return new FbCommandBuilder(logger, relationalTypeMapper);
+		}
+	}
 }

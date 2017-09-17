@@ -19,8 +19,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{
-
+{ 
     public class FbStringLengthTranslator : IMemberTranslator
     {
         public virtual Expression Translate(MemberExpression memberExpression)

@@ -26,7 +26,6 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 			: base(dependencies)
 		{ }
 
-		 
 		public override ConventionSet AddConventions(ConventionSet conventionSet)
 		{
 			base.AddConventions(conventionSet);
@@ -34,8 +33,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 			var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
 			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention); 
 			ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
-			ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
-
+			ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention); 
 			return conventionSet;
 		}
 	}

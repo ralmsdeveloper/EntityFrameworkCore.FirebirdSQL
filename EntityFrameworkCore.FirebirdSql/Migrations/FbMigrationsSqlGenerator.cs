@@ -123,8 +123,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 					EndStatement(builder);
 				}
 			}
-		}
-
+		} 
 
 		protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
 		{
@@ -165,14 +164,14 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 				{
 					var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
 					builder.Append(" SET DEFAULT ")
-						.Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
-						.AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+					       .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+					       .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
 				}
 				else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
 				{
 					builder.Append(" SET DEFAULT ")
-						.Append(operation.DefaultValueSql)
-						.AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
+					       .Append(operation.DefaultValueSql)
+					       .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
 				}
 				else
 				{
@@ -340,10 +339,8 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 					var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
 					builder.Append(" DEFAULT ")
 						   .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
-				}
-				 
-			}
-
+				} 
+			} 
 		}
 
 		protected override void DefaultValue(object defaultValue, string defaultValueSql, MigrationCommandListBuilder builder)

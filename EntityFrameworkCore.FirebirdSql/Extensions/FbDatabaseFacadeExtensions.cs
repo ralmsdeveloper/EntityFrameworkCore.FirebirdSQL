@@ -16,15 +16,11 @@
 
 using System;
 using System.Reflection;
-using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal; 
 using Microsoft.EntityFrameworkCore.Infrastructure; 
 
 namespace EntityFrameworkCore.FirebirdSql.Extensions
-{
-    /// <summary>
-    ///     FirebirdSQL specific extension methods for <see cref="DbContext.Database" />.
-    /// </summary>
+{ 
     public static class FbDatabaseFacadeExtensions
     { 
         public static bool IsFirebird(this DatabaseFacade database)

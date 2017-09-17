@@ -20,8 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.FirebirdSql.Utilities;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
-
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators; 
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {

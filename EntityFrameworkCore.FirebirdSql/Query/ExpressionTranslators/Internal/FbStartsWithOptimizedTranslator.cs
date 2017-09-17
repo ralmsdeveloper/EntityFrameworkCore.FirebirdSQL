@@ -20,18 +20,14 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{
-
+{ 
     public class FbStartsWithOptimizedTranslator : IMethodCallTranslator
     {
-        private static readonly MethodInfo _methodStringOf
-            = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(string) });
+        private static readonly MethodInfo _methodStringOf = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(string) });
 
-        private static readonly MethodInfo _methodCharOf
-            = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(char) });
+        private static readonly MethodInfo _methodCharOf  = typeof(string).GetRuntimeMethod(nameof(string.StartsWith), new[] { typeof(char) });
 
-        static readonly MethodInfo _concatCast
-           = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
+        static readonly MethodInfo _concatCast = typeof(string).GetRuntimeMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) });
 
         public virtual Expression Translate(MethodCallExpression methodStartCall)
         {
@@ -48,21 +44,18 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
                     methodStartCall.Object,
                     Expression.Constant(System.Text.RegularExpressions.Regex.Replace((string)constantPatternExpr?.Value, @"([%_\\'])", @"\$1") + '%')
                 );
-            } 
-
+            }  
             var pattern = methodStartCall.Arguments[0];
             return Expression.AndAlso(
                 new LikeExpression(methodStartCall.Object, Expression.Add(pattern, Expression.Constant("%"), _concatCast)),
-                Expression.Equal(
-                    new SqlFunctionExpression("LEFT", typeof(string), new[]
+                Expression.Equal(new SqlFunctionExpression("LEFT", typeof(string), new[]
                     {
                         methodStartCall.Object,
                         new SqlFunctionExpression("CHARACTER_LENGTH", typeof(int), new[] { pattern }),
                     }),
                     pattern
                 )
-            );
-              
+            ); 
         }
     }
 }

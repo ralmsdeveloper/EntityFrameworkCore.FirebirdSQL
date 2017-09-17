@@ -16,7 +16,6 @@
 
 using System.Linq.Expressions;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
-using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {

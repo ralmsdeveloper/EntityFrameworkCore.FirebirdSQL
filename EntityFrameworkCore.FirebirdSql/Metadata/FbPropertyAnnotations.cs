@@ -68,8 +68,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
 			if (modelStrategy == FbValueGenerationStrategy.SequenceTrigger && IsCompatibleSequenceTrigger(Property.ClrType))
 			{
 				return FbValueGenerationStrategy.SequenceTrigger;
-			}
-
+			} 
 			return null;
 		}
 

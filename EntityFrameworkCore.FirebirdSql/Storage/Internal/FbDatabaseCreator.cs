@@ -16,8 +16,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using EntityFrameworkCore.FirebirdSql.Internal;
+using System.Collections.Generic; 
 using EntityFrameworkCore.FirebirdSql.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;

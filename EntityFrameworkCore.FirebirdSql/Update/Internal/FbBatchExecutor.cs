@@ -23,12 +23,10 @@ using Microsoft.EntityFrameworkCore.Update;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
-{
-
+{ 
     public class FbBatchExecutor : IBatchExecutor
     { 
-        public int Execute(IEnumerable<ModificationCommandBatch> commandBatches,
-            IRelationalConnection connection)
+        public int Execute(IEnumerable<ModificationCommandBatch> commandBatches, IRelationalConnection connection)
         {
             var recordAffecteds = 0;
             if(connection?.DbConnection?.State != System.Data.ConnectionState.Open)
@@ -68,10 +66,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             return recordAffecteds;
         }
 
-        public async Task<int> ExecuteAsync(
-            IEnumerable<ModificationCommandBatch> commandBatches,
-            IRelationalConnection connection,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<int> ExecuteAsync( IEnumerable<ModificationCommandBatch> commandBatches,IRelationalConnection connection, CancellationToken cancellationToken = default(CancellationToken))
         {
             var RowsAffecteds = 0;
             await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
@@ -79,9 +74,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             try
             {
                 if (connection.CurrentTransaction == null) 
-                    currentTransaction = await (connection as FbRelationalConnection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FbRelationalTransaction;
-               
-
+                    currentTransaction = await ((FbRelationalConnection)connection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FbRelationalTransaction;
+                
                 foreach (var commandbatch in commandBatches)
                 {
                     await commandbatch.ExecuteAsync(connection, cancellationToken).ConfigureAwait(false);

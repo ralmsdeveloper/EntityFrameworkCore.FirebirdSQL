@@ -136,8 +136,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 			if (_blockDeleteCommands.Count == 0)
 				return string.Empty;
-
-
+			 
 			var stringBuilder = new StringBuilder();
 			var resultSetMapping = UpdateSqlGenerator()
 				.AppendBlockDeleteOperation(stringBuilder, _blockDeleteCommands, lastIndex - _blockDeleteCommands.Count);

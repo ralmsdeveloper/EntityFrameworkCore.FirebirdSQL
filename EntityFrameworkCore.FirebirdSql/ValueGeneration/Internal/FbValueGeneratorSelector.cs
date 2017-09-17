@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {
     public class FbValueGeneratorSelector : RelationalValueGeneratorSelector
     {
-        private readonly IFbOptions _options;
+		private readonly IFbOptions _options;
 
         public FbValueGeneratorSelector(ValueGeneratorSelectorDependencies dependencies,IFbOptions options)
             : base(dependencies)

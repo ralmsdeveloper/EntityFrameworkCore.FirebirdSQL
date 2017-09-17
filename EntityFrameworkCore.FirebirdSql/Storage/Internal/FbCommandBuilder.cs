@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Microsoft.EntityFrameworkCore.Utilities;
+using Microsoft.EntityFrameworkCore.Storage.Internal; 
 
 // ReSharper disable once CheckNamespace
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
@@ -27,12 +26,18 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         public virtual IRelationalParameterBuilder ParameterBuilder { get; }
 
         public virtual IRelationalCommand Build()
-            => BuildCore(_logger, _commandTextBuilder.ToString(), ParameterBuilder.Parameters);
+	    {
+		    return BuildCore(_logger, _commandTextBuilder.ToString(), ParameterBuilder.Parameters);
+	    }
 
-        protected virtual IRelationalCommand BuildCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, string commandText, IReadOnlyList<IRelationalParameter> parameters)
-            => new FirebirdRelationalCommand(logger, commandText, parameters);
+		protected virtual IRelationalCommand BuildCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, string commandText, IReadOnlyList<IRelationalParameter> parameters)
+		{
+			return new FirebirdRelationalCommand(logger, commandText, parameters);
+		}
 
-        public override string ToString() 
-			=> _commandTextBuilder.ToString();
+		public override string ToString()
+	    {
+		    return _commandTextBuilder.ToString();
+	    }
     }
 }
