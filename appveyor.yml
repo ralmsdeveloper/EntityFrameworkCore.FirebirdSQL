@@ -1,0 +1,36 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+skip_non_tags: true
+image: Previous Visual Studio 2017
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+before_build:
+- cmd: >-
+    cd EntityFrameworkCore.FirebirdSql
+
+    dotnet restore
+
+    cd ..
+build:
+  project: EntityFrameworkCore.FirebirdSql
+  publish_nuget: true
+  publish_nuget_symbols: true
+  include_nuget_references: true
+  parallel: true
+  verbosity: minimal
+notifications:
+- provider: GitHubPullRequest
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
+- provider: Email
+  to:
+  - ralms@ralms.net
+  subject: EntityframeworkCore.FirebirdSql
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
