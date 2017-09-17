@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using EntityFrameworkCore.FirebirdSql.Extensions;
+using EntityFrameworkCore.FirebirdSql.Metadata;
 using Microsoft.EntityFrameworkCore;  
 
 namespace EntityFrameworkCore.FirebirdSql.Console.Test
@@ -48,8 +49,15 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
             "ServerType=0"; 
             optionsBuilder.UseFirebird(connectionString);  
         }
-        protected override void OnModelCreating(ModelBuilder modelo)
-        {}
+
+	    protected override void OnModelCreating(ModelBuilder modelo)
+	    {
+			base.OnModelCreating(modelo); 
+		    var author = modelo.Entity<Author>();
+			//author.Property(x => x.AuthorId).UseFbSequenceTrigger();
+		    author.Property(x => x.AuthorId).UseFbIdentityColumn();
+
+		}
     } 
 
     public class Author

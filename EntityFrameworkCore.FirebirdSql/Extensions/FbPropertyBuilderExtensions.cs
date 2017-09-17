@@ -21,20 +21,36 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal; 
 
 namespace EntityFrameworkCore.FirebirdSql
-{ 
-
+{   
     public static class FbPropertyBuilderExtensions
-    { 
-        public static PropertyBuilder UseFbIdentityColumn(this PropertyBuilder propertyBuilder)
-        {
-            GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
-            return propertyBuilder;
-        } 
+    {
+	    public static PropertyBuilder UseFbIdentityColumn(this PropertyBuilder propertyBuilder)
+	    {
+		    GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
+		    return propertyBuilder;
+	    }
 
-        public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
-            => (PropertyBuilder<TProperty>)UseFbIdentityColumn((PropertyBuilder)propertyBuilder);
+	    public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>(
+		    this PropertyBuilder<TProperty> propertyBuilder)
+	    {
+		    return (PropertyBuilder<TProperty>) UseFbIdentityColumn((PropertyBuilder) propertyBuilder);
+	    }
 
-        private static FbPropertyBuilderAnnotations GetFbInternalBuilder(PropertyBuilder propertyBuilder)
-            => propertyBuilder.GetInfrastructure<InternalPropertyBuilder>().Firebird(ConfigurationSource.Explicit);
-    }
+	    public static PropertyBuilder UseFbSequenceTrigger(this PropertyBuilder propertyBuilder)
+	    {
+		    GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.SequenceTrigger);
+		    return propertyBuilder;
+	    }
+
+	    public static PropertyBuilder<TProperty> UseFbSequenceTrigger<TProperty>(
+		    this PropertyBuilder<TProperty> propertyBuilder)
+	    {
+		    return (PropertyBuilder<TProperty>) UseFbSequenceTrigger((PropertyBuilder) propertyBuilder);
+	    }
+
+	    private static FbPropertyBuilderAnnotations GetFbInternalBuilder(PropertyBuilder propertyBuilder)
+	    {
+		    return propertyBuilder.GetInfrastructure<InternalPropertyBuilder>().Firebird(ConfigurationSource.Explicit);
+	    }
+	}
 }
