@@ -30,7 +30,6 @@ The EntityFrameworkCore.FirebirdSql is an Entity Framework Core access provider 
 
 Same uses the ADO.NET Library  [Firebird Client](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient)  written by friend Cincura.
 
-##  Prediction Release 2.0 - September 05, 2017
 
 ##  What we already have:
 All basic operations are working well
