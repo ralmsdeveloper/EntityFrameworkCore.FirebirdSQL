@@ -106,6 +106,19 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 
 				WriteLine($"-----------------------------------");
 			}
+			
+			var Car = new Car()
+			{
+				NumberPlate = "NUMBER-ONE",
+				Country = "FRANCE"
+			};
+
+			cx.Car.Add(Car);
+			cx.SaveChanges();
+
+			cx.Car.Remove(Car);
+			cx.SaveChanges();
+
 
 			ReadKey();
 		}

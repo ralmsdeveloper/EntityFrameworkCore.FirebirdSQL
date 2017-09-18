@@ -139,18 +139,25 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			return ResultSetMapping.NotLastInResultSet;
 		}
 
-		private void AppendWhereClauseCustom(StringBuilder commandStringBuilder, ColumnModification[] col)
+		private void AppendWhereClauseCustom(StringBuilder commandStringBuilder, ColumnModification[] columns)
 		{
-			if (!col.Any())
+			if (!columns.Any())
 				return;
 
 			commandStringBuilder.Append(" WHERE ");
-			foreach (var item in col)
+			var predicates = new List<string>();
+			foreach (var column in columns)
 			{
-				commandStringBuilder.Append(SqlGenerationHelper.DelimitIdentifier(item.ColumnName))
-									.Append("=")
-									.Append(item.Value);
+				StringBuilder predicate = new StringBuilder();
+				predicate.Append(SqlGenerationHelper.DelimitIdentifier(column.ColumnName))
+									.Append("=");
+				if (column.Value is string)
+					predicate.Append('\'').Append(column.Value).Append('\'');
+				else
+					predicate.Append(column.Value);
+				predicates.Add(predicate.ToString());
 			}
+			commandStringBuilder.Append(string.Join(" AND ", predicates));
 		}
 
 		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)

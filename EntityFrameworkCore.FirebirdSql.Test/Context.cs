@@ -28,9 +28,10 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
     {
         
         public DbSet<Author> Author { get; set; }
-        public DbSet<Book> Book { get; set; } 
-        
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DbSet<Book> Book { get; set; }
+		public DbSet<Car> Car { get; set; }
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {   
             string connectionString =
             "User=SYSDBA;" +
@@ -55,8 +56,11 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 			base.OnModelCreating(modelo); 
 		    var author = modelo.Entity<Author>();
 			//author.Property(x => x.AuthorId).UseFbSequenceTrigger();
-		    author.Property(x => x.AuthorId).UseFbIdentityColumn();
+		    author.Property(x => x.AuthorId)
+				.UseFbIdentityColumn();
 
+			modelo.Entity<Car>()
+				.HasKey(car => new { car.NumberPlate, car.Country });
 		}
     } 
 
@@ -92,6 +96,15 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
         public long AuthorId { get; set; }
 
         public Author Author { get; set; }
-    } 
+    }
+
+	public class Car
+	{
+		[StringLength(20)]
+		public string NumberPlate { get; set; }
+
+		[StringLength(50)]
+		public string Country { get; set; }
+	}
 }
 
