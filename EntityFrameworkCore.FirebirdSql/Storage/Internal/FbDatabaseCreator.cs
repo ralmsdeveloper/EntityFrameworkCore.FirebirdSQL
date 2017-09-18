@@ -74,13 +74,16 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 					  }
 			};
 			return Dependencies.MigrationsSqlGenerator.Generate(operations);
-		} 
+		}
 
 		protected override bool HasTables()
-		    => Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
+		{
+			return Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
+		}
 
-	    IRelationalCommand CreateHasTablesCommand()
-		    => _rawSqlCommandBuilder
-			    .Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(r.rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
-    }
+		IRelationalCommand CreateHasTablesCommand()
+		{
+			return _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
+		}
+	}
 }
