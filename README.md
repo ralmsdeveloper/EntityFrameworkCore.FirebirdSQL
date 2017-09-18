@@ -17,7 +17,7 @@ EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 [![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql)
 [![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/master/LICENSE) [![Travis build status](https://img.shields.io/travis/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL.svg?label=travis-ci&branch=dev&style=plastic)](https://travis-ci.org/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/branches)
-[![AppVeyor build status](https://img.shields.io/appveyor/ci/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL.svg?label=appveyor&style=plastic)](https://ci.appveyor.com/project/ralmsdeveloper/entityframeworkcore-firebirdsql/branch/master)  
+[![AppVeyor build status](https://img.shields.io/appveyor/ci/ralmsdeveloper/EntityFrameworkCore-FirebirdSQL/master.svg?label=appveyor&style=plastic)](https://ci.appveyor.com/project/ralmsdeveloper/entityframeworkcore-firebirdsql/branch/master)  
 
 
 
