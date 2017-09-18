@@ -18,8 +18,7 @@ using EntityFrameworkCore.FirebirdSql.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata; 
 
 namespace EntityFrameworkCore.FirebirdSql.Extensions
-{
-
+{ 
     public static class FbMetadataExtensions
     {
         public static FbPropertyAnnotations Firebird(this IMutableProperty property)

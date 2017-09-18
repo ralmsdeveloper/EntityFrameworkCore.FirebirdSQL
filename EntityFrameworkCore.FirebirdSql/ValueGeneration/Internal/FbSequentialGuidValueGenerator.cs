@@ -50,7 +50,6 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 
         }
 		 
-        public override bool GeneratesTemporaryValues => false;
-
+        public override bool GeneratesTemporaryValues => false; 
     }
 }

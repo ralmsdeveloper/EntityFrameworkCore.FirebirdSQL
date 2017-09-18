@@ -92,8 +92,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 					parameterCount++;
 			}
 			return parameterCount;
-		}
-
+		} 
  
 		protected override void ResetCommandText()
 		{
@@ -300,12 +299,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 					{
 						commandIndex++;
 						if (!dataReader.Read())
-							throw new DbUpdateConcurrencyException(
-								RelationalStrings.UpdateConcurrencyException(1, 0),
-								ModificationCommands[commandIndex].Entries
-							);
-					}
-
+							throw new DbUpdateConcurrencyException(RelationalStrings.UpdateConcurrencyException(1, 0),ModificationCommands[commandIndex].Entries);
+					} 
 					//check if you've gone through all notifications
 					if (propragation == ModificationCommands.Count)
 						break;

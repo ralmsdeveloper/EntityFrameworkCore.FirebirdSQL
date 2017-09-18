@@ -23,22 +23,21 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
     {
         public FbModelAnnotations(IModel model)
             : base(model)
-        {
-        }
+        { }
 
         protected FbModelAnnotations(RelationalAnnotations annotations)
             : base(annotations)
-        {
-        }
+        { }
 
         public virtual FbValueGenerationStrategy? ValueGenerationStrategy
         {
-            get => (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy];
-
+            get => (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy]; 
             set => SetValueGenerationStrategy(value);
         }
 
-        protected virtual bool SetValueGenerationStrategy(FbValueGenerationStrategy? value)
-            => Annotations.SetAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
-    }
+		protected virtual bool SetValueGenerationStrategy(FbValueGenerationStrategy? value)
+		{
+			return Annotations.SetAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
+		}
+	}
 }

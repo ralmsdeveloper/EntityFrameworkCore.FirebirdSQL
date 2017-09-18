@@ -19,6 +19,5 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public interface IFbEntityTypeAnnotations : IRelationalEntityTypeAnnotations
-    {
-    }
+    { }
 }

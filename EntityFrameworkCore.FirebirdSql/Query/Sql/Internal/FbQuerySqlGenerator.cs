@@ -30,8 +30,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 		
 		public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies,SelectExpression selectExpression)
 			: base(dependencies, selectExpression)
-		{
-		}
+		{ }
 
 		public override Expression VisitSelect(SelectExpression selectExpression)
 		{

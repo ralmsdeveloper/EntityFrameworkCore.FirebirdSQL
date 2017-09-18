@@ -93,8 +93,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
 					if (ShouldThrowOnInvalidConfiguration)
 					{
 						throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{Property.Name}'.");
-					}
-
+					} 
 					return false;
 				}
 			}
@@ -141,10 +140,9 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
 					throw new InvalidOperationException(RelationalStrings.ConflictingColumnServerGeneration(nameof(ValueGenerationStrategy), Property.Name, nameof(ComputedColumnSql)));
 				}
 			}
-			else if (value != null
-					 && (!CanSetDefaultValue(null)
-						 || !CanSetDefaultValueSql(null)
-						 || !CanSetComputedColumnSql(null)))
+			else if (value != null && (!CanSetDefaultValue(null)
+			                           || !CanSetDefaultValueSql(null)
+			                           || !CanSetComputedColumnSql(null)))
 			{
 				return false;
 			}

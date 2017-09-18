@@ -30,8 +30,7 @@ namespace EntityFrameworkCore.FirebirdSql
 		    return propertyBuilder;
 	    }
 
-	    public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>(
-		    this PropertyBuilder<TProperty> propertyBuilder)
+	    public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>( this PropertyBuilder<TProperty> propertyBuilder)
 	    {
 		    return (PropertyBuilder<TProperty>) UseFbIdentityColumn((PropertyBuilder) propertyBuilder);
 	    }
@@ -42,8 +41,7 @@ namespace EntityFrameworkCore.FirebirdSql
 		    return propertyBuilder;
 	    }
 
-	    public static PropertyBuilder<TProperty> UseFbSequenceTrigger<TProperty>(
-		    this PropertyBuilder<TProperty> propertyBuilder)
+	    public static PropertyBuilder<TProperty> UseFbSequenceTrigger<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
 	    {
 		    return (PropertyBuilder<TProperty>) UseFbSequenceTrigger((PropertyBuilder) propertyBuilder);
 	    }

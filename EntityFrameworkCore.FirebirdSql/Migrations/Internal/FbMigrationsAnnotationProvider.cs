@@ -27,8 +27,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations.Internal
     {
         public FbMigrationsAnnotationProvider(MigrationsAnnotationProviderDependencies dependencies)
             : base(dependencies)
-        {
-        }
+        { }
 
         public override IEnumerable<IAnnotation> For(IProperty property)
         {

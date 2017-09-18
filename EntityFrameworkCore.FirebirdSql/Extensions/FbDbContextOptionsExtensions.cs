@@ -61,7 +61,6 @@ namespace EntityFrameworkCore.FirebirdSql.Extensions
             return existsExtension != null
                 ? new FbOptionsExtension(existsExtension)
                 : new FbOptionsExtension();
-        }
-    
+        } 
     }
 }

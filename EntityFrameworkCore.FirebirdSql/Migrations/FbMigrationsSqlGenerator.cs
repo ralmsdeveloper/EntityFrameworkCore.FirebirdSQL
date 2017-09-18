@@ -59,7 +59,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 				EndStatement(builder);
 			}
 
-			// If Firebird Version > = 3 (Not User Trigger Sequence)
+			// If Firebird Version > = 3  
 			if (_options.Settings.IsSupportIdentityIncrement)
 				return;
 
@@ -405,8 +405,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 			if (referentialAction == ReferentialAction.Restrict)
 				builder.Append("NO ACTION");
 			else
-				base.ForeignKeyAction(referentialAction, builder);
-
+				base.ForeignKeyAction(referentialAction, builder); 
 		}
 
 		protected override void ForeignKeyConstraint(AddForeignKeyOperation operation, IModel model, MigrationCommandListBuilder builder)
