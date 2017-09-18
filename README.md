@@ -16,7 +16,9 @@ Por se esforçar para ajudar, analisando cada parte do código!
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 [![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql)
-[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/master/LICENSE) 
+[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/master/LICENSE)
+[![Travis build status](https://travis-ci.org/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL.svg?branch=master)](https://travis-ci.org/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL)
+
 
 
 Provider               | Package name                              | Stable (`master` branch)    | On test (`dev` branch)
