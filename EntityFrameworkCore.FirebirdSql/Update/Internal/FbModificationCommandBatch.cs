@@ -137,13 +137,21 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 				return string.Empty;
 			 
 			var stringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator()
-				.AppendBlockDeleteOperation(stringBuilder, _blockDeleteCommands, lastIndex - _blockDeleteCommands.Count);
+			var headStringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator().AppendBlockDeleteOperation(stringBuilder, _executeParameters,  _blockDeleteCommands, lastIndex - _blockDeleteCommands.Count);
 			for (var i = lastIndex - _blockDeleteCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
 				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+
+			var executeParameters = headStringBuilder.ToString();
+			if (executeParameters.Length > 0)
+			{
+				_executeParameters.Append(_seperator);
+				_executeParameters.Append(executeParameters);
+				_seperator = ","; 
+			}
 
 			return stringBuilder.ToString();
 		}

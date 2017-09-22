@@ -24,19 +24,20 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
     {
 		ResultSetMapping AppendBlockInsertOperation(
 		    StringBuilder commandStringBuilder,
-		    StringBuilder headBlockStringBuilder,
+		    StringBuilder executeParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
 	    ResultSetMapping AppendBlockUpdateOperation(
 		    StringBuilder commandStringBuilder,
-		    StringBuilder headBlockStringBuilder,
+		    StringBuilder executeParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
 	    ResultSetMapping AppendBlockDeleteOperation(
 		    StringBuilder commandStringBuilder,
-		    IReadOnlyList<ModificationCommand> modificationCommands,
+		    StringBuilder executeParameters,
+			IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 	}
    

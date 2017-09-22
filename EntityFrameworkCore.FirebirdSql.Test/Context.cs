@@ -18,9 +18,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql.Metadata;
-using Microsoft.EntityFrameworkCore;  
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace EntityFrameworkCore.FirebirdSql.Console.Test
 {
@@ -28,9 +30,10 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
     {
         
         public DbSet<Author> Author { get; set; }
-        public DbSet<Book> Book { get; set; } 
-        
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DbSet<Book> Book { get; set; }
+	    public DbSet<Person> Person { get; set; }
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {   
             string connectionString =
             "User=SYSDBA;" +
@@ -53,9 +56,10 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 	    protected override void OnModelCreating(ModelBuilder modelo)
 	    {
 			base.OnModelCreating(modelo); 
-		    var author = modelo.Entity<Author>();
-			//author.Property(x => x.AuthorId).UseFbSequenceTrigger();
+		    var author = modelo.Entity<Author>(); 
 		    author.Property(x => x.AuthorId).UseFbIdentityColumn();
+
+		    modelo.Entity<Person>().HasKey(person => new { person.Name, person.LastName });
 
 		}
     } 
@@ -92,6 +96,15 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
         public long AuthorId { get; set; }
 
         public Author Author { get; set; }
-    } 
+    }
+
+	public class Person
+	{ 
+		[StringLength(100)]
+		public string Name { get; set; }
+
+		[StringLength(100)]  
+		public string LastName { get; set; }
+	}
 }
 
