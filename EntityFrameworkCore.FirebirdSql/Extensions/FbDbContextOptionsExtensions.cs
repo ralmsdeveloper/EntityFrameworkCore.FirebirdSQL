@@ -44,15 +44,13 @@ namespace EntityFrameworkCore.FirebirdSql.Extensions
 		public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder,string connectionString,Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
 			where TContext : DbContext
 		{
-			return (DbContextOptionsBuilder<TContext>)UseFirebird(
-						   (DbContextOptionsBuilder)optionsBuilder, connectionString, fbOptionsAction);
+			return (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connectionString, fbOptionsAction);
 		}
 
 		public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder,DbConnection connection, Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
 			where TContext : DbContext
 		{
-			return (DbContextOptionsBuilder<TContext>)UseFirebird(
-						   (DbContextOptionsBuilder)optionsBuilder, connection, fbOptionsAction);
+			return (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connection, fbOptionsAction);
 		}
 
 		private static FbOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)
