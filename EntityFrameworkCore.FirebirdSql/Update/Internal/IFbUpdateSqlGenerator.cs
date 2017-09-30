@@ -22,19 +22,19 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator
     {
-		ResultSetMapping AppendBlockInsertOperation(
+		ResultSetMapping AppendBulkInsertOperation(
 		    StringBuilder commandStringBuilder,
 		    StringBuilder executeParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
-	    ResultSetMapping AppendBlockUpdateOperation(
+	    ResultSetMapping AppendBulkUpdateOperation(
 		    StringBuilder commandStringBuilder,
 		    StringBuilder executeParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
-	    ResultSetMapping AppendBlockDeleteOperation(
+	    ResultSetMapping AppendBulkDeleteOperation(
 		    StringBuilder commandStringBuilder,
 		    StringBuilder executeParameters,
 			IReadOnlyList<ModificationCommand> modificationCommands,

@@ -36,9 +36,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		private readonly int _maxBatchSize;
 		private readonly IRelationalCommandBuilderFactory _commandBuilderFactory;
 		private readonly IRelationalValueBufferFactoryFactory _valueBufferFactory;
-		private readonly List<ModificationCommand> _blockInsertCommands;
-		private readonly List<ModificationCommand> _blockUpdateCommands;
-		private readonly List<ModificationCommand> _blockDeleteCommands; 
+		private readonly List<ModificationCommand> _bulkInsertCommands;
+		private readonly List<ModificationCommand> _bulkUpdateCommands;
+		private readonly List<ModificationCommand> _bulkDeleteCommands; 
 		private readonly StringBuilder _executeParameters;
 		private string _seperator;
 		 
@@ -53,9 +53,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			_valueBufferFactory = valueBufferFactoryFactory; 
 			_executeParameters = new StringBuilder();
 			_seperator = string.Empty;
-			_blockInsertCommands = new List<ModificationCommand>();
-			_blockUpdateCommands = new List<ModificationCommand>();
-			_blockDeleteCommands = new List<ModificationCommand>();
+			_bulkInsertCommands = new List<ModificationCommand>();
+			_bulkUpdateCommands = new List<ModificationCommand>();
+			_bulkDeleteCommands = new List<ModificationCommand>();
 		}
  
 		protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator()
@@ -98,9 +98,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 			base.ResetCommandText();
 			_executeParameters.Clear();
-			_blockInsertCommands.Clear();
-			_blockUpdateCommands.Clear();
-			_blockDeleteCommands.Clear();
+			_bulkInsertCommands.Clear();
+			_bulkUpdateCommands.Clear();
+			_bulkDeleteCommands.Clear();
 		}
 		 
 		protected override string GetCommandText()
@@ -133,13 +133,13 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 		private string GetBlockDeleteCommandText(int lastIndex)
 		{
-			if (_blockDeleteCommands.Count == 0)
+			if (_bulkDeleteCommands.Count == 0)
 				return string.Empty;
 			 
 			var stringBuilder = new StringBuilder();
 			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBlockDeleteOperation(stringBuilder, _executeParameters,  _blockDeleteCommands, lastIndex - _blockDeleteCommands.Count);
-			for (var i = lastIndex - _blockDeleteCommands.Count; i < lastIndex; i++)
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkDeleteOperation(stringBuilder, _executeParameters,  _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
+			for (var i = lastIndex - _bulkDeleteCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
@@ -158,14 +158,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 		private string GetBlockUpdateCommandText(int lastIndex)
 		{
-			if (_blockUpdateCommands.Count == 0)
+			if (_bulkUpdateCommands.Count == 0)
 				return string.Empty;
 
 			var stringBuilder = new StringBuilder();
 			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBlockUpdateOperation(stringBuilder, headStringBuilder,_blockUpdateCommands, lastIndex - _blockUpdateCommands.Count);
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkUpdateOperation(stringBuilder, headStringBuilder,_bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
 
-			for (var i = lastIndex - _blockUpdateCommands.Count; i < lastIndex; i++)
+			for (var i = lastIndex - _bulkUpdateCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
@@ -184,14 +184,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 		private string GetBlockInsertCommandText(int lastIndex)
 		{
-			if (_blockInsertCommands.Count == 0)
+			if (_bulkInsertCommands.Count == 0)
 				return string.Empty;
 
 			var stringBuilder = new StringBuilder();
 			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBlockInsertOperation(stringBuilder, headStringBuilder, _blockInsertCommands, lastIndex - _blockInsertCommands.Count);
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkInsertOperation(stringBuilder, headStringBuilder, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
 
-			for (var i = lastIndex - _blockInsertCommands.Count; i < lastIndex; i++)
+			for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
@@ -214,38 +214,38 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 			if (newModificationCommand.EntityState == EntityState.Added)
 			{
-				if (_blockInsertCommands.Count > 0 && !CanBeInsertedInSameStatement(_blockInsertCommands[0], newModificationCommand))
+				if (_bulkInsertCommands.Count > 0 && !CanBeInsertedInSameStatement(_bulkInsertCommands[0], newModificationCommand))
 				{
 					CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
-					_blockInsertCommands.Clear();
+					_bulkInsertCommands.Clear();
 				}
-				_blockInsertCommands.Add(newModificationCommand);
+				_bulkInsertCommands.Add(newModificationCommand);
 				LastCachedCommandIndex = commandPosition;
 			}
 			else if (newModificationCommand.EntityState == EntityState.Modified)
 			{
-				if (_blockUpdateCommands.Count > 0 && !CanBeUpdateInSameStatement(_blockUpdateCommands[0], newModificationCommand))
+				if (_bulkUpdateCommands.Count > 0 && !CanBeUpdateInSameStatement(_bulkUpdateCommands[0], newModificationCommand))
 				{
 					CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
-					_blockUpdateCommands.Clear();
+					_bulkUpdateCommands.Clear();
 				}
-				_blockUpdateCommands.Add(newModificationCommand);
+				_bulkUpdateCommands.Add(newModificationCommand);
 				LastCachedCommandIndex = commandPosition;
 			}
 			else if (newModificationCommand.EntityState == EntityState.Deleted)
 			{
-				if (_blockDeleteCommands.Count > 0 && !CanBeDeleteInSameStatement(_blockDeleteCommands[0], newModificationCommand))
+				if (_bulkDeleteCommands.Count > 0 && !CanBeDeleteInSameStatement(_bulkDeleteCommands[0], newModificationCommand))
 				{
 					CachedCommandText.Append(GetBlockDeleteCommandText(commandPosition));
-					_blockDeleteCommands.Clear();
+					_bulkDeleteCommands.Clear();
 				}
-				_blockDeleteCommands.Add(newModificationCommand);
+				_bulkDeleteCommands.Add(newModificationCommand);
 				LastCachedCommandIndex = commandPosition;
 			}
 			else
 			{
 				CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
-				_blockInsertCommands.Clear();
+				_bulkInsertCommands.Clear();
 				base.UpdateCachedCommandText(commandPosition);
 			}
 		}

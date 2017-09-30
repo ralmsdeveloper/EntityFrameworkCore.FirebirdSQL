@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			_typeMapperRelational = typeMapper;
 		} 
 		 
-		public ResultSetMapping AppendBlockInsertOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+		public ResultSetMapping AppendBulkInsertOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
 			commandStringBuilder.Clear();
 			commaAppend = string.Empty;
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			return ResultSetMapping.NotLastInResultSet;
 		}
 
-		public ResultSetMapping AppendBlockUpdateOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+		public ResultSetMapping AppendBulkUpdateOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
 			commandStringBuilder.Clear();
 			commaAppend = string.Empty;
@@ -109,7 +109,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			return ResultSetMapping.NotLastInResultSet;
 		}
 
-		public ResultSetMapping AppendBlockDeleteOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+		public ResultSetMapping AppendBulkDeleteOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
 		{
 			var name = modificationCommands[0].TableName;
 			commaAppend = string.Empty;
