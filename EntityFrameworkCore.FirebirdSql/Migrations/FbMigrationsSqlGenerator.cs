@@ -325,10 +325,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 					               : " NOT NULL");
 			}
 			else
-			{
-				if (!nullable)
-					builder.Append(" NOT NULL");
-
+			{				
 				if (defaultValueSql != null)
 				{
 					builder.Append(" DEFAULT ")
@@ -339,7 +336,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 					var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
 					builder.Append(" DEFAULT ")
 						   .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
-				} 
+				}
+			
+				if (!nullable)
+					builder.Append(" NOT NULL "); 
 			} 
 		}
 
