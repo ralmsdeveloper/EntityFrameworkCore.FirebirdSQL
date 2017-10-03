@@ -1,17 +1,3 @@
-## Temporary repository
-
-**Attention! This repository will be merged with the [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/) repository, intent is to unite all our efforts.**
-**The same will be officially integrated with FirebirdSQL in a few days!**
-
-I want to thank Jiri Cincura for helping me see the growth of the project. 
-For striving to help by analyzing every part of the code!
-
-**Atenção! Este repositório será mesclado com o repositório [FirebirdSql](https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/), a intenção é unir todos nossos esforços.**
-**O mesmo será integrado de forma Oficial com o FirebirdSQL em alguns dias!**
-
-Quero agradecer a Jiri Cincura por me ajudar a ver o crescimento do projeto. 
-Por se esforçar para ajudar, analisando cada parte do código!
-
 
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
@@ -60,7 +46,7 @@ IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 
             string connectionString = "...";
-            optionsBuilder.UseFirebirdSql(connectionString);   
+            optionsBuilder.UseFirebird(connectionString);   
         }
         protected override void OnModelCreating(ModelBuilder modelo)
         {
