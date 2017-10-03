@@ -42,6 +42,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 			commandStringBuilder.Clear();
 			commaAppend = string.Empty;
+			var resultMapping = ResultSetMapping.LastInResultSet;
 			for (var i = 0; i < modificationCommands.Count; i++)
 			{
 				var name = modificationCommands[i].TableName;
@@ -59,14 +60,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 				if (readOperations.Length > 0)
 				{
 					AppendInsertOutputClause(commandStringBuilder, readOperations, operations);
+					resultMapping = ResultSetMapping.LastInResultSet;
 				}
 				else if (readOperations.Length == 0)
 				{
 					AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
+					resultMapping = ResultSetMapping.NoResultSet;
 				}
-			}
-
-			return ResultSetMapping.NotLastInResultSet;
+			} 
+			return resultMapping;
 		}
 
 		public ResultSetMapping AppendBulkUpdateOperation(StringBuilder commandStringBuilder, StringBuilder executeParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)

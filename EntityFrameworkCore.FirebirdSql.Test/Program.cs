@@ -55,9 +55,7 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 							new Book {Title = $"Firebird 4.0.0 {i}"}
 						}
 					});
-				cx.SaveChanges();
-			}
-
+			} 
 			//Add Person
 			var person = new Person
 			{
