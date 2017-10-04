@@ -33,14 +33,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		private const int MaxParameterCount = 1000;
 		private const int MaxRowCount = 256;
 		private int _countParameter = 1;
-		private readonly int _maxBatchSize;
-		private readonly IRelationalCommandBuilderFactory _commandBuilderFactory;
-		private readonly IRelationalValueBufferFactoryFactory _valueBufferFactory;
+		private readonly int _maxBatchSize; 
 		private readonly List<ModificationCommand> _bulkInsertCommands;
 		private readonly List<ModificationCommand> _bulkUpdateCommands;
 		private readonly List<ModificationCommand> _bulkDeleteCommands; 
-		private readonly StringBuilder _executeParameters;
-		private string _seperator;
+		private readonly StringBuilder _variablesParameters; 
 		 
 		public FbModificationCommandBatch(IRelationalCommandBuilderFactory commandBuilderFactory,ISqlGenerationHelper sqlGenerationHelper, IFbUpdateSqlGenerator updateSqlGenerator, IRelationalValueBufferFactoryFactory valueBufferFactoryFactory, int? maxBatchSize)
 			: base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
@@ -48,11 +45,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
 
-			_maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
-			_commandBuilderFactory = commandBuilderFactory;
-			_valueBufferFactory = valueBufferFactoryFactory; 
-			_executeParameters = new StringBuilder();
-			_seperator = string.Empty;
+			_maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount); 
+			_variablesParameters = new StringBuilder(); 
 			_bulkInsertCommands = new List<ModificationCommand>();
 			_bulkUpdateCommands = new List<ModificationCommand>();
 			_bulkDeleteCommands = new List<ModificationCommand>();
@@ -97,7 +91,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		protected override void ResetCommandText()
 		{
 			base.ResetCommandText();
-			_executeParameters.Clear();
+			_variablesParameters.Clear();
 			_bulkInsertCommands.Clear();
 			_bulkUpdateCommands.Clear();
 			_bulkDeleteCommands.Clear();
@@ -107,7 +101,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		{
 			var sbCommands = new StringBuilder();
 			var sbExecuteBlock = new StringBuilder();
-			_executeParameters.Clear(); 
+			_variablesParameters.Clear(); 
 
 			//Commands Insert/Update/Delete
 			sbCommands.AppendLine(base.GetCommandText());
@@ -116,13 +110,13 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			sbCommands.Append(GetBlockDeleteCommandText(ModificationCommands.Count));
 
 			//Execute Block
-			var parameters = _executeParameters.ToString();
+			var parameters = _variablesParameters.ToString();
 			sbExecuteBlock.Append("EXECUTE BLOCK ");
 			if (parameters.Length > 0)
 			{
-				sbExecuteBlock.Append("( ");
+				sbExecuteBlock.AppendLine("( ");
 				sbExecuteBlock.Append(parameters);
-				sbExecuteBlock.Append(") ");
+				sbExecuteBlock.AppendLine(") ");
 			}
 			sbExecuteBlock.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
 			sbExecuteBlock.AppendLine("AffectedRows=0;");
@@ -136,22 +130,13 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			if (_bulkDeleteCommands.Count == 0)
 				return string.Empty;
 			 
-			var stringBuilder = new StringBuilder();
-			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkDeleteOperation(stringBuilder, _executeParameters,  _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
+			var stringBuilder = new StringBuilder(); 
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkDeleteOperation(stringBuilder, _variablesParameters,  _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
 			for (var i = lastIndex - _bulkDeleteCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
-				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-
-			var executeParameters = headStringBuilder.ToString();
-			if (executeParameters.Length > 0)
-			{
-				_executeParameters.Append(_seperator);
-				_executeParameters.Append(executeParameters);
-				_seperator = ","; 
-			}
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet; 
 
 			return stringBuilder.ToString();
 		}
@@ -163,21 +148,13 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
 			var stringBuilder = new StringBuilder();
 			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkUpdateOperation(stringBuilder, headStringBuilder,_bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkUpdateOperation(stringBuilder, _variablesParameters, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
 
 			for (var i = lastIndex - _bulkUpdateCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
-				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-
-			var executeParameters = headStringBuilder.ToString();
-			if (executeParameters.Length > 0)
-			{
-				_executeParameters.Append(_seperator);
-				_executeParameters.Append(executeParameters);
-				_seperator = ",";
-			}
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet; 
 
 			return stringBuilder.ToString();
 		}
@@ -187,24 +164,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			if (_bulkInsertCommands.Count == 0)
 				return string.Empty;
 
-			var stringBuilder = new StringBuilder();
-			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkInsertOperation(stringBuilder, headStringBuilder, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
+			var stringBuilder = new StringBuilder(); 
+			var resultSetMapping = UpdateSqlGenerator().AppendBulkInsertOperation(stringBuilder, _variablesParameters, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
 
 			for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
 				CommandResultSet[i] = resultSetMapping;
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
 				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-
-			var executeParameters = headStringBuilder.ToString();
-			if (executeParameters.Length > 0)
-			{
-				_executeParameters.Append(_seperator);
-				_executeParameters.Append(executeParameters);
-				_seperator = ",";
-			}
-
+			 
 			return stringBuilder.ToString();
 		}
 		 

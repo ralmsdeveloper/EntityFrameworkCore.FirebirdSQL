@@ -67,7 +67,7 @@ namespace EntityFrameworkCore.FirebirdSql.Console.Test
 
 			//Remove Person
 			cx.Person.Remove(person);
-			cx.SaveChanges();
+	 
 
 			cx.Book.Add(new Book
 			{

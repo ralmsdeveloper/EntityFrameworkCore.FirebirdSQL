@@ -24,19 +24,19 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
     {
 		ResultSetMapping AppendBulkInsertOperation(
 		    StringBuilder commandStringBuilder,
-		    StringBuilder executeParameters,
+		    StringBuilder variablesParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
 	    ResultSetMapping AppendBulkUpdateOperation(
 		    StringBuilder commandStringBuilder,
-		    StringBuilder executeParameters,
+		    StringBuilder variablesParameters,
 		    IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 
 	    ResultSetMapping AppendBulkDeleteOperation(
 		    StringBuilder commandStringBuilder,
-		    StringBuilder executeParameters,
+		    StringBuilder variablesParameters,
 			IReadOnlyList<ModificationCommand> modificationCommands,
 		    int commandPosition);
 	}
