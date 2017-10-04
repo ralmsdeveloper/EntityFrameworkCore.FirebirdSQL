@@ -5,13 +5,6 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirebirdSql", "EntityFrameworkCore.FirebirdSql\EFCore.FirebirdSql.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF35-BA86-4A02-AB92-97DEEDB8219F}"
-	ProjectSection(SolutionItems) = preProject
-		.travis.yml = .travis.yml
-		LICENSE = LICENSE
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSql.FunctionalTests", "EntityFrameworkCore.FirebirdSql.FunctionalTests\EFCore.FirebirdSql.FunctionalTests.csproj", "{61B6B2E6-80B0-4916-8EE4-91D059CB204F}"
 EndProject
 Global
