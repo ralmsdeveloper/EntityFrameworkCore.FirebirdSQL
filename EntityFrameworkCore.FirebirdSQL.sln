@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.FirebirdSql", "EntityFrameworkCore.FirebirdSql\EntityFrameworkCore.FirebirdSql.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSQL.Console.Test", "EntityFrameworkCore.FirebirdSql.Test\EFCore.FirebirdSQL.Console.Test.csproj", "{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirebirdSql", "EntityFrameworkCore.FirebirdSql\EFCore.FirebirdSql.csproj", "{C725AC99-64C8-4CBF-B01F-094D5837BC58}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF35-BA86-4A02-AB92-97DEEDB8219F}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{4F90CF
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.FirebirdSql.FunctionalTests", "EntityFrameworkCore.FirebirdSql.FunctionalTests\EFCore.FirebirdSql.FunctionalTests.csproj", "{61B6B2E6-80B0-4916-8EE4-91D059CB204F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,16 +24,13 @@ Global
 		{C725AC99-64C8-4CBF-B01F-094D5837BC58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C725AC99-64C8-4CBF-B01F-094D5837BC58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C725AC99-64C8-4CBF-B01F-094D5837BC58}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{E1786F5D-5D2C-4231-BEFA-A563F075BD8B} = {331974B1-B109-487C-BCDF-85DA9B677C0B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCB461D4-B163-4511-8434-CE0C357FDC74}

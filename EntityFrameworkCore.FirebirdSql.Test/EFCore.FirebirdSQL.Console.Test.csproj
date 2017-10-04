@@ -63,9 +63,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore.FirebirdSql\EntityFrameworkCore.FirebirdSql.csproj">
+    <ProjectReference Include="..\EntityFrameworkCore.FirebirdSql\EFCore.FirebirdSql.csproj">
       <Project>{c725ac99-64c8-4cbf-b01f-094d5837bc58}</Project>
-      <Name>EntityFrameworkCore.FirebirdSql</Name>
+      <Name>EFCore.FirebirdSql</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,27 +1,38 @@
-version: 1.0.{build}
-pull_requests:
-  do_not_increment_build_number: true
-skip_non_tags: true
-image: Previous Visual Studio 2017
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
+version: '0.0.0.{build}'
+image: Visual Studio 2017
+configuration:
+  - Release
+environment:
+  matrix:
+  - name: FB 3.2
+    fb_download: https://www.dropbox.com/s/lwn0gcywgpqt2bm/binarios.7z?dl=1
+    fb_start: .\firebird.exe -a
+
+shallow_clone: true
+test: off
 before_build:
-- cmd: >-
-    cd EntityFrameworkCore.FirebirdSql
+  - ps: $baseDir = Resolve-Path .
+build_script:
+  - ps: $env:build_nuget = 'C:\Program Files\AppVeyor\BuildAgent\Tools\nuget.exe'
+  - ps: $env:build_wix = 'C:\Program Files (x86)\WiX Toolset v3.11\bin'
+  - ps: "& $baseDir\\build.ps1 -Configuration $env:CONFIGURATION -Version $env:APPVEYOR_BUILD_VERSION"
+after_build:
+  - ps: gci "$baseDir\out" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+before_test:
+  - ps: $testsBaseDir = "$baseDir\EntityFrameworkCore.FirebirdSql.FunctionalTests"
+  - ps: mkdir C:\firebirdefcore | Out-Null
+  - ps: cd C:\firebirdefcore
+  - ps: Start-FileDownload "$env:fb_download" | Out-Null
+  - ps: 7z x ($env:fb_download -replace '.+/([^/]+)\?dl=1','$1')
+  - ps: rmdir -Recurse .\embedded
+  - ps: mv .\server\* .
+  - ps: rmdir .\server
 
-    dotnet restore
-
-    cd ..
-build:
-  project: EntityFrameworkCore.FirebirdSql
-  publish_nuget: true
-  publish_nuget_symbols: true
-  include_nuget_references: true
-  parallel: true
-  verbosity: minimal
+  - ps: iex $env:fb_start
+  - ps: ni firebird.log -ItemType File | Out-Null
+test_script:
+  - ps: cd $testsBaseDir
+  - ps: dotnet test EFCore.FirebirdSql.FunctionalTests.csproj -c $env:CONFIGURATION -f netcoreapp2.0 --no-build --no-restore
 notifications:
 - provider: GitHubPullRequest
   on_build_success: true
