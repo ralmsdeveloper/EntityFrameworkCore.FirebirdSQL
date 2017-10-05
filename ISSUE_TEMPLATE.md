@@ -19,6 +19,6 @@ Stack trace:
 ### Further technical details
 
 Firebird version: 
-EntityFrameworkCore.Firebird version:
+EntityFrameworkCore.FirebirdSql version:
 
 Other details about my project setup:
