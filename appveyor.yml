@@ -29,6 +29,7 @@ before_test:
   - ps: ni firebird.log -ItemType File | Out-Null
 test_script:
   - ps: cd $testsBaseDir
+  - ps: dir $testsBaseDir
   - ps: dotnet test EFCore.FirebirdSql.FunctionalTests.csproj -c $env:CONFIGURATION -f netcoreapp2.0 --no-build --no-restore
 notifications:
 - provider: GitHubPullRequest
