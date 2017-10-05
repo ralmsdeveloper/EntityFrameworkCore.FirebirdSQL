@@ -5,7 +5,7 @@ configuration:
 environment:
   matrix:
   - name: FB 3.2
-    fb_download: https://www.dropbox.com/s/uq6sr8fih471zlb/binarios.7z?dl=1
+    fb_download: https://www.dropbox.com/s/rz2o42smwyefinh/binarios.7z?dl=1
 shallow_clone: true
 test: off
 before_build:
@@ -22,6 +22,7 @@ before_test:
   - ps: cd C:\firebirdefcore
   - ps: Start-FileDownload "$env:fb_download" | Out-Null
   - ps: 7z x ($env:fb_download -replace '.+/([^/]+)\?dl=1','$1')
+  - ps: .\isql.exe -m -m2 -user SYSADMIN -i sec.txt security3.fdb
   - ps: .\firebird.exe -a -m 
 test_script:
   - ps: cd $testsBaseDir
