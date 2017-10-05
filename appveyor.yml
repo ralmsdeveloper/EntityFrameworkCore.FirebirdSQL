@@ -16,6 +16,7 @@ build_script:
   - ps: $env:build_nuget = 'C:\Program Files\AppVeyor\BuildAgent\Tools\nuget.exe'
   - ps: $env:build_wix = 'C:\Program Files (x86)\WiX Toolset v3.11\bin'
 after_build:
+  - ps: mkdir "$baseDir\out" | Out-Null
   - ps: gci "$baseDir\out" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 before_test:
   - ps: $testsBaseDir = "$baseDir\EntityFrameworkCore.FirebirdSql.FunctionalTests"
