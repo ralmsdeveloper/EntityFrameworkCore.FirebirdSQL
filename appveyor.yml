@@ -30,7 +30,7 @@ before_test:
 test_script:
   - ps: cd $testsBaseDir
   - ps: dir $testsBaseDir
-  - ps: dotnet test EFCore.FirebirdSql.FunctionalTests.csproj -c $env:CONFIGURATION -f netcoreapp2.0 --no-build --no-restore
+  - ps: dotnet test EFCore.FirebirdSql.FunctionalTests.csproj
 notifications:
 - provider: GitHubPullRequest
   on_build_success: true
