@@ -5,7 +5,7 @@ configuration:
 environment:
   matrix:
   - name: FB 3.2
-    fb_download: https://www.dropbox.com/s/rz2o42smwyefinh/binarios.7z?dl=1
+    fb_download: https://www.dropbox.com/s/4o6nvoahmlegv64/binarios.7z?dl=1
 shallow_clone: true
 test: off
 before_build:

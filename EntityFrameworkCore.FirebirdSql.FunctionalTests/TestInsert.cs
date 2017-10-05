@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 		private TestContext CreateContext() => new TestContext();
 
 		[Fact]
-		public async Task insert_data()
+		public void insert_data()
 		{
 			using (var context = CreateContext())
 			{
@@ -56,7 +56,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						}
 					});
 				} 
-				await context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 
 			using (var context = CreateContext())
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						LastName = $"Almeida {i}"
 					});
 				}
-				await context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 
 			using (var context = CreateContext())
@@ -82,7 +82,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						Title = $"Test Insert Book {i}"
 					});
 				}
-				await context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 			 
 			using (var context = CreateContext())
