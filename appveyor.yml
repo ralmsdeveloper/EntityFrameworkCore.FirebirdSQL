@@ -5,9 +5,7 @@ configuration:
 environment:
   matrix:
   - name: FB 3.2
-    fb_download: https://www.dropbox.com/s/lwn0gcywgpqt2bm/binarios.7z?dl=1
-    fb_start: .\firebird.exe -a
-
+    fb_download: https://www.dropbox.com/s/uq6sr8fih471zlb/binarios.7z?dl=1
 shallow_clone: true
 test: off
 before_build:
@@ -24,9 +22,7 @@ before_test:
   - ps: cd C:\firebirdefcore
   - ps: Start-FileDownload "$env:fb_download" | Out-Null
   - ps: 7z x ($env:fb_download -replace '.+/([^/]+)\?dl=1','$1')
-
-  - ps: iex $env:fb_start
-  - ps: ni firebird.log -ItemType File | Out-Null
+  - ps: .\firebird.exe -a -m 
 test_script:
   - ps: cd $testsBaseDir
   - ps: dir $testsBaseDir
