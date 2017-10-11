@@ -14,21 +14,20 @@
  *
  */
 
- using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 {
-    public class TestInsert
-    {
+	public class TestInsert
+	{
 		private TestContext CreateContext() => new TestContext();
-
+		
 		[Fact]
-		public void insert_data()
+		public void Insert_data()
 		{
 			using (var context = CreateContext())
 			{
@@ -38,7 +37,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 1; i++)
+				for (var i = 1; i <= 1000; i++)
 				{
 					context.Author.Add(new Author
 					{
@@ -48,29 +47,20 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						TestGuid = Guid.NewGuid(),
 						TestBytes = Encoding.UTF8.GetBytes("RAFAEL ALMEIDA"),
 						TestDecimal = i,
-						//TestDouble = i,
+						TestDouble = i,
 						Books = new List<Book>
 						{
-							new Book {Title = $"Firebird 3.0.2 {i}"} 
+							new Book {Title = $"Firebird 3.0.2 {i}"}
 						}
 					});
 				}
 
-				//for (var i = 0; i < 2; i++)
-				//{
-				//	context.Person.Add(new Person
-				//	{
-				//		Name = "Rafael",
-				//		LastName = $"Almeida {i}"
-				//	});
-				//}
-
-				context.SaveChanges();
+				Assert.Equal(2000, context.SaveChanges());
 			}
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 2; i++)
+				for (var i = 1; i <= 1000; i++)
 				{
 					context.Person.Add(new Person
 					{
@@ -78,25 +68,22 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						LastName = $"Almeida {i}"
 					});
 				}
-				context.SaveChanges();
+
+				Assert.Equal(1000, context.SaveChanges());
 			}
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 2; i++)
+				for (var i = 1; i <= 1000; i++)
 				{
 					context.Book.Add(new Book
 					{
-						AuthorId = i+1,
+						AuthorId =  i,
 						Title = $"Test Insert Book {i}"
 					});
 				}
-				context.SaveChanges();
-			}
-			 
-			using (var context = CreateContext())
-			{
-				Assert.Equal(1000, context.Author.Count());
+
+				Assert.Equal(1000, context.SaveChanges());
 			}
 		}
 	}

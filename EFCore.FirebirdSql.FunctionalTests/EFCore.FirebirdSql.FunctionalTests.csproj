@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore.FirebirdSql\EFCore.FirebirdSql.csproj" />
+    <ProjectReference Include="..\EFCore.FirebirdSql\EFCore.FirebirdSql.csproj" />
   </ItemGroup>
 
 </Project>
