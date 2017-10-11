@@ -36,7 +36,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
 			using (var context = CreateContext())
 			{
-				for (var i = 1; i <= 20000; i++)
+				for (var i = 1; i <= 40000; i++)
 				{
 					context.Author.Add(new Author
 					{
@@ -54,7 +54,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 					});
 				}
 
-				Assert.Equal(40000, context.SaveChanges());
+				Assert.Equal(80000, context.SaveChanges());
 			}
 
 			using (var context = CreateContext())
