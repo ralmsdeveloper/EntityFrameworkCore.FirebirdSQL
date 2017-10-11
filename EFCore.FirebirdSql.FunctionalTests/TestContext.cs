@@ -17,6 +17,7 @@
  using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -28,9 +29,15 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{ 
-			var connectionString = @"database=localhost:efCoreFirebird.fdb;user=sysdba;password=masterkey";
+			var connectionBuilder =
+				new FbConnectionStringBuilder("database=localhost:EFCore.fdb;user=sysdba;password=masterkey");
 
-			optionsBuilder.UseFirebird(connectionString);
+			FbConnection.ClearPool(new FbConnection(connectionBuilder.ToString()));
+
+			connectionBuilder.Pooling = true;
+			connectionBuilder.MaxPoolSize = 200;
+
+			optionsBuilder.UseFirebird(connectionBuilder.ToString());
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelo)
