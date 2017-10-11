@@ -17,7 +17,7 @@ after_build:
   - ps: mkdir "$baseDir\out" | Out-Null
   - ps: gci "$baseDir\out" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 before_test:
-  - ps: $testsBaseDir = "$baseDir\EntityFrameworkCore.FirebirdSql.FunctionalTests"
+  - ps: $testsBaseDir = "$baseDir\EFCore.FirebirdSql.FunctionalTests"
   - ps: mkdir C:\firebirdefcore | Out-Null
   - ps: cd C:\firebirdefcore
   - ps: Start-FileDownload "$env:fb_download" | Out-Null
