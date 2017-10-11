@@ -36,7 +36,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
 			using (var context = CreateContext())
 			{
-				for (var i = 1; i <= 1000; i++)
+				for (var i = 1; i <= 20000; i++)
 				{
 					context.Author.Add(new Author
 					{
@@ -54,12 +54,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
 					});
 				}
 
-				Assert.Equal(2000, context.SaveChanges());
+				Assert.Equal(40000, context.SaveChanges());
 			}
 
 			using (var context = CreateContext())
 			{
-				for (var i = 1; i <= 1000; i++)
+				for (var i = 1; i <= 40000; i++)
 				{
 					context.Person.Add(new Person
 					{
@@ -68,12 +68,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
 					});
 				}
 
-				Assert.Equal(1000, context.SaveChanges());
+				Assert.Equal(40000, context.SaveChanges());
 			}
 
 			using (var context = CreateContext())
 			{
-				for (var i = 1; i <= 1000; i++)
+				for (var i = 1; i <= 40000; i++)
 				{
 					context.Book.Add(new Book
 					{
@@ -82,7 +82,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 					});
 				}
 
-				Assert.Equal(1000, context.SaveChanges());
+				Assert.Equal(40000, context.SaveChanges());
 			}
 		}
 	}

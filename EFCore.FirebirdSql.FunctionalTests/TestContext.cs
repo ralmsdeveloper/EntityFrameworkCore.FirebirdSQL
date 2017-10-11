@@ -27,23 +27,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
 		public DbSet<Person> Person { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
+		{ 
+			var connectionString = @"database=localhost:efCoreFirebird.fdb;user=sysdba;password=masterkey";
 
-			string connectionString =
-			"User=SYSDBA;" +
-			"Password=masterkey;" +
-			$"Database=localhost:{System.IO.Directory.GetCurrentDirectory()}\\FirebirdCore.fdb;" +
-			"DataSource=localhost;" +
-			"Port=3050;" +
-			"Dialect=3;" +
-			"Charset=NONE;" +
-			"Role=;" +
-			"Connection lifetime=15;" +
-			"Pooling=true;" +
-			"MinPoolSize=1;" +
-			"MaxPoolSize=50;" +
-			"Packet Size=8192;" +
-			"ServerType=0";
 			optionsBuilder.UseFirebird(connectionString);
 		}
 
