@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 1000; i++)
+				for (var i = 0; i < 1; i++)
 				{
 					context.Author.Add(new Author
 					{
@@ -48,20 +48,29 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 						TestGuid = Guid.NewGuid(),
 						TestBytes = Encoding.UTF8.GetBytes("RAFAEL ALMEIDA"),
 						TestDecimal = i,
-						TestDouble = i,
+						//TestDouble = i,
 						Books = new List<Book>
 						{
-							new Book {Title = $"Firebird 3.0.2 {i}"},
-							new Book {Title = $"Firebird 4.0.0 {i}"}
+							new Book {Title = $"Firebird 3.0.2 {i}"} 
 						}
 					});
-				} 
+				}
+
+				//for (var i = 0; i < 2; i++)
+				//{
+				//	context.Person.Add(new Person
+				//	{
+				//		Name = "Rafael",
+				//		LastName = $"Almeida {i}"
+				//	});
+				//}
+
 				context.SaveChanges();
 			}
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 1000; i++)
+				for (var i = 0; i < 2; i++)
 				{
 					context.Person.Add(new Person
 					{
@@ -74,7 +83,7 @@ namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
 
 			using (var context = CreateContext())
 			{
-				for (var i = 0; i < 50; i++)
+				for (var i = 0; i < 2; i++)
 				{
 					context.Book.Add(new Book
 					{

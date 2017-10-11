@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text; 
+using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
@@ -28,51 +28,55 @@ using Microsoft.EntityFrameworkCore.Update;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
-	public class FbModificationCommandBatch : AffectedCountModificationCommandBatch
+	public class FbModificationCommandBatch : ReaderModificationCommandBatch
 	{
 		private const int MaxParameterCount = 1000;
 		private const int MaxRowCount = 256;
 		private int _countParameter = 1;
-		private readonly int _maxBatchSize; 
+		private readonly int _maxBatchSize;
 		private readonly List<ModificationCommand> _bulkInsertCommands;
 		private readonly List<ModificationCommand> _bulkUpdateCommands;
-		private readonly List<ModificationCommand> _bulkDeleteCommands; 
-		private readonly StringBuilder _variablesParameters; 
-		 
-		public FbModificationCommandBatch(IRelationalCommandBuilderFactory commandBuilderFactory,ISqlGenerationHelper sqlGenerationHelper, IFbUpdateSqlGenerator updateSqlGenerator, IRelationalValueBufferFactoryFactory valueBufferFactoryFactory, int? maxBatchSize)
+		private readonly List<ModificationCommand> _bulkDeleteCommands;
+		private readonly StringBuilder _variablesParameters;
+
+		public FbModificationCommandBatch(IRelationalCommandBuilderFactory commandBuilderFactory, ISqlGenerationHelper sqlGenerationHelper, IFbUpdateSqlGenerator updateSqlGenerator, IRelationalValueBufferFactoryFactory valueBufferFactoryFactory, int? maxBatchSize)
 			: base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
 		{
 			if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
 
-			_maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount); 
-			_variablesParameters = new StringBuilder(); 
+			_maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
+			_variablesParameters = new StringBuilder();
 			_bulkInsertCommands = new List<ModificationCommand>();
 			_bulkUpdateCommands = new List<ModificationCommand>();
 			_bulkDeleteCommands = new List<ModificationCommand>();
 		}
- 
+
 		protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator()
 		{
-			return (IFbUpdateSqlGenerator) base.UpdateSqlGenerator;
+			return (IFbUpdateSqlGenerator)base.UpdateSqlGenerator;
 		}
- 
+
 		protected override bool CanAddCommand(ModificationCommand modificationCommand)
 		{
 			if (ModificationCommands.Count >= _maxBatchSize)
-				return false; 
+			{
+				return false;
+			}
 
 			var additionalParameterCount = CountParameters(modificationCommand);
 			if (_countParameter + additionalParameterCount >= MaxParameterCount)
+			{
 				return false;
-			 
+			}
+
 			_countParameter += additionalParameterCount;
 			return true;
 		}
 
 		protected override bool IsCommandTextValid() => true;
 
-		protected override int GetParameterCount() => _countParameter; 
+		protected override int GetParameterCount() => _countParameter;
 
 		private static int CountParameters(ModificationCommand modificationCommand)
 		{
@@ -80,14 +84,18 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			foreach (var columnModification in modificationCommand.ColumnModifications)
 			{
 				if (columnModification.UseCurrentValueParameter)
+				{
 					parameterCount++;
+				}
 
 				if (columnModification.UseOriginalValueParameter)
+				{
 					parameterCount++;
+				}
 			}
 			return parameterCount;
-		} 
- 
+		}
+
 		protected override void ResetCommandText()
 		{
 			base.ResetCommandText();
@@ -96,12 +104,12 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			_bulkUpdateCommands.Clear();
 			_bulkDeleteCommands.Clear();
 		}
-		 
+
 		protected override string GetCommandText()
 		{
 			var sbCommands = new StringBuilder();
 			var sbExecuteBlock = new StringBuilder();
-			_variablesParameters.Clear(); 
+			_variablesParameters.Clear();
 
 			//Commands Insert/Update/Delete
 			sbCommands.AppendLine(base.GetCommandText());
@@ -122,21 +130,30 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			sbExecuteBlock.AppendLine("AffectedRows=0;");
 			sbExecuteBlock.Append(sbCommands);
 			sbExecuteBlock.AppendLine("END;");
+
 			return sbExecuteBlock.ToString();
 		}
 
 		private string GetBlockDeleteCommandText(int lastIndex)
 		{
 			if (_bulkDeleteCommands.Count == 0)
+			{
 				return string.Empty;
-			 
-			var stringBuilder = new StringBuilder(); 
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkDeleteOperation(stringBuilder, _variablesParameters,  _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
+			}
+
+			var stringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator()
+				.AppendBulkDeleteOperation(stringBuilder, _variablesParameters, _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
+
 			for (var i = lastIndex - _bulkDeleteCommands.Count; i < lastIndex; i++)
+			{
 				CommandResultSet[i] = resultSetMapping;
+			}
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
-				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet; 
+			{
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+			}
 
 			return stringBuilder.ToString();
 		}
@@ -144,17 +161,24 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		private string GetBlockUpdateCommandText(int lastIndex)
 		{
 			if (_bulkUpdateCommands.Count == 0)
+			{
 				return string.Empty;
+			}
 
 			var stringBuilder = new StringBuilder();
 			var headStringBuilder = new StringBuilder();
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkUpdateOperation(stringBuilder, _variablesParameters, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
+			var resultSetMapping = UpdateSqlGenerator()
+				.AppendBulkUpdateOperation(stringBuilder, _variablesParameters, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
 
 			for (var i = lastIndex - _bulkUpdateCommands.Count; i < lastIndex; i++)
+			{
 				CommandResultSet[i] = resultSetMapping;
+			}
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
-				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet; 
+			{
+				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
+			}
 
 			return stringBuilder.ToString();
 		}
@@ -162,27 +186,35 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		private string GetBlockInsertCommandText(int lastIndex)
 		{
 			if (_bulkInsertCommands.Count == 0)
+			{
 				return string.Empty;
+			}
 
-			var stringBuilder = new StringBuilder(); 
-			var resultSetMapping = UpdateSqlGenerator().AppendBulkInsertOperation(stringBuilder, _variablesParameters, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
+			var stringBuilder = new StringBuilder();
+			var resultSetMapping = UpdateSqlGenerator()
+				.AppendBulkInsertOperation(stringBuilder, _variablesParameters, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
 
 			for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
+			{
 				CommandResultSet[i] = resultSetMapping;
+			}
 
 			if (resultSetMapping != ResultSetMapping.NoResultSet)
+			{
 				CommandResultSet[lastIndex - 1] = ResultSetMapping.LastInResultSet;
-			 
+			}
+
 			return stringBuilder.ToString();
 		}
-		 
+
 		protected override void UpdateCachedCommandText(int commandPosition)
 		{
-			var newModificationCommand = ModificationCommands[commandPosition]; 
+			var newModificationCommand = ModificationCommands[commandPosition];
 
 			if (newModificationCommand.EntityState == EntityState.Added)
 			{
-				if (_bulkInsertCommands.Count > 0 && !CanBeInsertedInSameStatement(_bulkInsertCommands[0], newModificationCommand))
+				if (_bulkInsertCommands.Count > 0
+					&& !CanBeInsertedInSameStatement(_bulkInsertCommands[0], newModificationCommand))
 				{
 					CachedCommandText.Append(GetBlockInsertCommandText(commandPosition));
 					_bulkInsertCommands.Clear();
@@ -192,17 +224,19 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			}
 			else if (newModificationCommand.EntityState == EntityState.Modified)
 			{
-				if (_bulkUpdateCommands.Count > 0 && !CanBeUpdateInSameStatement(_bulkUpdateCommands[0], newModificationCommand))
+				if (_bulkUpdateCommands.Count > 0
+					&& !CanBeUpdateInSameStatement(_bulkUpdateCommands[0], newModificationCommand))
 				{
-					CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
-					_bulkUpdateCommands.Clear();
+				    CachedCommandText.Append(GetBlockUpdateCommandText(commandPosition));
+				    _bulkUpdateCommands.Clear();
 				}
 				_bulkUpdateCommands.Add(newModificationCommand);
 				LastCachedCommandIndex = commandPosition;
 			}
 			else if (newModificationCommand.EntityState == EntityState.Deleted)
 			{
-				if (_bulkDeleteCommands.Count > 0 && !CanBeDeleteInSameStatement(_bulkDeleteCommands[0], newModificationCommand))
+				if (_bulkDeleteCommands.Count > 0
+				    && !CanBeDeleteInSameStatement(_bulkDeleteCommands[0], newModificationCommand))
 				{
 					CachedCommandText.Append(GetBlockDeleteCommandText(commandPosition));
 					_bulkDeleteCommands.Clear();
@@ -221,34 +255,34 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 		private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
 		{
 			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-			       && firstCommand.ColumnModifications.Where(o => o.IsWrite)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-			       && firstCommand.ColumnModifications.Where(o => o.IsRead)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+				   && firstCommand.ColumnModifications.Where(o => o.IsWrite)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+				   && firstCommand.ColumnModifications.Where(o => o.IsRead)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
 
 		private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
 		{
 			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-			       && firstCommand.ColumnModifications.Where(o => o.IsWrite)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-			       && firstCommand.ColumnModifications.Where(o => o.IsRead)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand .ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+				   && firstCommand.ColumnModifications.Where(o => o.IsWrite)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+				   && firstCommand.ColumnModifications.Where(o => o.IsRead)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
 
 		private static bool CanBeInsertedInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
 		{
 			return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
-			       && firstCommand.ColumnModifications.Where(o => o.IsWrite)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
-			       && firstCommand.ColumnModifications.Where(o => o.IsRead)
-			                      .Select(o => o.ColumnName)
-			                      .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
+				   && firstCommand.ColumnModifications.Where(o => o.IsWrite)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
+				   && firstCommand.ColumnModifications.Where(o => o.IsRead)
+								  .Select(o => o.ColumnName)
+								  .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
 		}
 
 		protected override void Consume(RelationalDataReader relationalReader)
@@ -257,33 +291,49 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			{
 				throw new ArgumentNullException(nameof(relationalReader));
 			}
-
-			var dataReader = (FbDataReader)relationalReader.DbDataReader;
+			var dataReader = relationalReader.DbDataReader;
 			var commandIndex = 0;
 			try
 			{
-				for (; ; )
+				while (true)
 				{
 					while (commandIndex < CommandResultSet.Count && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+					{
 						commandIndex++;
+					}
 
 					var propragation = commandIndex;
 					while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
+					{
 						propragation++;
+					}
 
 					while (commandIndex < propragation)
 					{
 						commandIndex++;
 						if (!dataReader.Read())
-							throw new DbUpdateConcurrencyException(RelationalStrings.UpdateConcurrencyException(1, 0),ModificationCommands[commandIndex].Entries);
-					} 
+						{
+						    throw new DbUpdateConcurrencyException(
+										RelationalStrings.UpdateConcurrencyException(
+										ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+										ModificationCommands[commandIndex].Entries);
+						}
+					}
+
 					//check if you've gone through all notifications
 					if (propragation == ModificationCommands.Count)
+					{
 						break;
+					}
 
 					var modifications = ModificationCommands[commandIndex];
 					if (!relationalReader.Read())
-						throw new DbUpdateConcurrencyException(RelationalStrings.UpdateConcurrencyException(1, 0),modifications.Entries);
+					{
+						throw new DbUpdateConcurrencyException(
+								RelationalStrings.UpdateConcurrencyException(
+								ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+								ModificationCommands[commandIndex].Entries);
+					}
 
 					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
 					modifications.PropagateResults(bufferFactory.Create(dataReader));
@@ -297,13 +347,78 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 			}
 			catch (Exception ex)
 			{
-				throw new DbUpdateException(RelationalStrings.UpdateStoreException, ex, ModificationCommands[commandIndex].Entries);
+				throw new DbUpdateException(
+				RelationalStrings.UpdateStoreException,
+				ex, ModificationCommands[commandIndex].Entries);
 			}
 		}
 
-		protected override Task ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken = default(CancellationToken))
+		protected override async Task ConsumeAsync(RelationalDataReader relationalReader, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Task.Run(() => Consume(reader), cancellationToken);
+			if (relationalReader == null)
+			{
+				throw new ArgumentNullException(nameof(relationalReader));
+			}
+			var dataReader = relationalReader.DbDataReader;
+			var commandIndex = 0;
+			try
+			{
+				while (true)
+				{
+					while (commandIndex < CommandResultSet.Count && CommandResultSet[commandIndex] == ResultSetMapping.NoResultSet)
+					{
+						commandIndex++;
+					}
+
+					var propragation = commandIndex;
+					while (propragation < ModificationCommands.Count && !ModificationCommands[propragation].RequiresResultPropagation)
+					{
+						propragation++;
+					}
+
+					while (commandIndex < propragation)
+					{
+						commandIndex++;
+						if (!(await relationalReader.ReadAsync()))
+						{
+							throw new DbUpdateConcurrencyException(
+									RelationalStrings.UpdateConcurrencyException(
+									ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+									ModificationCommands[commandIndex].Entries);
+						}
+					}
+
+					//check if you've gone through all notifications
+					if (propragation == ModificationCommands.Count)
+					{
+						break;
+					}
+
+					var modifications = ModificationCommands[commandIndex];
+					if (!(await relationalReader.ReadAsync()))
+					{
+						throw new DbUpdateConcurrencyException(
+								RelationalStrings.UpdateConcurrencyException(
+								ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+								ModificationCommands[commandIndex].Entries);
+					}
+
+					var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
+					modifications.PropagateResults(bufferFactory.Create(dataReader));
+					await dataReader.NextResultAsync();
+					commandIndex++;
+				}
+			}
+			catch (DbUpdateException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new DbUpdateException(
+				RelationalStrings.UpdateStoreException,
+				ex, ModificationCommands[commandIndex].Entries);
+			}
 		}
 	}
 }
