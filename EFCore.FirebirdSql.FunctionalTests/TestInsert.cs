@@ -15,12 +15,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic; 
 using System.Text;
 using Xunit;
 
-namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
+namespace EFCore.FirebirdSql.FunctionalTests
 {
 	public class TestInsert
 	{

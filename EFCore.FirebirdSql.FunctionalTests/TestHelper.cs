@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations; 
 
-namespace EntityFrameworkCore.FirebirdSql.FunctionalTests
+namespace EFCore.FirebirdSql.FunctionalTests
 {
 	public class Author
 	{
