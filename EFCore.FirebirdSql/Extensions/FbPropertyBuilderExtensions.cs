@@ -24,26 +24,26 @@ namespace EntityFrameworkCore.FirebirdSql
 {   
     public static class FbPropertyBuilderExtensions
     {
-	    public static PropertyBuilder UseFbIdentityColumn(this PropertyBuilder propertyBuilder)
+	    public static PropertyBuilder UseFirebirdIdentityColumn(this PropertyBuilder propertyBuilder)
 	    {
 		    GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
 		    return propertyBuilder;
 	    }
 
-	    public static PropertyBuilder<TProperty> UseFbIdentityColumn<TProperty>( this PropertyBuilder<TProperty> propertyBuilder)
+	    public static PropertyBuilder<TProperty> UseFirebirdIdentityColumn<TProperty>( this PropertyBuilder<TProperty> propertyBuilder)
 	    {
-		    return (PropertyBuilder<TProperty>) UseFbIdentityColumn((PropertyBuilder) propertyBuilder);
+		    return (PropertyBuilder<TProperty>)UseFirebirdIdentityColumn((PropertyBuilder) propertyBuilder);
 	    }
 
-	    public static PropertyBuilder UseFbSequenceTrigger(this PropertyBuilder propertyBuilder)
+	    public static PropertyBuilder UseFirebirdSequenceTrigger(this PropertyBuilder propertyBuilder)
 	    {
 		    GetFbInternalBuilder(propertyBuilder).ValueGenerationStrategy(FbValueGenerationStrategy.SequenceTrigger);
 		    return propertyBuilder;
 	    }
 
-	    public static PropertyBuilder<TProperty> UseFbSequenceTrigger<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
+	    public static PropertyBuilder<TProperty> UseFirebirdSequenceTrigger<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
 	    {
-		    return (PropertyBuilder<TProperty>) UseFbSequenceTrigger((PropertyBuilder) propertyBuilder);
+		    return (PropertyBuilder<TProperty>)UseFirebirdSequenceTrigger((PropertyBuilder) propertyBuilder);
 	    }
 
 	    private static FbPropertyBuilderAnnotations GetFbInternalBuilder(PropertyBuilder propertyBuilder)

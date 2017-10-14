@@ -44,7 +44,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 		{
 			base.OnModelCreating(modelo);
 			var author = modelo.Entity<Author>();
-			author.Property(x => x.AuthorId).UseFbIdentityColumn();
+			author.Property(x => x.AuthorId).UseFirebirdIdentityColumn();
 
 			modelo.Entity<Person>().HasKey(person => new { person.Name, person.LastName });
 		}
