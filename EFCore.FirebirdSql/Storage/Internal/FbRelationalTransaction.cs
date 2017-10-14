@@ -54,7 +54,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             var stopwatch = Stopwatch.StartNew(); 
             try
             {
-                (_dbTransaction as FbTransaction)?.Commit();
+                await Task.Run(() => (_dbTransaction as FbTransaction)?.Commit(), cancellationToken);
                 _logger.TransactionCommitted( _relationalConnection,_dbTransaction,TransactionId,startTime,stopwatch.Elapsed);
             }
             catch (Exception e)
@@ -72,8 +72,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 
             try
             {
-                (_dbTransaction as FbTransaction)?.Rollback();
-
+                await Task.Run(() => (_dbTransaction as FbTransaction)?.Rollback(), cancellationToken);
                 _logger.TransactionRolledBack(_relationalConnection,_dbTransaction,TransactionId, startTime, stopwatch.Elapsed);
             }
             catch (Exception e)

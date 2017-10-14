@@ -29,8 +29,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 { 
     public class FbDatabaseCreator : RelationalDatabaseCreator
     { 
-        readonly IFbRelationalConnection _connection;
-        readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
+        private readonly IFbRelationalConnection _connection;
+        private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
         public FbDatabaseCreator(RelationalDatabaseCreatorDependencies dependencies, IFbRelationalConnection connection, IRawSqlCommandBuilder rawSqlCommandBuilder)
             : base(dependencies)
@@ -68,22 +68,23 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         {
             var operations = new MigrationOperation[]
             {
-                      new FbCreateDatabaseOperation
-                      {
-                          ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
-                      }
+                new FbCreateDatabaseOperation
+                {
+                    ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
+                }
             };
             return Dependencies.MigrationsSqlGenerator.Generate(operations);
         }
 
         protected override bool HasTables()
         {
-            return Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
+            return Dependencies
+                .ExecutionStrategyFactory.Create()
+                .Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
         }
 
         IRelationalCommand CreateHasTablesCommand()
-        {
-            return _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
-        }
+            => _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
+        
     }
 }

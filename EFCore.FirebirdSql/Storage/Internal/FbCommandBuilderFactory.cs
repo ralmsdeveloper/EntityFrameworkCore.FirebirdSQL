@@ -39,8 +39,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         public virtual IRelationalCommandBuilder Create() => CreateCore(_logger, _typeMapper);
 
         protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper relationalTypeMapper)
-        {
-            return new FbCommandBuilder(logger, relationalTypeMapper);
-        }
+            => new FbCommandBuilder(logger, relationalTypeMapper);
     }
 }

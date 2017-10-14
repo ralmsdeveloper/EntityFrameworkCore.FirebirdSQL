@@ -49,9 +49,9 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         DatabaseModel _databaseModel;
         Dictionary<string, DatabaseTable> _tables;
         Dictionary<string, DatabaseColumn> _tableColumns;
-        static string TableKey(DatabaseTable table) => TableKey(table.Name, table.Schema);
-        static string TableKey(string name, string schema) => $"{name}";
-        static string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
+        private string TableKey(DatabaseTable table) => TableKey(table.Name, table.Schema);
+		private string TableKey(string name, string schema) => $"{name}";
+		private string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
 
         #region Declaration Query
         private readonly string GetTablesQuery = @"SELECT
@@ -163,7 +163,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
         }
 
         public DatabaseModel Create(DbConnection connection, IEnumerable<string> tables, IEnumerable<string> schemas)
-        => Create(connection, new TableSelectionSet(tables, schemas));
+            => Create(connection, new TableSelectionSet(tables, schemas));
 
         public DatabaseModel Create(DbConnection connection, TableSelectionSet tableSelectionSet)
         {

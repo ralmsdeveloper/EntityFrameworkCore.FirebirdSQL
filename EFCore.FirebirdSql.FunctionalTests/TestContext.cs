@@ -32,11 +32,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
 			var connectionBuilder =
 				new FbConnectionStringBuilder("database=localhost:EFCore.fdb;user=sysdba;password=masterkey");
 
-			FbConnection.ClearPool(new FbConnection(connectionBuilder.ToString()));
-
-			connectionBuilder.Pooling = true;
-			connectionBuilder.MaxPoolSize = 200;
-
 			optionsBuilder.UseFirebird(connectionBuilder.ToString());
 		}
 

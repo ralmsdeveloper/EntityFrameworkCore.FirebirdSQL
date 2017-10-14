@@ -30,8 +30,8 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         {
             var fbOptions = GetOptions(options); 
             _fbSettings = new Lazy<FbSettings>(() => fbOptions.Connection != null
-                                                         ? new FbSettings().GetSettings(fbOptions.Connection)
-                                                         : new FbSettings().GetSettings(fbOptions.ConnectionString));
+                                                ? new FbSettings().GetSettings(fbOptions.Connection)
+                                                : new FbSettings().GetSettings(fbOptions.ConnectionString));
         }
 
         public virtual void Validate(IDbContextOptions options)
@@ -39,7 +39,6 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
             var fbOptions = GetOptions(options);
         }
 
-        //Sugestion CINCURA
         private FbOptionsExtension GetOptions(IDbContextOptions options)
             => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
 
