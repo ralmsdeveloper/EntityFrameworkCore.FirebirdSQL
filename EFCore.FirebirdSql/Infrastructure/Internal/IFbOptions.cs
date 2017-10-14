@@ -21,6 +21,6 @@ namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {
     public interface IFbOptions : ISingletonOptions
     {
-		FbSettings Settings { get; }
-	}
+        FbSettings Settings { get; }
+    }
 }

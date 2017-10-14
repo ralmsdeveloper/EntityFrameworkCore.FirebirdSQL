@@ -33,8 +33,8 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations.Internal
         {
             if (property.Firebird().ValueGenerationStrategy.HasValue)
             {
-				yield return new Annotation(FbAnnotationNames.ValueGenerationStrategy, property.Firebird().ValueGenerationStrategy);
-			}
+                yield return new Annotation(FbAnnotationNames.ValueGenerationStrategy, property.Firebird().ValueGenerationStrategy);
+            }
         }
     }
 }

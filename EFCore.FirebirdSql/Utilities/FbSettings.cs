@@ -23,63 +23,63 @@ using System.Data;
 
 namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
-	public class FbSettings
-	{ 
-		public Version ServerVersion;
-		public bool IsSupportIdentityIncrement => ServerVersion.Major >= 3;
-		public int ObjectLengthName => ServerVersion.Major == 3 ? 31 : 63; 
-		private static readonly ConcurrentDictionary<string, FbSettings> Settings = new ConcurrentDictionary<string, FbSettings>();
+    public class FbSettings
+    { 
+        public Version ServerVersion;
+        public bool IsSupportIdentityIncrement => ServerVersion.Major >= 3;
+        public int ObjectLengthName => ServerVersion.Major == 3 ? 31 : 63; 
+        private static readonly ConcurrentDictionary<string, FbSettings> Settings = new ConcurrentDictionary<string, FbSettings>();
 
-		public FbSettings GetSettings(string connectionString)
-		{
-			if (ServerVersion != null)
-				return this;
+        public FbSettings GetSettings(string connectionString)
+        {
+            if (ServerVersion != null)
+                return this;
 
-			var csb = new FbConnectionStringBuilder(connectionString);
+            var csb = new FbConnectionStringBuilder(connectionString);
 
-			return Settings.GetOrAdd(csb.ConnectionString, key =>
-			{
-				try
-				{
-					using (var _connection = new FbConnection(csb.ConnectionString))
-					{
-						_connection.Open();
-						ServerVersion = FbServerProperties.ParseServerVersion(_connection.ServerVersion);
-						_connection.Close();
-					}
-				}
-				catch
-				{
-					//
-				} 
-				return this;
-			});
-		}
+            return Settings.GetOrAdd(csb.ConnectionString, key =>
+            {
+                try
+                {
+                    using (var _connection = new FbConnection(csb.ConnectionString))
+                    {
+                        _connection.Open();
+                        ServerVersion = FbServerProperties.ParseServerVersion(_connection.ServerVersion);
+                        _connection.Close();
+                    }
+                }
+                catch
+                {
+                    //
+                } 
+                return this;
+            });
+        }
 
-		public FbSettings GetSettings(DbConnection connection)
-		{
-			if (ServerVersion != null)
-				return this;
+        public FbSettings GetSettings(DbConnection connection)
+        {
+            if (ServerVersion != null)
+                return this;
 
-			var csb = new FbConnectionStringBuilder(connection.ConnectionString); 
+            var csb = new FbConnectionStringBuilder(connection.ConnectionString); 
 
-			return Settings.GetOrAdd(csb.ConnectionString, key =>
-			{
-				if (connection.State == ConnectionState.Closed)
-				{
-					connection.Open();
-				}
-				try
-				{
-					ServerVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
-					return this;
-				}
-				finally
-				{
-					if (connection?.State == ConnectionState.Open)
-						connection.Close();
-				}
-			});
-		}
-	}
+            return Settings.GetOrAdd(csb.ConnectionString, key =>
+            {
+                if (connection.State == ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+                try
+                {
+                    ServerVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
+                    return this;
+                }
+                finally
+                {
+                    if (connection?.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            });
+        }
+    }
 }

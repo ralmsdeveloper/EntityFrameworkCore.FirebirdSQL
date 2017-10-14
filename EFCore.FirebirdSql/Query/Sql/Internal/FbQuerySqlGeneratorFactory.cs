@@ -25,9 +25,9 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             : base(dependencies)
         { }
 
-		public override IQuerySqlGenerator CreateDefault(SelectExpression selectExpression)
-		{
-			return new FbQuerySqlGenerator(Dependencies, selectExpression);
-		}
-	}
+        public override IQuerySqlGenerator CreateDefault(SelectExpression selectExpression)
+        {
+            return new FbQuerySqlGenerator(Dependencies, selectExpression);
+        }
+    }
 }

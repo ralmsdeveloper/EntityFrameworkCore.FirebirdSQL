@@ -19,16 +19,16 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 { 
-	public class FbByteArrayTypeMapping : ByteArrayTypeMapping
-	{
-		public FbByteArrayTypeMapping()
-			: base("BLOB SUB_TYPE BINARY", System.Data.DbType.Binary)
-		{ }
+    public class FbByteArrayTypeMapping : ByteArrayTypeMapping
+    {
+        public FbByteArrayTypeMapping()
+            : base("BLOB SUB_TYPE BINARY", System.Data.DbType.Binary)
+        { }
 
-		protected override string GenerateNonNullSqlLiteral(object value)
-		{
-			var hex =  BitConverter.ToString(((byte[])value)).Replace("-", string.Empty);
-			return $"x'{hex}'";
-		}
-	}
+        protected override string GenerateNonNullSqlLiteral(object value)
+        {
+            var hex =  BitConverter.ToString(((byte[])value)).Replace("-", string.Empty);
+            return $"x'{hex}'";
+        }
+    }
 }

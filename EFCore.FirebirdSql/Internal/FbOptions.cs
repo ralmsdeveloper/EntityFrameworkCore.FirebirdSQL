@@ -23,25 +23,25 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     public class FbOptions : IFbOptions
     {
-	    private Lazy<FbSettings> _fbSettings;
-	    public virtual FbSettings Settings => _fbSettings.Value; 
+        private Lazy<FbSettings> _fbSettings;
+        public virtual FbSettings Settings => _fbSettings.Value; 
 
-		public virtual void Initialize(IDbContextOptions options)
+        public virtual void Initialize(IDbContextOptions options)
         {
-			var fbOptions = GetOptions(options); 
-	        _fbSettings = new Lazy<FbSettings>(() => fbOptions.Connection != null
-		                                                 ? new FbSettings().GetSettings(fbOptions.Connection)
-		                                                 : new FbSettings().GetSettings(fbOptions.ConnectionString));
-		}
+            var fbOptions = GetOptions(options); 
+            _fbSettings = new Lazy<FbSettings>(() => fbOptions.Connection != null
+                                                         ? new FbSettings().GetSettings(fbOptions.Connection)
+                                                         : new FbSettings().GetSettings(fbOptions.ConnectionString));
+        }
 
         public virtual void Validate(IDbContextOptions options)
         {
-			var fbOptions = GetOptions(options);
-		}
+            var fbOptions = GetOptions(options);
+        }
 
-		//Sugestion CINCURA
-	    private FbOptionsExtension GetOptions(IDbContextOptions options)
-		    => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
+        //Sugestion CINCURA
+        private FbOptionsExtension GetOptions(IDbContextOptions options)
+            => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
 
     }
 }

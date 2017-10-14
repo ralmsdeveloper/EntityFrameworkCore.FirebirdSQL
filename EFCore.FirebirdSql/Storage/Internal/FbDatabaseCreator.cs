@@ -1,7 +1,7 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
- *							   Jiri Cincura	  (jiri@cincura.net)
- *							   
+ *                               Jiri Cincura      (jiri@cincura.net)
+ *                               
  *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
@@ -29,61 +29,61 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 { 
     public class FbDatabaseCreator : RelationalDatabaseCreator
     { 
-	    readonly IFbRelationalConnection _connection;
-	    readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
+        readonly IFbRelationalConnection _connection;
+        readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
-	    public FbDatabaseCreator(RelationalDatabaseCreatorDependencies dependencies, IFbRelationalConnection connection, IRawSqlCommandBuilder rawSqlCommandBuilder)
-		    : base(dependencies)
-	    {
-		    _connection = connection;
-		    _rawSqlCommandBuilder = rawSqlCommandBuilder;
-	    }
+        public FbDatabaseCreator(RelationalDatabaseCreatorDependencies dependencies, IFbRelationalConnection connection, IRawSqlCommandBuilder rawSqlCommandBuilder)
+            : base(dependencies)
+        {
+            _connection = connection;
+            _rawSqlCommandBuilder = rawSqlCommandBuilder;
+        }
 
-	    public override void Create()
-	    {
-		    Dependencies.MigrationCommandExecutor.ExecuteNonQuery(CreateDatabaseOperations(), _connection);
-	    }
+        public override void Create()
+        {
+            Dependencies.MigrationCommandExecutor.ExecuteNonQuery(CreateDatabaseOperations(), _connection);
+        }
 
-	    public override void Delete()
-	    {
-		    FirebirdClientConnection.ClearPool((FirebirdClientConnection)_connection.DbConnection);
-		    FirebirdClientConnection.DropDatabase(_connection.ConnectionString);
-	    }
+        public override void Delete()
+        {
+            FirebirdClientConnection.ClearPool((FirebirdClientConnection)_connection.DbConnection);
+            FirebirdClientConnection.DropDatabase(_connection.ConnectionString);
+        }
 
-	    public override bool Exists()
-	    {
-		    try
-		    {
-			    _connection.Open();
-			    _connection.Close();
-				return true;
-		    }
-		    catch (FbException)
-		    {
-			    return false;
-		    } 
-	    }
+        public override bool Exists()
+        {
+            try
+            {
+                _connection.Open();
+                _connection.Close();
+                return true;
+            }
+            catch (FbException)
+            {
+                return false;
+            } 
+        }
 
-		private IReadOnlyList<MigrationCommand> CreateDatabaseOperations()
-		{
-			var operations = new MigrationOperation[]
-			{
-					  new FbCreateDatabaseOperation
-					  {
-						  ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
-					  }
-			};
-			return Dependencies.MigrationsSqlGenerator.Generate(operations);
-		}
+        private IReadOnlyList<MigrationCommand> CreateDatabaseOperations()
+        {
+            var operations = new MigrationOperation[]
+            {
+                      new FbCreateDatabaseOperation
+                      {
+                          ConnectionStringBuilder = new FbConnectionStringBuilder(_connection.DbConnection.ConnectionString)
+                      }
+            };
+            return Dependencies.MigrationsSqlGenerator.Generate(operations);
+        }
 
-		protected override bool HasTables()
-		{
-			return Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
-		}
+        protected override bool HasTables()
+        {
+            return Dependencies.ExecutionStrategyFactory.Create().Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
+        }
 
-		IRelationalCommand CreateHasTablesCommand()
-		{
-			return _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
-		}
-	}
+        IRelationalCommand CreateHasTablesCommand()
+        {
+            return _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
+        }
+    }
 }

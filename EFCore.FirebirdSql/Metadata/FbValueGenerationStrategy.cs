@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
     public enum FbValueGenerationStrategy
     {
-	    IdentityColumn,
-		SequenceTrigger
-	}
+        IdentityColumn,
+        SequenceTrigger
+    }
 }

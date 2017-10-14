@@ -21,24 +21,24 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 { 
-	public class FbDateTimeNowTranslator : IMemberTranslator
-	{ 
-		public virtual Expression Translate(MemberExpression memberExpression)
-		{
-			if (memberExpression.Expression == null
-				&& memberExpression.Member.DeclaringType == typeof(DateTime))
-			{
-				switch (memberExpression.Member.Name)
-				{
-					case nameof(DateTime.Now):
-						return new SqlFragmentExpression("CURRENT_TIMESTAMP");
-					case nameof(DateTime.UtcNow):
-						return new SqlFragmentExpression("CURRENT_TIMESTAMP");
-					default:
-						throw new Exception(nameof(memberExpression));
-				}
-			}
-			return null;
-		}
-	}
+    public class FbDateTimeNowTranslator : IMemberTranslator
+    { 
+        public virtual Expression Translate(MemberExpression memberExpression)
+        {
+            if (memberExpression.Expression == null
+                && memberExpression.Member.DeclaringType == typeof(DateTime))
+            {
+                switch (memberExpression.Member.Name)
+                {
+                    case nameof(DateTime.Now):
+                        return new SqlFragmentExpression("CURRENT_TIMESTAMP");
+                    case nameof(DateTime.UtcNow):
+                        return new SqlFragmentExpression("CURRENT_TIMESTAMP");
+                    default:
+                        throw new Exception(nameof(memberExpression));
+                }
+            }
+            return null;
+        }
+    }
 }

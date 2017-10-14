@@ -20,17 +20,17 @@ namespace System.Text
 {
     internal static class StringBuilderExtensions
     {
-		public static StringBuilder AppendJoin(this StringBuilder stringBuilder, IEnumerable<string> values, string separator = ", ")
-		{
-			return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
-		}
+        public static StringBuilder AppendJoin(this StringBuilder stringBuilder, IEnumerable<string> values, string separator = ", ")
+        {
+            return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
+        }
 
-		public static StringBuilder AppendJoin(this StringBuilder stringBuilder, string separator, params string[] values)
-		{
-			return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
-		}
+        public static StringBuilder AppendJoin(this StringBuilder stringBuilder, string separator, params string[] values)
+        {
+            return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
+        }
 
-		public static StringBuilder AppendJoin<T>(this StringBuilder stringBuilder,IEnumerable<T> values,Action<StringBuilder, T> joinAction,string separator = ", ")
+        public static StringBuilder AppendJoin<T>(this StringBuilder stringBuilder,IEnumerable<T> values,Action<StringBuilder, T> joinAction,string separator = ", ")
         {
             var appended = false;
 

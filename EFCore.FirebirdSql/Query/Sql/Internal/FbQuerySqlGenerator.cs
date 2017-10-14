@@ -23,108 +23,108 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
-	public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
-	{
-		protected override string TypedTrueLiteral => "TRUE";
-		protected override string TypedFalseLiteral => "FALSE";
-		
-		public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies,SelectExpression selectExpression)
-			: base(dependencies, selectExpression)
-		{ }
+    public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
+    {
+        protected override string TypedTrueLiteral => "TRUE";
+        protected override string TypedFalseLiteral => "FALSE";
+        
+        public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies,SelectExpression selectExpression)
+            : base(dependencies, selectExpression)
+        { }
 
-		public override Expression VisitSelect(SelectExpression selectExpression)
-		{
-			base.VisitSelect(selectExpression);
-			//Fix Any()
-			if (selectExpression.Type == typeof(bool))
-				Sql.Append(" FROM RDB$DATABASE");
-			return selectExpression;
-		}
+        public override Expression VisitSelect(SelectExpression selectExpression)
+        {
+            base.VisitSelect(selectExpression);
+            //Fix Any()
+            if (selectExpression.Type == typeof(bool))
+                Sql.Append(" FROM RDB$DATABASE");
+            return selectExpression;
+        }
 
-		protected override void GenerateTop(SelectExpression selectExpression)
-		{
-			if (selectExpression.Limit != null)
-			{
-				Sql.AppendLine().Append("FIRST ");
-				Visit(selectExpression.Limit);
-				Sql.AppendLine().Append(" ");
-			}
+        protected override void GenerateTop(SelectExpression selectExpression)
+        {
+            if (selectExpression.Limit != null)
+            {
+                Sql.AppendLine().Append("FIRST ");
+                Visit(selectExpression.Limit);
+                Sql.AppendLine().Append(" ");
+            }
 
-			if (selectExpression.Offset != null)
-			{
-				if (selectExpression.Limit == null)
-					Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
-				Sql.Append(" SKIP ");
-				Visit(selectExpression.Offset);
-			}
-		}
-		
-		protected override void GenerateLimitOffset(SelectExpression selectExpression)
-		{
-		}
+            if (selectExpression.Offset != null)
+            {
+                if (selectExpression.Limit == null)
+                    Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
+                Sql.Append(" SKIP ");
+                Visit(selectExpression.Offset);
+            }
+        }
+        
+        protected override void GenerateLimitOffset(SelectExpression selectExpression)
+        {
+        }
 
-		protected override void GenerateProjection(Expression projection)
-		{
-			var aliasedProjection = projection as AliasExpression;
-			var expressionToProcess = aliasedProjection?.Expression ?? projection;
-			var updatedExperssion = ExplicitCastToBool(expressionToProcess);
+        protected override void GenerateProjection(Expression projection)
+        {
+            var aliasedProjection = projection as AliasExpression;
+            var expressionToProcess = aliasedProjection?.Expression ?? projection;
+            var updatedExperssion = ExplicitCastToBool(expressionToProcess);
 
-			expressionToProcess = aliasedProjection != null
-				? new AliasExpression(aliasedProjection.Alias, updatedExperssion)
-				: updatedExperssion;
+            expressionToProcess = aliasedProjection != null
+                ? new AliasExpression(aliasedProjection.Alias, updatedExperssion)
+                : updatedExperssion;
 
-			base.GenerateProjection(expressionToProcess);
-		}
+            base.GenerateProjection(expressionToProcess);
+        }
 
-		private Expression ExplicitCastToBool(Expression expression)
-		{
-			return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
-			       && expression.Type.UnwrapNullableType() == typeof(bool)
-				? new ExplicitCastExpression(expression, expression.Type)
-				: expression;
-		}
+        private Expression ExplicitCastToBool(Expression expression)
+        {
+            return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
+                   && expression.Type.UnwrapNullableType() == typeof(bool)
+                ? new ExplicitCastExpression(expression, expression.Type)
+                : expression;
+        }
 
-		protected override Expression VisitBinary(BinaryExpression binaryExpression)
-		{
-			if (binaryExpression.NodeType == ExpressionType.Add &&
-			    binaryExpression.Left.Type == typeof(string) &&
-			    binaryExpression.Right.Type == typeof(string))
-			{
-				Sql.Append("(");
-				Visit(binaryExpression.Left);
-				Sql.Append("||");
-				var exp = Visit(binaryExpression.Right);
-				Sql.Append(")");
-				return exp;
-			}
+        protected override Expression VisitBinary(BinaryExpression binaryExpression)
+        {
+            if (binaryExpression.NodeType == ExpressionType.Add &&
+                binaryExpression.Left.Type == typeof(string) &&
+                binaryExpression.Right.Type == typeof(string))
+            {
+                Sql.Append("(");
+                Visit(binaryExpression.Left);
+                Sql.Append("||");
+                var exp = Visit(binaryExpression.Right);
+                Sql.Append(")");
+                return exp;
+            }
 
-			var expr = base.VisitBinary(binaryExpression);
-			return expr;
-		}
+            var expr = base.VisitBinary(binaryExpression);
+            return expr;
+        }
 
-		public virtual Expression VisitSubString(FbSubStringExpression substringExpression)
-		{
-			Sql.Append("SUBSTRING(");
-			Visit(substringExpression.ValueExpression);
-			Sql.Append(" FROM ");
-			Visit(substringExpression.FromExpression);
-			if (substringExpression.ForExpression != null)
-			{
-				Sql.Append(" FOR ");
-				Visit(substringExpression.ForExpression);
-			}
-			Sql.Append(")");
-			return substringExpression;
-		}
+        public virtual Expression VisitSubString(FbSubStringExpression substringExpression)
+        {
+            Sql.Append("SUBSTRING(");
+            Visit(substringExpression.ValueExpression);
+            Sql.Append(" FROM ");
+            Visit(substringExpression.FromExpression);
+            if (substringExpression.ForExpression != null)
+            {
+                Sql.Append(" FOR ");
+                Visit(substringExpression.ForExpression);
+            }
+            Sql.Append(")");
+            return substringExpression;
+        }
 
-		public virtual Expression VisitExtract(FbExtractExpression extractExpression)
-		{
-			Sql.Append("EXTRACT(");
-			Sql.Append(extractExpression.Part);
-			Sql.Append(" FROM ");
-			Visit(extractExpression.ValueExpression);
-			Sql.Append(")");
-			return extractExpression;
-		} 
-	}
+        public virtual Expression VisitExtract(FbExtractExpression extractExpression)
+        {
+            Sql.Append("EXTRACT(");
+            Sql.Append(extractExpression.Part);
+            Sql.Append(" FROM ");
+            Visit(extractExpression.ValueExpression);
+            Sql.Append(")");
+            return extractExpression;
+        } 
+    }
 }

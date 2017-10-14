@@ -18,19 +18,19 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Metadata
 {
-	public class FbIndexModelAnnotations
-	{
-		private readonly DatabaseIndex _index;
+    public class FbIndexModelAnnotations
+    {
+        private readonly DatabaseIndex _index;
 
-		public FbIndexModelAnnotations(DatabaseIndex index)
-		{ 
-			_index = index;
-		}
+        public FbIndexModelAnnotations(DatabaseIndex index)
+        { 
+            _index = index;
+        }
 
-		public string Expression
-		{
-			get => _index[FbDatabaseModelAnnotationNames.Expression] as string; 
-			set => _index[FbDatabaseModelAnnotationNames.Expression] = value;
-		}
-	}
+        public string Expression
+        {
+            get => _index[FbDatabaseModelAnnotationNames.Expression] as string; 
+            set => _index[FbDatabaseModelAnnotationNames.Expression] = value;
+        }
+    }
 }

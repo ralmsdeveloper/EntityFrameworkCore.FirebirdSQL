@@ -22,7 +22,7 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
-	public class FbDateTimeDatePartComponentTranslator : IMemberTranslator
+    public class FbDateTimeDatePartComponentTranslator : IMemberTranslator
     { 
         public virtual Expression Translate(MemberExpression memberExpression)
         {

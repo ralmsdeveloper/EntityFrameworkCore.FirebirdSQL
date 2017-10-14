@@ -41,22 +41,22 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 foreach (var commandbatch in commandBatches)
                 {
                     commandbatch.Execute(connection);
-	                recordAffecteds += commandbatch.ModificationCommands.Count;
+                    recordAffecteds += commandbatch.ModificationCommands.Count;
                 } 
                 currentTransaction?.Commit();
                 currentTransaction?.Dispose();
             }
             catch(Exception ex)
             {
-	            try
-	            {
-		            currentTransaction?.Rollback();
-		            currentTransaction?.Dispose();
-	            }
-	            catch
-	            {
-		            //
-	            }
+                try
+                {
+                    currentTransaction?.Rollback();
+                    currentTransaction?.Dispose();
+                }
+                catch
+                {
+                    //
+                }
                 throw ex;
             }
             finally
@@ -89,15 +89,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             }
             catch (Exception err)
             {
-	            try
-	            {
-		            currentTransaction?.Rollback();
-		            currentTransaction?.Dispose();
-	            }
-	            catch
-	            {
-		            //
-	            }
+                try
+                {
+                    currentTransaction?.Rollback();
+                    currentTransaction?.Dispose();
+                }
+                catch
+                {
+                    //
+                }
                 throw err;
             }
             finally

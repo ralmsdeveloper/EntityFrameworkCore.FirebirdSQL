@@ -23,33 +23,33 @@ namespace EntityFrameworkCore.FirebirdSql.Storage
 { 
     public class FbDateTimeTypeMapping : DateTimeTypeMapping
     {
-		readonly FbDbType _fbDbType;
+        readonly FbDbType _fbDbType;
 
-	    public FbDateTimeTypeMapping(string storeType, FbDbType fbDbType)
-		    : base(storeType)
-	    {
-		    _fbDbType = fbDbType;
-		}
+        public FbDateTimeTypeMapping(string storeType, FbDbType fbDbType)
+            : base(storeType)
+        {
+            _fbDbType = fbDbType;
+        }
 
-		protected override void ConfigureParameter(DbParameter parameter)
+        protected override void ConfigureParameter(DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;
 
         protected override string SqlLiteralFormatString
         {
-			get
-			{
-				switch (_fbDbType)
-				{
-					case FbDbType.TimeStamp:
-						return "{0:yyyy-MM-dd HH:mm:ss}";
-					case FbDbType.Date:
-						return "{0:yyyy-MM-dd}";
-					case FbDbType.Time:
-						return "{0:HH:mm:ss}";
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			}
-		} 
+            get
+            {
+                switch (_fbDbType)
+                {
+                    case FbDbType.TimeStamp:
+                        return "{0:yyyy-MM-dd HH:mm:ss}";
+                    case FbDbType.Date:
+                        return "{0:yyyy-MM-dd}";
+                    case FbDbType.Time:
+                        return "{0:HH:mm:ss}";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        } 
     }
 }

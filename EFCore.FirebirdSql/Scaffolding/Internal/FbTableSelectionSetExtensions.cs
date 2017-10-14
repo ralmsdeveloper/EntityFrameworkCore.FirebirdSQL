@@ -19,46 +19,46 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 {
-	internal static class FbTableSelectionSetExtensions
-	{
-		public static bool Allows(this TableSelectionSet _tableSelectionSet, string schemaName, string tableName)
-		{
-			if (_tableSelectionSet == null
-				|| (_tableSelectionSet.Schemas.Count == 0
-				&& _tableSelectionSet.Tables.Count == 0))
-			{
-				return true;
-			} 
-			var result = false; 
-			foreach (var schemaSelection in _tableSelectionSet.Schemas)
-			{
-				if (EqualsWithQuotes(schemaSelection.Text, schemaName))
-				{
-					schemaSelection.IsMatched = true;
-					result = true;
-				}
-			}
+    internal static class FbTableSelectionSetExtensions
+    {
+        public static bool Allows(this TableSelectionSet _tableSelectionSet, string schemaName, string tableName)
+        {
+            if (_tableSelectionSet == null
+                || (_tableSelectionSet.Schemas.Count == 0
+                && _tableSelectionSet.Tables.Count == 0))
+            {
+                return true;
+            } 
+            var result = false; 
+            foreach (var schemaSelection in _tableSelectionSet.Schemas)
+            {
+                if (EqualsWithQuotes(schemaSelection.Text, schemaName))
+                {
+                    schemaSelection.IsMatched = true;
+                    result = true;
+                }
+            }
 
-			foreach (var tableSelection in _tableSelectionSet.Tables)
-			{
-				var components = tableSelection.Text.Split('.');
-				if (components.Length == 1
-					? EqualsWithQuotes(components[0], tableName)
-					: EqualsWithQuotes(components[0], schemaName) && EqualsWithQuotes(components[1], tableName))
-				{
-					tableSelection.IsMatched = true;
-					result = true;
-				}
-			}
+            foreach (var tableSelection in _tableSelectionSet.Tables)
+            {
+                var components = tableSelection.Text.Split('.');
+                if (components.Length == 1
+                    ? EqualsWithQuotes(components[0], tableName)
+                    : EqualsWithQuotes(components[0], schemaName) && EqualsWithQuotes(components[1], tableName))
+                {
+                    tableSelection.IsMatched = true;
+                    result = true;
+                }
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		static bool EqualsWithQuotes(string expr, string name)
-		{
-			return expr[0] == '"' && expr[expr.Length - 1] == '"'
-				? expr.Substring(0, expr.Length - 2).Equals(name)
-				: expr.Equals(name, StringComparison.OrdinalIgnoreCase);
-		}
-	}
+        static bool EqualsWithQuotes(string expr, string name)
+        {
+            return expr[0] == '"' && expr[expr.Length - 1] == '"'
+                ? expr.Substring(0, expr.Length - 2).Equals(name)
+                : expr.Equals(name, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 }

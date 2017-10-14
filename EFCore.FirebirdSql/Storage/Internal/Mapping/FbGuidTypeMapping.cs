@@ -22,13 +22,13 @@ namespace EntityFrameworkCore.FirebirdSql.Storage
 { 
     public class FbGuidTypeMapping : GuidTypeMapping
     {
-		public FbGuidTypeMapping()
-		    : base("CHAR(16) CHARACTER SET OCTETS")
-	    { }
+        public FbGuidTypeMapping()
+            : base("CHAR(16) CHARACTER SET OCTETS")
+        { }
 
-	    protected override void ConfigureParameter(DbParameter parameter)
-	    {
-		    ((FbParameter)parameter).FbDbType = FbDbType.Guid;
-	    } 
-	}
+        protected override void ConfigureParameter(DbParameter parameter)
+        {
+            ((FbParameter)parameter).FbDbType = FbDbType.Guid;
+        } 
+    }
 }

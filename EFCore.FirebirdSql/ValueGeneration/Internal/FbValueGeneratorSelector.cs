@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {
     public class FbValueGeneratorSelector : RelationalValueGeneratorSelector
     {
-		private readonly IFbOptions _options;
+        private readonly IFbOptions _options;
 
         public FbValueGeneratorSelector(ValueGeneratorSelectorDependencies dependencies,IFbOptions options)
             : base(dependencies)
@@ -34,7 +34,7 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 
         public override ValueGenerator Create(IProperty property, IEntityType entityType)
         {
-			var ret = property.ClrType.UnwrapNullableType() == typeof(Guid)
+            var ret = property.ClrType.UnwrapNullableType() == typeof(Guid)
                 ? property.ValueGenerated == ValueGenerated.Never
                   || property.Firebird().DefaultValueSql != null
                     ? (ValueGenerator)new TemporaryGuidValueGenerator()

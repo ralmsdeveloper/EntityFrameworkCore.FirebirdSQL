@@ -26,18 +26,18 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         public virtual IRelationalParameterBuilder ParameterBuilder { get; }
 
         public virtual IRelationalCommand Build()
-	    {
-		    return BuildCore(_logger, _commandTextBuilder.ToString(), ParameterBuilder.Parameters);
-	    }
+        {
+            return BuildCore(_logger, _commandTextBuilder.ToString(), ParameterBuilder.Parameters);
+        }
 
-		protected virtual IRelationalCommand BuildCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, string commandText, IReadOnlyList<IRelationalParameter> parameters)
-		{
-			return new FirebirdRelationalCommand(logger, commandText, parameters);
-		}
+        protected virtual IRelationalCommand BuildCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, string commandText, IReadOnlyList<IRelationalParameter> parameters)
+        {
+            return new FirebirdRelationalCommand(logger, commandText, parameters);
+        }
 
-		public override string ToString()
-	    {
-		    return _commandTextBuilder.ToString();
-	    }
+        public override string ToString()
+        {
+            return _commandTextBuilder.ToString();
+        }
     }
 }

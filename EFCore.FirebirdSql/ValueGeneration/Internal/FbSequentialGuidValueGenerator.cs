@@ -26,13 +26,13 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
     { 
         private readonly IFbOptions _options;
 
-	    public FbSequentialGuidValueGenerator(IFbOptions options)
-	    {
-			_options = options;
-		} 
+        public FbSequentialGuidValueGenerator(IFbOptions options)
+        {
+            _options = options;
+        } 
 
         private static readonly RandomNumberGenerator Rng = RandomNumberGenerator.Create();
-		 
+         
         public override Guid Next(EntityEntry entry)
         {
             var randomBytes = new byte[8];
@@ -49,7 +49,7 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
             return new Guid(guidBytes);
 
         }
-		 
+         
         public override bool GeneratesTemporaryValues => false; 
     }
 }

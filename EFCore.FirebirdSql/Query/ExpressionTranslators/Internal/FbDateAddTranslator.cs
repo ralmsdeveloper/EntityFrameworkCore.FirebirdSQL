@@ -41,7 +41,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddMinutes), new[] { typeof(double) }), "minute" },
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddSeconds), new[] { typeof(double) }), "second" },
         };
-		 
+         
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
             if (_methodInfoDatePartMapping.TryGetValue(methodCallExpression.Method, out var dateInfo))

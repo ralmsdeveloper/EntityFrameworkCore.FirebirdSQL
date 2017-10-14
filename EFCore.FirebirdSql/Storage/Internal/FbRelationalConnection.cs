@@ -51,7 +51,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         }
 
         public override bool IsMultipleActiveResultSetsEnabled => true;
-		 
+         
         public override async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (CurrentTransaction != null)
@@ -69,7 +69,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             Dependencies.TransactionLogger.TransactionStarted(this, dbTransaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
             return CurrentTransaction;
         }
-		 
+         
         public override IDbContextTransaction UseTransaction(DbTransaction transaction)
         {
             if (transaction == null)

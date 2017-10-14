@@ -24,14 +24,14 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
-	public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
-	{
-		static readonly List<Type> Translators = TranslatorsHelper.GetTranslators<IMemberTranslator>().ToList();
+    public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
+    {
+        static readonly List<Type> Translators = TranslatorsHelper.GetTranslators<IMemberTranslator>().ToList();
 
-		public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
-			: base(dependencies)
-		{
-			AddTranslators(Translators.Select(t => (IMemberTranslator)Activator.CreateInstance(t)));
-		}
-	}
+        public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
+            : base(dependencies)
+        {
+            AddTranslators(Translators.Select(t => (IMemberTranslator)Activator.CreateInstance(t)));
+        }
+    }
 }

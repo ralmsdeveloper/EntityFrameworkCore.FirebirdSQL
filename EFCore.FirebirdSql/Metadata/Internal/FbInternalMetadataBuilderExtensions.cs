@@ -25,17 +25,17 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
 
         public static FbPropertyBuilderAnnotations Firebird( this InternalPropertyBuilder builder, ConfigurationSource configurationSource)
             => new FbPropertyBuilderAnnotations(builder, configurationSource);
-		 
+         
         public static FbEntityTypeBuilderAnnotations Firebird(this InternalEntityTypeBuilder builder, ConfigurationSource configurationSource)
             => new FbEntityTypeBuilderAnnotations(builder, configurationSource);
-		 
+         
         public static FbKeyBuilderAnnotations Firebird(this InternalKeyBuilder builder, ConfigurationSource configurationSource)
             => new FbKeyBuilderAnnotations(builder, configurationSource);
 
-	    public static RelationalIndexBuilderAnnotations Firebird(this InternalIndexBuilder builder, ConfigurationSource configurationSource)
-		    => new RelationalIndexBuilderAnnotations(builder, configurationSource);
+        public static RelationalIndexBuilderAnnotations Firebird(this InternalIndexBuilder builder, ConfigurationSource configurationSource)
+            => new RelationalIndexBuilderAnnotations(builder, configurationSource);
 
-		public static RelationalForeignKeyBuilderAnnotations Firebird(this InternalRelationshipBuilder builder, ConfigurationSource configurationSource)
+        public static RelationalForeignKeyBuilderAnnotations Firebird(this InternalRelationshipBuilder builder, ConfigurationSource configurationSource)
             => new RelationalForeignKeyBuilderAnnotations(builder, configurationSource);
     }
 }

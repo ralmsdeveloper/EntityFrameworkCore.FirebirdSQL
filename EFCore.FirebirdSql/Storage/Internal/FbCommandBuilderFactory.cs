@@ -28,19 +28,19 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 
         public FbCommandBuilderFactory(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper typeMapper)
         {
-			_logger = logger;
+            _logger = logger;
             _typeMapper = typeMapper;
         }
 
         public IRelationalParameterBuilder ParameterBuilder => throw new System.NotImplementedException();
 
         public IndentedStringBuilder Instance => throw new System.NotImplementedException();
-		 
+         
         public virtual IRelationalCommandBuilder Create() => CreateCore(_logger, _typeMapper);
 
-		protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper relationalTypeMapper)
-		{
-			return new FbCommandBuilder(logger, relationalTypeMapper);
-		}
-	}
+        protected virtual IRelationalCommandBuilder CreateCore(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper relationalTypeMapper)
+        {
+            return new FbCommandBuilder(logger, relationalTypeMapper);
+        }
+    }
 }

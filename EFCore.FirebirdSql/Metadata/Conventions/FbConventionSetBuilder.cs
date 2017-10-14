@@ -20,21 +20,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 {
-	public class FbConventionSetBuilder : RelationalConventionSetBuilder
-	{
-		public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies)
-			: base(dependencies)
-		{ }
+    public class FbConventionSetBuilder : RelationalConventionSetBuilder
+    {
+        public FbConventionSetBuilder(RelationalConventionSetBuilderDependencies dependencies)
+            : base(dependencies)
+        { }
 
-		public override ConventionSet AddConventions(ConventionSet conventionSet)
-		{
-			base.AddConventions(conventionSet);
+        public override ConventionSet AddConventions(ConventionSet conventionSet)
+        {
+            base.AddConventions(conventionSet);
 
-			var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
-			conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
-			ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
-			ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
-			return conventionSet;
-		}
-	}
+            var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
+            conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
+            ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
+            ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
+            return conventionSet;
+        }
+    }
 }

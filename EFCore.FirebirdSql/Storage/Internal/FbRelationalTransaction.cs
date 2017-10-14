@@ -64,7 +64,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             } 
             ClearTransaction();
         }
-		 
+         
         public virtual async Task RollbackAsync(CancellationToken cancellationToken=default(CancellationToken))
         {
             var startTime = DateTimeOffset.UtcNow;
@@ -87,11 +87,11 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private void ClearTransaction()
         {
             _relationalConnection.UseTransaction(null);
-	        if (_connectionClosed)
-				return;
+            if (_connectionClosed)
+                return;
 
-	        _connectionClosed = true; 
-	        _relationalConnection.Close();
+            _connectionClosed = true; 
+            _relationalConnection.Close();
         } 
     }
 }

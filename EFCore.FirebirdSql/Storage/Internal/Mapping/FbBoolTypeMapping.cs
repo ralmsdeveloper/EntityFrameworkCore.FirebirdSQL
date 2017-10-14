@@ -18,18 +18,18 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage
 {
-	public class FbBoolTypeMapping : BoolTypeMapping
-	{
-		public const string TrueLiteral = "TRUE";
-		public const string FalseLiteral = "FALSE";
+    public class FbBoolTypeMapping : BoolTypeMapping
+    {
+        public const string TrueLiteral = "TRUE";
+        public const string FalseLiteral = "FALSE";
 
-		public FbBoolTypeMapping()
-			: base("BOOLEAN", System.Data.DbType.Boolean)
-		{ }
+        public FbBoolTypeMapping()
+            : base("BOOLEAN", System.Data.DbType.Boolean)
+        { }
 
-		protected override string GenerateNonNullSqlLiteral(object value)
-		{
-			return (bool)value ? TrueLiteral : FalseLiteral;
-		}
-	}
+        protected override string GenerateNonNullSqlLiteral(object value)
+        {
+            return (bool)value ? TrueLiteral : FalseLiteral;
+        }
+    }
 }

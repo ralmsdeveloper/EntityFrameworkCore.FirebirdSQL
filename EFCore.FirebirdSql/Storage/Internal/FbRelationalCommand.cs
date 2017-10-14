@@ -1,7 +1,7 @@
 ﻿/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
- *							   Jiri Cincura	  (jiri@cincura.net)
- *							   
+ *                               Jiri Cincura      (jiri@cincura.net)
+ *                               
  *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED

@@ -18,20 +18,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
 {
-	public class FbEntityTypeBuilderAnnotations : FbEntityTypeAnnotations
-	{
-		public FbEntityTypeBuilderAnnotations(InternalEntityTypeBuilder internalBuilder, ConfigurationSource configurationSource)
-			: base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
-		{ }
-		 
-		public virtual bool ToTable(string name)
-		{
-			return SetTableName(name);
-		}
-		 
-		public virtual bool ToTable(string name, string schema)
-		{
-			return SetTableName(name); 
-		}
-	}
+    public class FbEntityTypeBuilderAnnotations : FbEntityTypeAnnotations
+    {
+        public FbEntityTypeBuilderAnnotations(InternalEntityTypeBuilder internalBuilder, ConfigurationSource configurationSource)
+            : base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
+        { }
+         
+        public virtual bool ToTable(string name)
+        {
+            return SetTableName(name);
+        }
+         
+        public virtual bool ToTable(string name, string schema)
+        {
+            return SetTableName(name); 
+        }
+    }
 }

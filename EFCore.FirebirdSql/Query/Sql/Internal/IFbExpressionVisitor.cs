@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public interface IFbExpressionVisitor
     {
-		Expression VisitExtract(FbExtractExpression extractExpression);
-		Expression VisitSubString(FbSubStringExpression sbStringExpression);
+        Expression VisitExtract(FbExtractExpression extractExpression);
+        Expression VisitSubString(FbSubStringExpression sbStringExpression);
     }
 }

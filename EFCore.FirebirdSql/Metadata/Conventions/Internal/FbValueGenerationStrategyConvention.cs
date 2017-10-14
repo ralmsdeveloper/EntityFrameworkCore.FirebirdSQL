@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
             propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy); 
             return base.Apply(propertyBuilder, attribute, clrMember);
         }
-		 
+         
         public virtual InternalModelBuilder Apply(InternalModelBuilder modelBuilder)
         {
             modelBuilder.Firebird(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn); 

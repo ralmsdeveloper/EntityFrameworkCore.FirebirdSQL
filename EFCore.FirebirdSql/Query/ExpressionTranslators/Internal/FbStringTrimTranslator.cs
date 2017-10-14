@@ -25,29 +25,29 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 
     public class FbStringTrimTranslator : IMethodCallTranslator
     {
-	    // Method defined in netstandard2.0
-	    private static readonly MethodInfo MethodInfoWithoutArgs
-		    = typeof(string).GetRuntimeMethod(nameof(string.Trim), new Type[] { });
+        // Method defined in netstandard2.0
+        private static readonly MethodInfo MethodInfoWithoutArgs
+            = typeof(string).GetRuntimeMethod(nameof(string.Trim), new Type[] { });
 
-	    // Method defined in netstandard2.0
-	    private static readonly MethodInfo MethodInfoWithCharArrayArg
-		    = typeof(string).GetRuntimeMethod(nameof(string.Trim), new[] {typeof(char[])});
+        // Method defined in netstandard2.0
+        private static readonly MethodInfo MethodInfoWithCharArrayArg
+            = typeof(string).GetRuntimeMethod(nameof(string.Trim), new[] {typeof(char[])});
 
-	    public virtual Expression Translate(MethodCallExpression methodCallExpression)
-	    {
-		    if (MethodInfoWithoutArgs.Equals(methodCallExpression.Method)
-		        || MethodInfoWithCharArrayArg.Equals(methodCallExpression.Method)
-		        && ((methodCallExpression.Arguments[0] as ConstantExpression)?.Value as Array)?.Length == 0)
-		    {
-			    var sqlArguments = new[] {methodCallExpression.Object};
+        public virtual Expression Translate(MethodCallExpression methodCallExpression)
+        {
+            if (MethodInfoWithoutArgs.Equals(methodCallExpression.Method)
+                || MethodInfoWithCharArrayArg.Equals(methodCallExpression.Method)
+                && ((methodCallExpression.Arguments[0] as ConstantExpression)?.Value as Array)?.Length == 0)
+            {
+                var sqlArguments = new[] {methodCallExpression.Object};
 
-			    return new SqlFunctionExpression(
-				    "TRIM",
-				    methodCallExpression.Type,
-				    sqlArguments);
-		    }
+                return new SqlFunctionExpression(
+                    "TRIM",
+                    methodCallExpression.Type,
+                    sqlArguments);
+            }
 
-		    return null;
-	    }
+            return null;
+        }
     }
 }
