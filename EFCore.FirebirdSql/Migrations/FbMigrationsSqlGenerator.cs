@@ -57,72 +57,21 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             {
                 builder.AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
                 EndStatement(builder);
-            }
 
-            // If Firebird Version > = 3  
-            if (_options.Settings.IsSupportIdentityIncrement)
-                return;
-
-            foreach (var column in operation.Columns.Where(p => !p.IsNullable))
-            {
-                var colAnnotation = (IAnnotation)column.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy);
-                if (colAnnotation is null)
+                var columns = operation.Columns.Where(p => !p.IsNullable && string.IsNullOrWhiteSpace(p.DefaultValueSql) && p.DefaultValue == null);
+                foreach (var column in columns)
                 {
-                    continue;
+                    var colAnnotation =  column.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy);
+                    if (colAnnotation != null)
+                    {
+                        var typeSequence = IsSequenceIdentityOrTrigger(colAnnotation.Value as FbValueGenerationStrategy?);
+                        if(typeSequence == FbValueGenerationStrategy.SequenceTrigger)
+                        {
+                                GenerateSequenceOnTrigger(builder, column.Table, column.Name);
+                        } 
+                    } 
                 }
-
-                var valueGenerationStrategy = colAnnotation.Value as FbValueGenerationStrategy?;
-                if (valueGenerationStrategy is null)
-                {
-                    continue;
-                }
-
-                if (valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn && string.IsNullOrWhiteSpace(column.DefaultValueSql) && column.DefaultValue == null)
-                {
-                    var mergeColumnTable = string.Format("{0}_{1}", column.Table, column.Name).ToUpper();
-                    var sequenceName = string.Format("GEN_IDENTITY_{0}", mergeColumnTable);
-                    var triggerName = string.Format("ID_{0}", mergeColumnTable);
-
-                    builder.AppendLine("EXECUTE BLOCK");
-                    builder.AppendLine("AS");
-                    builder.AppendLine("BEGIN");
-                    builder.Append("if (not exists(select 1 from rdb$generators where rdb$generator_name = '");
-                    builder.Append(sequenceName);
-                    builder.Append("')) then");
-                    builder.AppendLine();
-                    builder.AppendLine("begin");
-                    builder.Append("execute statement 'create sequence ");
-                    builder.Append(sequenceName);
-                    builder.Append("';");
-                    builder.AppendLine();
-                    builder.AppendLine("end");
-                    builder.AppendLine("END");
-                    EndStatement(builder);
-
-                    builder.Append("CREATE OR ALTER TRIGGER ");
-                    builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(triggerName));
-                    builder.Append(" ACTIVE BEFORE INSERT ON ");
-                    builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Table));
-                    builder.AppendLine();
-                    builder.AppendLine("AS");
-                    builder.AppendLine("BEGIN");
-                    builder.AppendLine();
-                    builder.Append("if (new.");
-                    builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name));
-                    builder.Append(" is null) then");
-                    builder.AppendLine();
-                    builder.AppendLine("begin");
-                    builder.Append("new.");
-                    builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(column.Name));
-                    builder.Append(" = next value for ");
-                    builder.Append(sequenceName);
-                    builder.Append(";");
-                    builder.AppendLine();
-                    builder.AppendLine("end");
-                    builder.Append("END");
-                    EndStatement(builder);
-                }
-            }
+            } 
         } 
 
         protected override void Generate(DropColumnOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -294,35 +243,24 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 
         protected override void ColumnDefinition(string schema, string table, string name, Type clrType, string type, bool? unicode, int? maxLength, bool rowVersion, bool nullable, object defaultValue, string defaultValueSql, string computedColumnSql, IAnnotatable annotatable, IModel model, MigrationCommandListBuilder builder)
         {
-            var IsSupportIdentity = false;
             var valueGenerationStrategy = annotatable[FbAnnotationNames.ValueGenerationStrategy] as FbValueGenerationStrategy?;
-            if ((valueGenerationStrategy == FbValueGenerationStrategy.IdentityColumn) && string.IsNullOrWhiteSpace(defaultValueSql) && defaultValue == null)
-            {
-                switch (type)
-                {
-                    case "INTEGER":
-                    case "BIGINT":
-                        IsSupportIdentity = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            if (valueGenerationStrategy == FbValueGenerationStrategy.SequenceTrigger)
-            {
-                throw new NotImplementedException("Not implemented");
-            }
+            var typeSequence = IsSequenceIdentityOrTrigger(valueGenerationStrategy);
 
             builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name))
                    .Append(" ")
                    .Append(type ?? GetColumnType(schema, table, name, clrType, unicode, maxLength, rowVersion, model));
 
-            if (!nullable && IsSupportIdentity)
+            if (!nullable)
             {
-                builder.Append(_options.Settings.IsSupportIdentityIncrement
-                                   ? " GENERATED BY DEFAULT AS IDENTITY NOT NULL"
-                                   : " NOT NULL");
+                switch (typeSequence)
+                {
+                    case FbValueGenerationStrategy.IdentityColumn:
+                        builder.Append(" GENERATED BY DEFAULT AS IDENTITY NOT NULL");
+                        break;
+                    case FbValueGenerationStrategy.None:
+                        builder.Append(" NOT NULL");
+                        break;
+                }
             }
             else
             {                
@@ -444,5 +382,59 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override string ColumnList(string[] columns) => string.Join(", ", columns.Select(Dependencies.SqlGenerationHelper.DelimitIdentifier));
+
+        private FbValueGenerationStrategy IsSequenceIdentityOrTrigger(FbValueGenerationStrategy? valueGenerate)
+        {
+            return valueGenerate ?? FbValueGenerationStrategy.None;
+        }
+
+        private void GenerateSequenceOnTrigger(MigrationCommandListBuilder builder, string table, string column)
+        { 
+            var mergeColumnTable = string.Format("{0}_{1}", table, column).ToUpper();
+            var sequenceName = string.Format("GEN_{0}", mergeColumnTable);
+            var triggerName = string.Format("ID_{0}", mergeColumnTable);
+             
+            builder.AppendLine("EXECUTE BLOCK");
+            builder.AppendLine("AS");
+            builder.AppendLine("BEGIN");
+            builder.Append("if (not exists(select 1 from rdb$generators where rdb$generator_name = '");
+            builder.Append(sequenceName);
+            builder.Append("')) then");
+            builder.AppendLine();
+            builder.AppendLine("begin");
+            builder.Indent();
+            builder.Append("execute statement 'create sequence ");
+            builder.Append(sequenceName);
+            builder.Append("';");
+            builder.DecrementIndent();
+            builder.AppendLine();
+            builder.AppendLine("end");
+            builder.AppendLine("END");
+            EndStatement(builder);
+
+            builder.Append("CREATE OR ALTER TRIGGER ");
+            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(triggerName));
+            builder.Append(" ACTIVE BEFORE INSERT ON ");
+            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(table));
+            builder.AppendLine();
+            builder.AppendLine("AS");
+            builder.AppendLine("BEGIN"); 
+            builder.Append("if (new.");
+            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(column));
+            builder.Append(" is null) then");
+            builder.AppendLine(); 
+            builder.AppendLine("begin"); 
+            builder.Indent();
+            builder.Append("new.");
+            builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(column));
+            builder.Append(" = next value for ");
+            builder.Append(sequenceName);
+            builder.Append(";");
+            builder.DecrementIndent();
+            builder.AppendLine();
+            builder.AppendLine("end");
+            builder.Append("END");
+            EndStatement(builder);
+        }
     }
 }
