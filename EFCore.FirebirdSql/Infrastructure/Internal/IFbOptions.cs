@@ -15,7 +15,7 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Utilities;
-using Microsoft.EntityFrameworkCore.Infrastructure; 
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {

@@ -24,6 +24,6 @@ namespace EntityFrameworkCore.FirebirdSql.Infrastructure
     {
         public FbDbContextOptionsBuilder(DbContextOptionsBuilder optionsBuilder)
             : base(optionsBuilder)
-        { }  
+        { }
     }
 }

@@ -13,18 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
-
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the 
-// project root for license information. 
-
-// Search reference
-// https://firebirdsql.org/refdocs/langrefupd20-select.html
-// http://www.firebirdfaq.org/faq174/
-// https://firebirdsql.org/refdocs/langrefupd21-aggrfunc-list.html
-// Credit Query Schema Table:
-// Jean Ressouche: https://raw.githubusercontent.com/souchprod/EntityFrameworkCore.FirebirdSql/master/src/EFCore.Firebird/Scaffolding/Internal/FbDatabaseModelFactory.cs
-
+ 
 using System;
 using System.Collections.Generic;
 using System.Data.Common;

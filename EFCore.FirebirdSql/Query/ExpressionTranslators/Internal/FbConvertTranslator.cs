@@ -24,7 +24,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{ 
+{
     public class FbConvertTranslator : IMethodCallTranslator
     {
         static readonly Dictionary<string, string> TypeMapping = new Dictionary<string, string>
@@ -53,8 +53,9 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 
         static readonly IEnumerable<MethodInfo> SupportedMethods
             = TypeMapping.Keys
-                         .SelectMany(t => typeof(Convert).GetTypeInfo().GetDeclaredMethods(t)
-                                                         .Where(m => m.GetParameters().Length == 1 && SuportedTypes.Contains(m.GetParameters().First().ParameterType)));
+                         .SelectMany(t => typeof(Convert).GetTypeInfo()
+                         .GetDeclaredMethods(t)
+                         .Where(m => m.GetParameters().Length == 1 && SuportedTypes.Contains(m.GetParameters().First().ParameterType)));
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
             => SupportedMethods.Contains(methodCallExpression.Method)

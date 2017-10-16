@@ -114,7 +114,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         public ResultSetMapping AppendBulkDeleteOperation(StringBuilder commandStringBuilder, StringBuilder variablesParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
         {
             var name = modificationCommands[0].TableName;
-            commaAppend = variablesParameters.Length > 0 ? "," : string.Empty ;
+            commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;

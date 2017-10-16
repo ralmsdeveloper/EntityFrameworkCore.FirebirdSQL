@@ -54,8 +54,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal
             var newValueExpression = visitor.Visit(ValueExpression);
 
             return newValueExpression != ValueExpression
-                       ? new FbExtractExpression(Part, newValueExpression)
-                       : this;
+                ? new FbExtractExpression(Part, newValueExpression)
+                : this;
         }
 
         public override bool Equals(object obj)
@@ -68,7 +68,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal
             {
                 return true;
             }
-            return obj.GetType() == GetType() && Equals((FbExtractExpression) obj);
+            return obj.GetType() == GetType() && Equals((FbExtractExpression)obj);
         }
 
         public override int GetHashCode()
@@ -79,6 +79,6 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal
                 hashCode = (hashCode * 397) ^ ValueExpression.GetHashCode();
                 return hashCode;
             }
-        } 
+        }
     }
 }

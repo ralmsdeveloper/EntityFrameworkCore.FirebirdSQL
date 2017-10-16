@@ -1,4 +1,4 @@
-﻿/*
+/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
@@ -22,7 +22,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
 {
 	public class Author
 	{
-		public long AuthorId { get; set; }
+        [Key]
+        public long AuthorId { get; set; }
 
 		[StringLength(100)]
 		public string TestString { get; set; }
@@ -39,19 +40,19 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
 		public double TestDouble { get; set; }
 
-		public ICollection<Book> Books { get; set; } = new List<Book>();
+		public virtual ICollection<Book> Books { get; set; } = new List<Book>();
 	}
 
 	public class Book
 	{
+        [Key]
 		public long BookId { get; set; }
 
 		[StringLength(100)]
 		public string Title { get; set; }
 
 		public long AuthorId { get; set; }
-
-		public Author Author { get; set; }
+		public virtual Author Author { get; set; }
 	}
 
 	public class Person

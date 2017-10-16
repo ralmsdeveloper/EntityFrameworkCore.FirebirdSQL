@@ -20,11 +20,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
-using FirebirdSql.Data.FirebirdClient;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
@@ -388,7 +388,6 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                         }
                     }
 
-                    //check if you've gone through all notifications
                     if (propragation == ModificationCommands.Count)
                     {
                         break;

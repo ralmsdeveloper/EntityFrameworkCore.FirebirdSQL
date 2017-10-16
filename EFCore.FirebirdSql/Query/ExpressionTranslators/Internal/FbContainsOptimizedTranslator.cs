@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{ 
+{
     public class FbContainsOptimizedTranslator : IMethodCallTranslator
     {
         static readonly MethodInfo MethodInfo = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });

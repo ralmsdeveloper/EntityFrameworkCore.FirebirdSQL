@@ -1,4 +1,4 @@
-﻿/*
+/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
@@ -31,17 +31,18 @@ namespace EFCore.FirebirdSql.FunctionalTests
 		{ 
 			var connectionBuilder =
 				new FbConnectionStringBuilder("database=localhost:EFCore.fdb;user=sysdba;password=masterkey");
+            connectionBuilder.Database = @"R:\RafaelTestar.fdb";
 
-			optionsBuilder.UseFirebird(connectionBuilder.ToString());
+            optionsBuilder.UseFirebird(connectionBuilder.ToString());
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelo)
 		{
 			base.OnModelCreating(modelo);
-			var author = modelo.Entity<Author>();
-			author.Property(x => x.AuthorId).UseFirebirdIdentityColumn();
+            modelo.Entity<Author>().Property(x => x.AuthorId).UseFirebirdSequenceTrigger();
+            modelo.Entity<Book>().Property(x => x.BookId).UseFirebirdSequenceTrigger();
 
-			modelo.Entity<Person>().HasKey(person => new { person.Name, person.LastName });
+            modelo.Entity<Person>().HasKey(person => new { person.Name, person.LastName });
 		}
 	}
 }

@@ -15,7 +15,7 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Metadata; 
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
 
         public virtual FbValueGenerationStrategy? ValueGenerationStrategy
         {
-            get => (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy]; 
+            get => (FbValueGenerationStrategy?)Annotations.Metadata[FbAnnotationNames.ValueGenerationStrategy];
             set => SetValueGenerationStrategy(value);
         }
 

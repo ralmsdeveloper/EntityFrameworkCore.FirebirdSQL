@@ -13,8 +13,8 @@
  * modified is included with the above copyright notice.
  *
  */
-  
-using Microsoft.EntityFrameworkCore.Infrastructure;  
+
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
@@ -34,7 +34,7 @@ namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
         }
 
         public override bool ApplyServices(IServiceCollection services)
-        { 
+        {
             services.AddEntityFrameworkFirebird();
             return true;
         }

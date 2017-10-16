@@ -13,7 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
-  
+
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata

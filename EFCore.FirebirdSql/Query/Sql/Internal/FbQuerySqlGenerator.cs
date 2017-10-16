@@ -14,12 +14,12 @@
  *
  */
 
-using System; 
+using System;
 using System.Linq.Expressions;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
-using Microsoft.EntityFrameworkCore.Storage; 
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
@@ -27,8 +27,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
     {
         protected override string TypedTrueLiteral => "TRUE";
         protected override string TypedFalseLiteral => "FALSE";
-        
-        public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies,SelectExpression selectExpression)
+
+        public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, SelectExpression selectExpression)
             : base(dependencies, selectExpression)
         { }
 
@@ -58,7 +58,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
                 Visit(selectExpression.Offset);
             }
         }
-        
+
         protected override void GenerateLimitOffset(SelectExpression selectExpression)
         {
         }
@@ -125,6 +125,6 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             Visit(extractExpression.ValueExpression);
             Sql.Append(")");
             return extractExpression;
-        } 
+        }
     }
 }

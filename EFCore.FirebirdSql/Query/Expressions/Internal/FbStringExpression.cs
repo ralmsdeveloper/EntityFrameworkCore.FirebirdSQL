@@ -55,9 +55,11 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal
             var newFromExpression = visitor.Visit(FromExpression);
             var newForExpression = visitor.Visit(ForExpression);
 
-            return newValueExpression != ValueExpression || newFromExpression != FromExpression || newForExpression != ForExpression
-                       ? new FbSubStringExpression(newValueExpression, newFromExpression, newForExpression)
-                       : this;
+            return newValueExpression != ValueExpression
+                || newFromExpression != FromExpression
+                || newForExpression != ForExpression
+                    ? new FbSubStringExpression(newValueExpression, newFromExpression, newForExpression)
+                    : this;
         }
 
         public override bool Equals(object obj)

@@ -16,7 +16,7 @@
 
 using System;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure; 
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using EntityFrameworkCore.FirebirdSql.Utilities;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
@@ -24,14 +24,15 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
     public class FbOptions : IFbOptions
     {
         private Lazy<FbSettings> _fbSettings;
-        public virtual FbSettings Settings => _fbSettings.Value; 
+        public virtual FbSettings Settings => _fbSettings.Value;
 
         public virtual void Initialize(IDbContextOptions options)
         {
-            var fbOptions = GetOptions(options); 
-            _fbSettings = new Lazy<FbSettings>(() => fbOptions.Connection != null
-                                                ? new FbSettings().GetSettings(fbOptions.Connection)
-                                                : new FbSettings().GetSettings(fbOptions.ConnectionString));
+            var fbOptions = GetOptions(options);
+            _fbSettings = new Lazy<FbSettings>(() =>
+                fbOptions.Connection != null
+                ? new FbSettings().GetSettings(fbOptions.Connection)
+                : new FbSettings().GetSettings(fbOptions.ConnectionString));
         }
 
         public virtual void Validate(IDbContextOptions options)
@@ -40,7 +41,7 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         }
 
         private FbOptionsExtension GetOptions(IDbContextOptions options)
-            => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
+        => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
 
     }
 }

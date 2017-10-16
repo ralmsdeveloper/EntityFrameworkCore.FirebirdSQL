@@ -15,12 +15,12 @@
  */
 
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.EntityFrameworkCore.Migrations.Operations; 
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace EntityFrameworkCore.FirebirdSql.Migrations.Operations
 {
     public class FbDropDatabaseOperation : MigrationOperation
-    { 
+    {
         public virtual FbConnectionStringBuilder ConnectionStringBuilder { get; set; }
     }
 }

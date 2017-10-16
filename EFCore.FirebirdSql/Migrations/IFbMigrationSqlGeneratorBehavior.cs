@@ -14,15 +14,20 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.EntityFrameworkCore.Migrations;
+using System.Collections.Generic;
 
-namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
+namespace EntityFrameworkCore.FirebirdSql.Migrations
 {
-    public class FbScaffoldingCodeGenerator : IScaffoldingProviderCodeGenerator
+    public interface IFbMigrationSqlGeneratorBehavior
     {
-        public virtual string GenerateUseProvider(string connectionString, string language)
-        {
-            return $".UseFirebird(@\"{connectionString}\")";
-        }
+        IEnumerable<MigrationCommandListBuilder> CreateIdentityForColumn(
+            MigrationCommandListBuilder builder,
+            string columnName, string tableName);
+
+        IEnumerable<MigrationCommandListBuilder> DropIdentityForColumn(
+            MigrationCommandListBuilder builder,
+            string columnName,
+            string tableName);
     }
 }
