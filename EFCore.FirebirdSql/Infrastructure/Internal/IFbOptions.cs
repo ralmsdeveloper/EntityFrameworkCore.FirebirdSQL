@@ -14,13 +14,15 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Utilities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System;
 
 namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {
     public interface IFbOptions : ISingletonOptions
     {
-        FbSettings Settings { get; }
+        FbOptionsExtension Setting { get; }
+        Version ServerVersion { get; }
+        int ObjectLengthName { get; }
     }
 }

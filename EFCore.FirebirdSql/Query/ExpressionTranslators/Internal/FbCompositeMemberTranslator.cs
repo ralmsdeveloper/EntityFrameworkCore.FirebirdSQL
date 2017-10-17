@@ -26,7 +26,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
     {
-        static readonly List<Type> Translators = TranslatorsHelper.GetTranslators<IMemberTranslator>().ToList();
+        static readonly List<Type> Translators = TranslatorMethods.GetTranslatorMethods<IMemberTranslator>().ToList();
 
         public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
             : base(dependencies)

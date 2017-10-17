@@ -23,87 +23,79 @@ using Microsoft.EntityFrameworkCore.Update;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
-{ 
+{
     public class FbBatchExecutor : IBatchExecutor
-    { 
+    {
         public int Execute(IEnumerable<ModificationCommandBatch> commandBatches, IRelationalConnection connection)
         {
             var recordAffecteds = 0;
-            if(connection?.DbConnection?.State != System.Data.ConnectionState.Open)
-                connection.Open();
 
             IDbContextTransaction currentTransaction = null;
             try
             {
-                if (connection.CurrentTransaction == null) 
-                    currentTransaction = connection.BeginTransaction(); 
+                if (connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                    connection.Open();
+
+                if (connection.CurrentTransaction == null)
+                    currentTransaction = connection.BeginTransaction();
 
                 foreach (var commandbatch in commandBatches)
                 {
                     commandbatch.Execute(connection);
                     recordAffecteds += commandbatch.ModificationCommands.Count;
-                } 
+                }
                 currentTransaction?.Commit();
                 currentTransaction?.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                try
-                {
-                    currentTransaction?.Rollback();
-                    currentTransaction?.Dispose();
-                }
-                catch
-                {
-                    //
-                }
+                currentTransaction?.Rollback();
+                currentTransaction?.Dispose();
+
                 throw ex;
             }
             finally
             {
                 connection?.Close();
-            } 
+            }
             return recordAffecteds;
         }
 
-        public async Task<int> ExecuteAsync( IEnumerable<ModificationCommandBatch> commandBatches,IRelationalConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<int> ExecuteAsync(IEnumerable<ModificationCommandBatch> commandBatches, IRelationalConnection connection, CancellationToken cancellationToken = default(CancellationToken))
         {
             var RowsAffecteds = 0;
-            await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
+
             FbRelationalTransaction currentTransaction = null;
             try
             {
-                if (connection.CurrentTransaction == null) 
+                if (connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
+
+                if (connection.CurrentTransaction == null)
                     currentTransaction = await ((FbRelationalConnection)connection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FbRelationalTransaction;
-                
+
                 foreach (var commandbatch in commandBatches)
                 {
                     await commandbatch.ExecuteAsync(connection, cancellationToken).ConfigureAwait(false);
                     RowsAffecteds += commandbatch.ModificationCommands.Count;
                 }
 
-                if (currentTransaction != null) 
+                if (currentTransaction != null)
                     await currentTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-           
+
                 currentTransaction?.Dispose();
             }
             catch (Exception err)
             {
-                try
-                {
-                    currentTransaction?.Rollback();
-                    currentTransaction?.Dispose();
-                }
-                catch
-                {
-                    //
-                }
+                currentTransaction?.Rollback();
+                currentTransaction?.Dispose();
+
                 throw err;
             }
             finally
             {
                 connection?.Close();
-            } 
+            }
             return RowsAffecteds;
         }
     }

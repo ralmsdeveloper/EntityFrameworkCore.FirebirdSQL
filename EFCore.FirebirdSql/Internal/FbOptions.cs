@@ -16,32 +16,38 @@
 
 using System;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using EntityFrameworkCore.FirebirdSql.Utilities;
+using Microsoft.EntityFrameworkCore.Infrastructure; 
+using FirebirdSql.Data.FirebirdClient;
+using Data = FirebirdSql.Data.Services;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     public class FbOptions : IFbOptions
     {
-        private Lazy<FbSettings> _fbSettings;
-        public virtual FbSettings Settings => _fbSettings.Value;
+        public FbOptionsExtension Setting { get; private set; }
+        public Version ServerVersion { get; private set; }
+        public int ObjectLengthName { get; private set; }
 
         public virtual void Initialize(IDbContextOptions options)
         {
-            var fbOptions = GetOptions(options);
-            _fbSettings = new Lazy<FbSettings>(() =>
-                fbOptions.Connection != null
-                ? new FbSettings().GetSettings(fbOptions.Connection)
-                : new FbSettings().GetSettings(fbOptions.ConnectionString));
+            Setting = GetOptions(options);
+            var connection =
+                Setting.Connection ?? new FbConnection(Setting.ConnectionString);
+
+            if(connection.State != System.Data.ConnectionState.Open)
+            {
+                connection.Open();
+                ServerVersion = Data.FbServerProperties.ParseServerVersion(connection.ServerVersion);
+                ObjectLengthName = ServerVersion.Major == 3 ? 31 : 63;
+            }
         }
 
         public virtual void Validate(IDbContextOptions options)
         {
-            var fbOptions = GetOptions(options);
+            Setting = GetOptions(options);
         }
 
         private FbOptionsExtension GetOptions(IDbContextOptions options)
-        => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
-
+            => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension(); 
     }
 }

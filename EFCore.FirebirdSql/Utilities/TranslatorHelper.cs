@@ -1,4 +1,4 @@
-﻿/*
+/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
@@ -23,12 +23,13 @@ using System.Reflection;
 
 namespace EntityFrameworkCore.FirebirdSql.Utilities
 {
-    public class TranslatorsHelper
+    public class TranslatorMethods
     {
-        public static IEnumerable<Type> GetTranslators<TInterface>()
-        {
-            return Assembly.GetExecutingAssembly().GetTypes()
-                           .Where(t => t.GetInterfaces().Any(i => i == typeof(TInterface)) && t.GetConstructors().Any(c => c.GetParameters().Length == 0));
-        }
+        public static IEnumerable<Type> GetTranslatorMethods<TInteface>()
+            => Assembly.GetExecutingAssembly() 
+                .GetTypes()
+                .Where(t =>
+                    t .GetInterfaces().Any(i => i == typeof(TInteface)) &&
+                    t.GetConstructors().Any(c => c.GetParameters().Length == 0)); 
     }
 }

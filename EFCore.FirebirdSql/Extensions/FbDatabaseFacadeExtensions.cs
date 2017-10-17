@@ -24,8 +24,10 @@ namespace EntityFrameworkCore.FirebirdSql.Extensions
     public static class FbDatabaseFacadeExtensions
     {
         public static bool IsFirebird(this DatabaseFacade database)
-        {
-            return database.ProviderName.Equals(typeof(FbOptionsExtension).GetTypeInfo().Assembly.GetName().Name, StringComparison.Ordinal);
-        }
+            => database.ProviderName
+                .Equals(typeof(FbOptionsExtension)
+                .GetTypeInfo()
+                .Assembly
+                .GetName().Name, StringComparison.Ordinal); 
     }
 }

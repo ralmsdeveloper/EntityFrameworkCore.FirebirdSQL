@@ -17,39 +17,37 @@
 using System;
 using System.Security.Cryptography;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.ChangeTracking; 
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {
-    public class FbSequentialGuidValueGenerator  : ValueGenerator<Guid>
-    { 
+    public class FbSequentialGuidValueGenerator : ValueGenerator<Guid>
+    {
         private readonly IFbOptions _options;
+        private static readonly RandomNumberGenerator Rng = RandomNumberGenerator.Create();
 
         public FbSequentialGuidValueGenerator(IFbOptions options)
         {
             _options = options;
-        } 
+        }
 
-        private static readonly RandomNumberGenerator Rng = RandomNumberGenerator.Create();
-         
         public override Guid Next(EntityEntry entry)
         {
             var randomBytes = new byte[8];
             Rng.GetBytes(randomBytes);
-            var ticks = (ulong)DateTime.UtcNow.Ticks*2;
-
+            var ticks = (ulong)DateTime.UtcNow.Ticks * 2;
             var guidBytes = new byte[16];
             var tickBytes = BitConverter.GetBytes(ticks);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(tickBytes);
-
+            }
             Buffer.BlockCopy(tickBytes, 0, guidBytes, 0, 8);
-            Buffer.BlockCopy(randomBytes, 0, guidBytes, 8, 8); 
+            Buffer.BlockCopy(randomBytes, 0, guidBytes, 8, 8);
             return new Guid(guidBytes);
-
         }
-         
-        public override bool GeneratesTemporaryValues => false; 
+
+        public override bool GeneratesTemporaryValues => false;
     }
 }
