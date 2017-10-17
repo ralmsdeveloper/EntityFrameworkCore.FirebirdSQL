@@ -41,7 +41,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     MaxPoolSize = 250,
                     MinPoolSize = 2,
                     UserID = "sysdba",
-                    Password = "materkey"
+                    Password = "materkey",
+                    ServerType = FbServerType.Default
                 };
 
             optionsBuilder.UseFirebird(connectionBuilder.ToString());

@@ -1,9 +1,11 @@
 version: '0.0.0.{build}'
-image: Visual Studio 2017
+image:
+- Visual Studio 2017
 configuration:
   - Release
 environment:
-  matrix:
+  matrix: 
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
   - name: FB 3.2
     fb_download: https://www.dropbox.com/s/4o6nvoahmlegv64/binarios.7z?dl=1
 shallow_clone: true
