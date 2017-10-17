@@ -21,8 +21,6 @@ namespace EntityFrameworkCore.FirebirdSql.Extensions
     public static class FbStringExtension
     { 
         public static string MaxLength(this string src, int max)
-        { 
-            return src.Substring(0, Math.Min(src.Length,max));
-        }
+            => src.Substring(0, Math.Min(src.Length,max));
     }
 }

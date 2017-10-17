@@ -15,11 +15,11 @@
  */
 
 using System.Data.Common;
-using System.Threading.Tasks;  
+using System.Threading.Tasks;
 using System.Data;
 using System.Threading;
 using System;
-using EntityFrameworkCore.FirebirdSql.Extensions; 
+using EntityFrameworkCore.FirebirdSql.Extensions;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +28,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbRelationalConnection : RelationalConnection, IFbRelationalConnection
-    { 
+    {
         public FbRelationalConnection(RelationalConnectionDependencies dependencies)
             : base(dependencies)
         {
@@ -39,37 +39,37 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         public virtual IFbRelationalConnection CreateMasterConnection()
         {
             var csb = new FbConnectionStringBuilder(ConnectionString)
-            { 
+            {
                 Pooling = false
             };
 
             var contextOptions = new DbContextOptionsBuilder()
                 .UseFirebird(csb.ConnectionString)
                 .Options;
-                
+
             return new FbRelationalConnection(Dependencies.With(contextOptions));
         }
 
         public override bool IsMultipleActiveResultSetsEnabled => true;
-         
-        public override async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
+
+        public override async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
         {
             if (CurrentTransaction != null)
             {
                 throw new InvalidOperationException(RelationalStrings.TransactionAlreadyStarted);
-            } 
-            await OpenAsync(cancellationToken).ConfigureAwait(false); 
+            }
+            await OpenAsync(cancellationToken).ConfigureAwait(false);
             return BeginTransactionWithNoPreconditions(isolationLevel, cancellationToken);
         }
 
-        private IDbContextTransaction BeginTransactionWithNoPreconditions(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
+        private IDbContextTransaction BeginTransactionWithNoPreconditions(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
         {
-            var dbTransaction = ((FbConnection)DbConnection).BeginTransaction(isolationLevel); 
-            CurrentTransaction = new FbRelationalTransaction( this, dbTransaction, Dependencies.TransactionLogger,  true); 
+            var dbTransaction = ((FbConnection)DbConnection).BeginTransaction(isolationLevel);
+            CurrentTransaction = new FbRelationalTransaction(this, dbTransaction, Dependencies.TransactionLogger, true);
             Dependencies.TransactionLogger.TransactionStarted(this, dbTransaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
             return CurrentTransaction;
         }
-         
+
         public override IDbContextTransaction UseTransaction(DbTransaction transaction)
         {
             if (transaction == null)
@@ -86,29 +86,29 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
                     throw new InvalidOperationException(RelationalStrings.TransactionAlreadyStarted);
                 }
 
-                Open(); 
+                Open();
                 CurrentTransaction = new FbRelationalTransaction(this, transaction, Dependencies.TransactionLogger, transactionOwned: false);
                 Dependencies.TransactionLogger.TransactionUsed(this, transaction, CurrentTransaction.TransactionId, DateTimeOffset.UtcNow);
-            } 
+            }
             return CurrentTransaction;
         }
 
-        public virtual async Task CommitTransactionAsync(CancellationToken cancellationToken=default(CancellationToken))
+        public virtual async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
         {
             if (CurrentTransaction == null)
             {
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
-            }  
-            await ((FbRelationalTransaction) CurrentTransaction).CommitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            await ((FbRelationalTransaction)CurrentTransaction).CommitAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public virtual async Task RollbackTransactionAsync(CancellationToken cancellationToken=default(CancellationToken))
+        public virtual async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
             if (CurrentTransaction == null)
             {
                 throw new InvalidOperationException(RelationalStrings.NoActiveTransaction);
-            } 
-            await ((FbRelationalTransaction) CurrentTransaction).RollbackAsync(cancellationToken).ConfigureAwait(false);
+            }
+            await ((FbRelationalTransaction)CurrentTransaction).RollbackAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

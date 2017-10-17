@@ -16,7 +16,7 @@
  */
 
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using EntityFrameworkCore.FirebirdSql.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
@@ -26,13 +26,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
-{ 
+{
     public class FbDatabaseCreator : RelationalDatabaseCreator
-    { 
+    {
         private readonly IFbRelationalConnection _connection;
         private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
-        public FbDatabaseCreator(RelationalDatabaseCreatorDependencies dependencies, IFbRelationalConnection connection, IRawSqlCommandBuilder rawSqlCommandBuilder)
+        public FbDatabaseCreator(
+            RelationalDatabaseCreatorDependencies dependencies,
+            IFbRelationalConnection connection,
+            IRawSqlCommandBuilder rawSqlCommandBuilder)
             : base(dependencies)
         {
             _connection = connection;
@@ -61,7 +64,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             catch (FbException)
             {
                 return false;
-            } 
+            }
         }
 
         private IReadOnlyList<MigrationCommand> CreateDatabaseOperations()
@@ -77,14 +80,12 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         }
 
         protected override bool HasTables()
-        {
-            return Dependencies
+            => Dependencies
                 .ExecutionStrategyFactory.Create()
                 .Execute(_connection, connection => Convert.ToInt32(CreateHasTablesCommand().ExecuteScalar(connection)) != 0);
-        }
 
         IRelationalCommand CreateHasTablesCommand()
             => _rawSqlCommandBuilder.Build("SELECT COUNT(*) FROM rdb$relations WHERE COALESCE(rdb$system_flag, 0) = 0 AND rdb$view_blr IS NULL");
-        
+
     }
 }

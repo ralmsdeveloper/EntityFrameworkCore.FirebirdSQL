@@ -14,34 +14,51 @@
  *
  */
 
- using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
-	public class TestContext : DbContext
-	{
-		public DbSet<Author> Author { get; set; }
-		public DbSet<Book> Book { get; set; }
-		public DbSet<Person> Person { get; set; }
+    public class TestContext : DbContext
+    {
+        public DbSet<Author> Author { get; set; }
+        public DbSet<Book> Book { get; set; }
+        public DbSet<Person> Person { get; set; }
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{ 
-			var connectionBuilder =
-				new FbConnectionStringBuilder("database=localhost:EFCore.fdb;user=sysdba;password=masterkey");
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connectionBuilder =
+                new FbConnectionStringBuilder
+                {
+                    Database = "EfCoreFirebirdSql.fdb",
+                    DataSource = "127.0.0.1",
+                    Port = 3050,
+                    ConnectionTimeout = 10,
+                    PacketSize = 4096,
+                    Pooling = true,
+                    MaxPoolSize = 250,
+                    MinPoolSize = 2,
+                    UserID = "sysdba",
+                    Password = "materkey"
+                };
 
             optionsBuilder.UseFirebird(connectionBuilder.ToString());
-		}
+        }
 
-		protected override void OnModelCreating(ModelBuilder modelo)
-		{
-			base.OnModelCreating(modelo);
-            modelo.Entity<Author>().Property(x => x.AuthorId).UseFirebirdSequenceTrigger();
-            modelo.Entity<Book>().Property(x => x.BookId).UseFirebirdSequenceTrigger();
+        protected override void OnModelCreating(ModelBuilder modelo)
+        {
+            base.OnModelCreating(modelo);
 
-            modelo.Entity<Person>().HasKey(person => new { person.Name, person.LastName });
-		}
-	}
+            modelo.Entity<Author>()
+                .Property(x => x.AuthorId).UseFirebirdSequenceTrigger();
+
+            modelo.Entity<Book>()
+                .Property(x => x.BookId).UseFirebirdSequenceTrigger();
+
+            modelo.Entity<Person>()
+                .HasKey(person => new { person.Name, person.LastName });
+        }
+    }
 }

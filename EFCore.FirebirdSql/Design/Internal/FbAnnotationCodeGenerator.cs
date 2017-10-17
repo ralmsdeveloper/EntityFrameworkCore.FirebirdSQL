@@ -16,7 +16,7 @@
 
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata; 
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Design.Internal
 {
@@ -26,14 +26,8 @@ namespace EntityFrameworkCore.FirebirdSql.Design.Internal
             : base(dependencies)
         { }
 
-        public override bool IsHandledByConvention(IModel model, IAnnotation annotation)
-        {
-            return true;
-        }
+        public override bool IsHandledByConvention(IModel model, IAnnotation annotation) => true;
 
-        public override string GenerateFluentApi(IIndex index, IAnnotation annotation, string language)
-        {
-            return null;
-        }
+        public override string GenerateFluentApi(IIndex index, IAnnotation annotation, string language) => null;
     }
 }

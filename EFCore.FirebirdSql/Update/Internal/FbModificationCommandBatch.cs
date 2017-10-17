@@ -353,7 +353,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             }
         }
 
-        protected override async Task ConsumeAsync(RelationalDataReader relationalReader, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task ConsumeAsync(
+            RelationalDataReader relationalReader,
+            CancellationToken cancellationToken = default)
         {
             if (relationalReader == null)
             {

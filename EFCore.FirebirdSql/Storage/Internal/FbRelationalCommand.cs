@@ -1,4 +1,4 @@
-﻿/*
+/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *                               Jiri Cincura      (jiri@cincura.net)
  *                               
@@ -31,10 +31,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         }
 
         protected override object Execute(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary<string, object> parameterValues)
-        {  
-            return ExecuteAsync( connection, executeMethod, parameterValues)
-                .GetAwaiter()
-                .GetResult();
-        } 
+        => ExecuteAsync( connection, executeMethod, parameterValues).GetAwaiter().GetResult();
     }
 }

@@ -14,7 +14,7 @@
  *
  */
 
- 
+
 using System;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
@@ -23,7 +23,7 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbDateTimeDatePartComponentTranslator : IMemberTranslator
-    { 
+    {
         public virtual Expression Translate(MemberExpression memberExpression)
         {
             string datePart;

@@ -13,13 +13,13 @@
  * modified is included with the above copyright notice.
  *
  */
-  
+
 using System;
 using System.Linq.Expressions;
 using EntityFrameworkCore.FirebirdSql.Query.Sql.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal
-{ 
+{
     public class FbSubStringExpression : Expression
     {
         public virtual Expression ValueExpression { get; }

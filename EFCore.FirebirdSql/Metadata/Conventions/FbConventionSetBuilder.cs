@@ -14,9 +14,9 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal; 
+using EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal; 
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 {

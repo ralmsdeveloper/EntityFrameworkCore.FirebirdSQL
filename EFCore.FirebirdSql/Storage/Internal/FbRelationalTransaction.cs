@@ -18,9 +18,9 @@ using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks; 
-using Microsoft.EntityFrameworkCore.Diagnostics; 
-using Microsoft.EntityFrameworkCore.Internal; 
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -32,40 +32,40 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private readonly IRelationalConnection _relationalConnection;
         private readonly DbTransaction _dbTransaction;
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> _logger;
-        private readonly bool _transactionOwned; 
+        private readonly bool _transactionOwned;
         private bool _connectionClosed;
 
-        public FbRelationalTransaction(IRelationalConnection connection, DbTransaction transaction,IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger,bool transactionOwned)
+        public FbRelationalTransaction(IRelationalConnection connection, DbTransaction transaction, IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger, bool transactionOwned)
             : base(connection, transaction, logger, transactionOwned)
         {
             if (connection.DbConnection != transaction.Connection)
             {
                 throw new InvalidOperationException(RelationalStrings.TransactionAssociatedWithDifferentConnection);
-            } 
+            }
             _relationalConnection = connection;
             _dbTransaction = transaction;
             _logger = logger;
             _transactionOwned = transactionOwned;
         }
 
-        public virtual async Task CommitAsync(CancellationToken cancellationToken=default(CancellationToken))
+        public virtual async Task CommitAsync(CancellationToken cancellationToken = default)
         {
             var startTime = DateTimeOffset.UtcNow;
-            var stopwatch = Stopwatch.StartNew(); 
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 await Task.Run(() => (_dbTransaction as FbTransaction)?.Commit(), cancellationToken);
-                _logger.TransactionCommitted( _relationalConnection,_dbTransaction,TransactionId,startTime,stopwatch.Elapsed);
+                _logger.TransactionCommitted(_relationalConnection, _dbTransaction, TransactionId, startTime, stopwatch.Elapsed);
             }
             catch (Exception e)
             {
-                _logger.TransactionError(_relationalConnection,_dbTransaction, TransactionId, nameof(CommitAsync),e, startTime,stopwatch.Elapsed);
+                _logger.TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(CommitAsync), e, startTime, stopwatch.Elapsed);
                 throw;
-            } 
+            }
             ClearTransaction();
         }
-         
-        public virtual async Task RollbackAsync(CancellationToken cancellationToken=default(CancellationToken))
+
+        public virtual async Task RollbackAsync(CancellationToken cancellationToken = default)
         {
             var startTime = DateTimeOffset.UtcNow;
             var stopwatch = Stopwatch.StartNew();
@@ -73,13 +73,13 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             try
             {
                 await Task.Run(() => (_dbTransaction as FbTransaction)?.Rollback(), cancellationToken);
-                _logger.TransactionRolledBack(_relationalConnection,_dbTransaction,TransactionId, startTime, stopwatch.Elapsed);
+                _logger.TransactionRolledBack(_relationalConnection, _dbTransaction, TransactionId, startTime, stopwatch.Elapsed);
             }
             catch (Exception e)
             {
                 _logger.TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(RollbackAsync), e, startTime, stopwatch.Elapsed);
                 throw;
-            } 
+            }
             ClearTransaction();
         }
 
@@ -89,8 +89,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             if (_connectionClosed)
                 return;
 
-            _connectionClosed = true; 
+            _connectionClosed = true;
             _relationalConnection.Close();
-        } 
+        }
     }
 }

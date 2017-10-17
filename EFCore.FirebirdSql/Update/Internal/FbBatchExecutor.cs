@@ -61,7 +61,10 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             return recordAffecteds;
         }
 
-        public async Task<int> ExecuteAsync(IEnumerable<ModificationCommandBatch> commandBatches, IRelationalConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<int> ExecuteAsync(
+            IEnumerable<ModificationCommandBatch> commandBatches,
+            IRelationalConnection connection,
+            CancellationToken cancellationToken = default)
         {
             var RowsAffecteds = 0;
 
@@ -72,7 +75,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
 
                 if (connection.CurrentTransaction == null)
-                    currentTransaction = await ((FbRelationalConnection)connection).BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FbRelationalTransaction;
+                {
+                    currentTransaction =
+                        await ((FbRelationalConnection)connection)
+                        .BeginTransactionAsync(cancellationToken).ConfigureAwait(false) as FbRelationalTransaction;
+                }
 
                 foreach (var commandbatch in commandBatches)
                 {
@@ -81,7 +88,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 }
 
                 if (currentTransaction != null)
+                {
                     await currentTransaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                }
 
                 currentTransaction?.Dispose();
             }

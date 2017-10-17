@@ -12,8 +12,8 @@
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  *
- */ 
- 
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{ 
+{
     public class FbDateAddTranslator : IMethodCallTranslator
     {
         private readonly Dictionary<MethodInfo, string> _methodInfoDatePartMapping = new Dictionary<MethodInfo, string>
@@ -41,12 +41,12 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddMinutes), new[] { typeof(double) }), "minute" },
             {  typeof(DateTimeOffset).GetRuntimeMethod(nameof(DateTimeOffset.AddSeconds), new[] { typeof(double) }), "second" },
         };
-         
+
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
             if (_methodInfoDatePartMapping.TryGetValue(methodCallExpression.Method, out var dateInfo))
             {
-                var amountToAdd = methodCallExpression.Arguments.First(); 
+                var amountToAdd = methodCallExpression.Arguments.First();
                 if (!dateInfo.Equals("year")
                     && !dateInfo.Equals("month")
                     && amountToAdd is ConstantExpression constantExpression

@@ -19,7 +19,7 @@ using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Metadata; 
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata
 {
@@ -68,7 +68,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
             if (modelStrategy == FbValueGenerationStrategy.SequenceTrigger && IsCompatibleSequenceTrigger(Property.ClrType))
             {
                 return FbValueGenerationStrategy.SequenceTrigger;
-            } 
+            }
             return null;
         }
 
@@ -93,7 +93,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
                     if (ShouldThrowOnInvalidConfiguration)
                     {
                         throw new ArgumentException($"Incompatible data type for ${nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{Property.Name}'.");
-                    } 
+                    }
                     return false;
                 }
             }

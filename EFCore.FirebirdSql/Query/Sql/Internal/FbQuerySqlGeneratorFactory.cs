@@ -15,7 +15,7 @@
  */
 
 using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Microsoft.EntityFrameworkCore.Query.Sql; 
+using Microsoft.EntityFrameworkCore.Query.Sql;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
@@ -26,8 +26,6 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         { }
 
         public override IQuerySqlGenerator CreateDefault(SelectExpression selectExpression)
-        {
-            return new FbQuerySqlGenerator(Dependencies, selectExpression);
-        }
+            => new FbQuerySqlGenerator(Dependencies, selectExpression);
     }
 }

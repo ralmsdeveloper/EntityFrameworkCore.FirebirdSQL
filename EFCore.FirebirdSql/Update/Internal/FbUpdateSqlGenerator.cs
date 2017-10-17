@@ -38,7 +38,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             _typeMapperRelational = typeMapper;
         }
 
-        public ResultSetMapping AppendBulkInsertOperation(StringBuilder commandStringBuilder, StringBuilder variablesParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+        public ResultSetMapping AppendBulkInsertOperation(
+            StringBuilder commandStringBuilder,
+            StringBuilder variablesParameters,
+            IReadOnlyList<ModificationCommand> modificationCommands,
+            int commandPosition)
         {
             commandStringBuilder.Clear();
             commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
@@ -71,7 +75,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             return resultMapping;
         }
 
-        public ResultSetMapping AppendBulkUpdateOperation(StringBuilder commandStringBuilder, StringBuilder variablesParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+        public ResultSetMapping AppendBulkUpdateOperation(
+            StringBuilder commandStringBuilder,
+            StringBuilder variablesParameters,
+            IReadOnlyList<ModificationCommand> modificationCommands,
+            int commandPosition)
         {
             commandStringBuilder.Clear();
             commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
@@ -87,16 +95,17 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     AppendBlockVariable(variablesParameters, writeOperations);
                 }
 
-                commandStringBuilder.Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
-                                    .AppendJoinUpadate(writeOperations, SqlGenerationHelper, (sb, o, helper) =>
-                                    {
-                                        if (o.IsWrite)
-                                        {
-                                            sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
-                                              .Append(" = ")
-                                              .Append($":{o.ParameterName}");
-                                        }
-                                    });
+                commandStringBuilder
+                    .Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
+                    .AppendJoinUpadate(writeOperations, SqlGenerationHelper, (sb, o, helper) =>
+                    {
+                        if (o.IsWrite)
+                        {
+                            sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
+                                .Append(" = ")
+                                .Append($":{o.ParameterName}");
+                        }
+                    });
 
                 if (conditionsOperations.Any())
                 {
@@ -148,13 +157,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             if (operations.Count > 0)
             {
-                commandStringBuilder.Append("(")
-                                    .AppendJoin(operations, SqlGenerationHelper, (sb, o, helper) =>
-                                    {
-                                        if (o.IsWrite)
-                                            sb.Append(":").Append(o.ParameterName);
-                                    })
-                                    .Append(")");
+                commandStringBuilder
+                    .Append("(")
+                    .AppendJoin(operations, SqlGenerationHelper, (sb, o, helper) =>
+                    {
+                        if (o.IsWrite)
+                            sb.Append(":").Append(o.ParameterName);
+                    })
+                    .Append(")");
             }
         }
 
@@ -163,36 +173,40 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             if (columns.FirstOrDefault(p => p.IsCondition) == null)
                 return;
 
-            commandStringBuilder.Append(" WHERE ")
-                                .AppendJoin(columns, SqlGenerationHelper, (sb, o, helper) =>
-                                {
-                                    if (o.IsCondition)
-                                        sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
-                                          .Append(" = ")
-                                          .Append($":{o.ParameterName}");
-                                }, " AND ");
+            commandStringBuilder
+                .Append(" WHERE ")
+                .AppendJoin(columns, SqlGenerationHelper, (sb, o, helper) =>
+                {
+                    if (o.IsCondition)
+                        sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
+                            .Append(" = ")
+                            .Append($":{o.ParameterName}");
+                }, " AND ");
         }
 
         private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
         {
-            commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN")
-                                .AppendLine("   AffectedRows=AffectedRows+1;");
+            commandStringBuilder
+                .AppendLine("IF (ROW_COUNT > 0) THEN")
+                .AppendLine("   AffectedRows=AffectedRows+1;");
         }
 
         private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
         {
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
-                commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
-                                    .AppendLine("IF (ROW_COUNT > 0) THEN")
-                                    .AppendLine("   SUSPEND;");
+                commandStringBuilder
+                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
+                    .AppendLine("IF (ROW_COUNT > 0) THEN")
+                    .AppendLine("   SUSPEND;");
             }
         }
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)
         {
-            commandStringBuilder.AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
-                                .AppendLine("   SUSPEND;");
+            commandStringBuilder
+                .AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
+                .AppendLine("   SUSPEND;");
 
             return ResultSetMapping.LastInResultSet;
         }

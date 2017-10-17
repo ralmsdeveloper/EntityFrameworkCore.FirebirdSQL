@@ -16,7 +16,7 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net), Rafael Almeida(ralms@ralms.net)
 
-using System;  
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Migrations;
