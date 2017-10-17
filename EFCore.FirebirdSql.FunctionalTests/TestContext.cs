@@ -31,7 +31,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
 		{ 
 			var connectionBuilder =
 				new FbConnectionStringBuilder("database=localhost:EFCore.fdb;user=sysdba;password=masterkey");
-            connectionBuilder.Database = @"R:\RafaelTestar.fdb";
 
             optionsBuilder.UseFirebird(connectionBuilder.ToString());
 		}
