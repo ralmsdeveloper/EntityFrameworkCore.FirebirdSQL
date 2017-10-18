@@ -29,10 +29,22 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var stringConnection
-                = "User=SYSDBA; Password=masterkey;Database=EFCoreSample.fdb;DataSource=localhost;Port=3050;Pooling=true;";
+            var connectionBuilder = "User=SYSDBA; " +
+                                    "Password=masterkey;" +
+                                    "Database=EFCoreSample.fdb;" +
+                                    "DataSource=localhost;" +
+                                    "Port=3050;" +
+                                    "Dialect=3;" +
+                                    "Charset=NONE;" +
+                                    "Role=;" +
+                                    "Connection lifetime=15;" +
+                                    "Pooling=true;" +
+                                    "MinPoolSize=0;" +
+                                    "MaxPoolSize=200;" +
+                                    "Packet Size=8192;" +
+                                    "ServerType=0";
 
-            optionsBuilder.UseFirebird(stringConnection);
+            optionsBuilder.UseFirebird(connectionBuilder.ToString());
         }
 
         protected override void OnModelCreating(ModelBuilder modelo)
