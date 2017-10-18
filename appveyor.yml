@@ -1,5 +1,7 @@
 version: '0.0.0.{build}'
 image: Visual Studio 2017
+init:
+  - git config --global core.autocrlf true
 configuration:
   - Release
 environment:
@@ -25,7 +27,6 @@ before_test:
   - ps: .\firebird.exe -a
 test_script:
   - ps: cd $testsBaseDir
-  - ps: dir $testsBaseDir
   - ps: dotnet test EFCore.FirebirdSql.FunctionalTests.csproj
 notifications:
 - provider: GitHubPullRequest
