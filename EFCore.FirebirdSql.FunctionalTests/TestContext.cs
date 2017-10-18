@@ -17,7 +17,6 @@
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql;
-using FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
