@@ -25,7 +25,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 	{
 		private TestContext CreateContext() => new TestContext();
 		
-		[Fact]
+		[Fact(DisplayName = "Creating database and insert data")]
 		public void Insert_data()
 		{
 			using (var context = CreateContext())
@@ -57,7 +57,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
 						}
 					});
 				}
-                
                 Assert.Equal(8000, context.SaveChanges());
 			}
 

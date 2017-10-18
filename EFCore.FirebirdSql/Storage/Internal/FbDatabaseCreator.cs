@@ -49,9 +49,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 
         public override void Delete()
         {
-            FirebirdClientConnection.ClearPool((FirebirdClientConnection)_connection.DbConnection);
-            FirebirdClientConnection.DropDatabase(_connection.ConnectionString);
             FirebirdClientConnection.ClearAllPools();
+            FirebirdClientConnection.DropDatabase(_connection.ConnectionString); 
         }
 
         public override bool Exists()

@@ -14,24 +14,22 @@
  *
  */
 
-//$Authors = Jiri Cincura (jiri@cincura.net), Rafael Almeida(ralms@ralms.net)
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.FirebirdSql.Utilities;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators; 
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{
-    public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
+{ 
+    public sealed class FbCompositeMethodCallTranslator : RelationalCompositeMethodCallTranslator
     {
-        static readonly List<Type> Translators = TranslatorMethods.GetTranslatorMethods<IMemberTranslator>().ToList();
+        static readonly List<Type> Translators = TranslatorMethods.GetTranslatorMethods<IMethodCallTranslator>().ToList();
 
-        public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
+        public FbCompositeMethodCallTranslator(RelationalCompositeMethodCallTranslatorDependencies dependencies)
             : base(dependencies)
         {
-            AddTranslators(Translators.Select(t => (IMemberTranslator)Activator.CreateInstance(t)));
+            AddTranslators(Translators.Select(type => (IMethodCallTranslator)Activator.CreateInstance(type)));
         }
     }
 }

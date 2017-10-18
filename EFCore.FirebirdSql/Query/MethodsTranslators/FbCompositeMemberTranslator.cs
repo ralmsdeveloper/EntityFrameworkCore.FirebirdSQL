@@ -18,18 +18,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EntityFrameworkCore.FirebirdSql.Utilities;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators; 
 
 namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
-{ 
-    public sealed class FbCompositeMethodCallTranslator : RelationalCompositeMethodCallTranslator
+{
+    public sealed class FbCompositeMemberTranslator : RelationalCompositeMemberTranslator
     {
-        static readonly List<Type> Translators = TranslatorMethods.GetTranslatorMethods<IMethodCallTranslator>().ToList();
+        static readonly List<Type> Translators = TranslatorMethods.GetTranslatorMethods<IMemberTranslator>().ToList();
 
-        public FbCompositeMethodCallTranslator(RelationalCompositeMethodCallTranslatorDependencies dependencies)
+        public FbCompositeMemberTranslator(RelationalCompositeMemberTranslatorDependencies dependencies)
             : base(dependencies)
         {
-            AddTranslators(Translators.Select(t => (IMethodCallTranslator)Activator.CreateInstance(t)));
+            AddTranslators(Translators.Select(type => (IMemberTranslator)type));
         }
     }
 }

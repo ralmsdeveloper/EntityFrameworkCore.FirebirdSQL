@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
 {
     public interface IFbOptions : ISingletonOptions
     {
-        FbOptionsExtension Setting { get; }
+        FbOptionsExtension Settings { get; }
         Version ServerVersion { get; }
         int ObjectLengthName { get; }
     }
