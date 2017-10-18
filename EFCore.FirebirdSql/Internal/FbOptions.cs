@@ -20,14 +20,19 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Firebird = FirebirdSql.Data.FirebirdClient;
 using Data = FirebirdSql.Data.Services;
 using System.Collections.Concurrent;
+using System.Data.Common;
+using System.Data;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     public class FbOptions : IFbOptions
     {
+        private Lazy<FbOptions> internaSettings;
         public FbOptionsExtension Setting { get; private set; }
         public Version ServerVersion { get; private set; }
-        public int ObjectLengthName { get; private set; }
+
+        public int ObjectLengthName
+            => (ServerVersion ?? GetSettings(Setting.ConnectionString).ServerVersion).Major == 3 ? 31 : 63;
 
         private static readonly ConcurrentDictionary<string, FbOptions> internalOptions
             = new ConcurrentDictionary<string, FbOptions>();
@@ -35,17 +40,36 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         public virtual void Initialize(IDbContextOptions options)
         {
             Setting = GetOptions(options);
-            internalOptions.GetOrAdd(Setting.ConnectionString, key =>
+            internaSettings = new Lazy<FbOptions>(()
+                => Setting.Connection != null
+                        ? GetSettings(Setting.Connection)
+                        : GetSettings(Setting.ConnectionString));
+        }
+
+        public virtual void Validate(IDbContextOptions options)
+        {
+            Setting = GetOptions(options);
+        }
+
+        private FbOptionsExtension GetOptions(IDbContextOptions options)
+            => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
+
+        private FbOptions GetSettings(string connectionString)
+        {
+            if (ServerVersion != null)
+                return this;
+
+            var csb = new Firebird.FbConnectionStringBuilder(connectionString);
+
+            return internalOptions.GetOrAdd(csb.ConnectionString, key =>
             {
                 try
                 {
-                    using (var _connection = new Firebird.FbConnection(Setting.ConnectionString))
+                    using (var _connection = new Firebird.FbConnection(csb.ConnectionString))
                     {
                         _connection.Open();
                         ServerVersion = Data.FbServerProperties.ParseServerVersion(_connection.ServerVersion);
-                        ObjectLengthName = ServerVersion?.Major == 3 ? 31 : 63;
                         _connection.Close();
-
                     }
                 }
                 catch
@@ -56,12 +80,29 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
             });
         }
 
-        public virtual void Validate(IDbContextOptions options)
+        private FbOptions GetSettings(DbConnection connection)
         {
-            Setting = GetOptions(options);
-        }
+            if (ServerVersion != null)
+                return this;
 
-        private FbOptionsExtension GetOptions(IDbContextOptions options)
-            => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
+            var csb = new Firebird.FbConnectionStringBuilder(connection.ConnectionString);
+            return internalOptions.GetOrAdd(csb.ConnectionString, key =>
+            {
+                if (connection.State == ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+                try
+                {
+                    ServerVersion = Data.FbServerProperties.ParseServerVersion(connection.ServerVersion);
+                    return this;
+                }
+                finally
+                {
+                    if (connection?.State == ConnectionState.Open)
+                        connection.Close();
+                }
+            });
+        }
     }
 }
