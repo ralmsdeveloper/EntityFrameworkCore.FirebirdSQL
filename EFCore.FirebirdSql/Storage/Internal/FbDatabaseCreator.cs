@@ -63,6 +63,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             }
             catch (FbException)
             {
+                _connection?.Dispose();
                 return false;
             }
         }

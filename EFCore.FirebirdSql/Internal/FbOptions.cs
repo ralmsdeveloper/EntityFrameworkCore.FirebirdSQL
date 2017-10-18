@@ -19,6 +19,7 @@ using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Firebird = FirebirdSql.Data.FirebirdClient;
 using Data = FirebirdSql.Data.Services;
+using System.Collections.Concurrent;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
 {
@@ -28,28 +29,31 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         public Version ServerVersion { get; private set; }
         public int ObjectLengthName { get; private set; }
 
+        private static readonly ConcurrentDictionary<string, FbOptions> internalOptions
+            = new ConcurrentDictionary<string, FbOptions>();
+
         public virtual void Initialize(IDbContextOptions options)
         {
             Setting = GetOptions(options);
-            var connection =
-                Setting.Connection ?? new Firebird.FbConnection(Setting.ConnectionString);
-
-            try
+            internalOptions.GetOrAdd(Setting.ConnectionString, key =>
             {
-                if (connection.State != System.Data.ConnectionState.Open)
+                try
                 {
-                    Firebird.FbConnection.ClearPool((Firebird.FbConnection)connection);
-                    connection.Open();
-                    ServerVersion = Data.FbServerProperties.ParseServerVersion(connection.ServerVersion);
-                    ObjectLengthName = ServerVersion.Major == 3 ? 31 : 63;
-                }
-            }
-            catch  
-            {
+                    using (var _connection = new Firebird.FbConnection(Setting.ConnectionString))
+                    {
+                        _connection.Open();
+                        ServerVersion = Data.FbServerProperties.ParseServerVersion(_connection.ServerVersion);
+                        ObjectLengthName = ServerVersion?.Major == 3 ? 31 : 63;
+                        _connection.Close();
 
-                
-            }
-            
+                    }
+                }
+                catch
+                {
+                    //
+                }
+                return this;
+            });
         }
 
         public virtual void Validate(IDbContextOptions options)
