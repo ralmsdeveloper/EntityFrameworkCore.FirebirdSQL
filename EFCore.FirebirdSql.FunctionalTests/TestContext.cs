@@ -17,6 +17,7 @@
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -28,22 +29,25 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionBuilder = "User=SYSDBA; " +
-                                    "Password=masterkey;" +
-                                    "Database=EFCoreSample.fdb;" +
-                                    "DataSource=localhost;" +
-                                    "Port=3050;" +
-                                    "Dialect=3;" +
-                                    "Charset=NONE;" +
-                                    "Role=;" +
-                                    "Connection lifetime=15;" +
-                                    "Pooling=true;" +
-                                    "MinPoolSize=0;" +
-                                    "MaxPoolSize=200;" +
-                                    "Packet Size=8192;" +
-                                    "ServerType=0";
+            var connectionBuilder
+                = "User=SYSDBA; " +
+                "Password=masterkey;" +
+                "Database=EFCoreSample.fdb;" +
+                "DataSource=localhost;" +
+                "Port=3050;" +
+                "Dialect=3;" +
+                "Charset=NONE;" +
+                "Role=;" +
+                "Connection lifetime=15;" +
+                "Pooling=true;" +
+                "MinPoolSize=0;" +
+                "MaxPoolSize=200;" +
+                "Packet Size=8192;" +
+                "ServerType=0";
 
-            optionsBuilder.UseFirebird(connectionBuilder.ToString());
+            optionsBuilder
+                .UseFirebird(connectionBuilder)
+                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
         }
 
         protected override void OnModelCreating(ModelBuilder modelo)

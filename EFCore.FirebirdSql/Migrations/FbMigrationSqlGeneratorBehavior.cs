@@ -16,7 +16,6 @@
 
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Collections.Generic;
 
 namespace EntityFrameworkCore.FirebirdSql.Migrations
 {
@@ -29,14 +28,20 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             _sqlHelper = sqlHelper;
         }
 
-        public IEnumerable<MigrationCommandListBuilder> CreateIdentityForColumn(
+        private string SequenceName(string column, string table)
+            => $"GEN_{column}_{table}";
+
+        private string TriggerName(string column, string table)
+            => $"TR_{column}_{table}";
+
+        public virtual void CreateIdentityForColumn(
             MigrationCommandListBuilder builder,
             string columnName,
             string tableName)
         {
-            var mergeColumnTable = string.Format("{0}_{1}", columnName, tableName).ToUpper();
-            var sequenceName = string.Format("GEN_{0}", mergeColumnTable);
-            var triggerName = string.Format("ID_{0}", mergeColumnTable);
+
+            var sequenceName = SequenceName(columnName, tableName);
+            var triggerName = TriggerName(columnName, tableName);
 
             builder.AppendLine("EXECUTE BLOCK");
             builder.AppendLine("AS");
@@ -54,7 +59,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             builder.AppendLine();
             builder.AppendLine("end");
             builder.AppendLine("END");
-            yield return builder;
+            builder.EndCommand();
 
             builder.Append("CREATE OR ALTER TRIGGER ");
             builder.Append(_sqlHelper.DelimitIdentifier(triggerName));
@@ -78,12 +83,36 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             builder.AppendLine();
             builder.AppendLine("end");
             builder.Append("END");
-            yield return builder;
+            builder.EndCommand();
         }
 
-        public IEnumerable<MigrationCommandListBuilder> DropIdentityForColumn(MigrationCommandListBuilder builder, string columnName, string tableName)
+        public void DropIdentityForColumn(
+            MigrationCommandListBuilder builder,
+            string columnName,
+            string tableName)
         {
-            throw new System.NotImplementedException();
+            var triggerName = TriggerName(columnName, tableName);
+
+            builder.AppendLine("EXECUTE BLOCK");
+            builder.AppendLine("AS");
+            builder.AppendLine("BEGIN");
+            builder.Indent();
+            builder.Append("if (exists(select 1 from rdb$triggers where rdb$trigger_name = '");
+            builder.Append(triggerName);
+            builder.Append("')) then");
+            builder.AppendLine();
+            builder.AppendLine("begin");
+            builder.Indent();
+            builder.Append("execute statement 'drop trigger ");
+            builder.Append(_sqlHelper.DelimitIdentifier(triggerName));
+            builder.Append("'");
+            builder.Append(_sqlHelper.StatementTerminator);
+            builder.AppendLine();
+            builder.DecrementIndent();
+            builder.AppendLine("end");
+            builder.DecrementIndent();
+            builder.Append("END");
+            builder.EndCommand();
         }
     }
 }

@@ -21,11 +21,12 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 {
     public interface IFbMigrationSqlGeneratorBehavior
     {
-        IEnumerable<MigrationCommandListBuilder> CreateIdentityForColumn(
+        void CreateIdentityForColumn(
             MigrationCommandListBuilder builder,
-            string columnName, string tableName);
+            string columnName,
+            string tableName);
 
-        IEnumerable<MigrationCommandListBuilder> DropIdentityForColumn(
+        void DropIdentityForColumn(
             MigrationCommandListBuilder builder,
             string columnName,
             string tableName);
