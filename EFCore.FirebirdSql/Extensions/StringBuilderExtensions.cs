@@ -30,7 +30,11 @@ namespace System.Text
             return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
         }
 
-        public static StringBuilder AppendJoin<T>(this StringBuilder stringBuilder,IEnumerable<T> values,Action<StringBuilder, T> joinAction,string separator = ", ")
+        public static StringBuilder AppendJoin<T>(
+            this StringBuilder stringBuilder,
+            IEnumerable<T> values,
+            Action<StringBuilder, T> joinAction,
+            string separator = ", ")
         {
             var appended = false;
 
@@ -41,35 +45,21 @@ namespace System.Text
                 appended = true;
             }
 
-            if (appended) 
-                stringBuilder.Length -= separator.Length; 
-
-            return stringBuilder;
-        }
-
-        public static StringBuilder AppendJoin<T, TParam>(this StringBuilder stringBuilder, IEnumerable<T> values, TParam param, Action<StringBuilder, T, TParam> joinAction, string separator = ", ")
-        {
-            var appended = false; 
-            foreach (var value in values)
-            {
-                joinAction(stringBuilder,  value, param);
-                stringBuilder.Append(separator);
-                appended = true;
-            }
-
-            if (appended) 
+            if (appended)
                 stringBuilder.Length -= separator.Length;
-         
+
             return stringBuilder;
         }
 
-        public static StringBuilder AppendJoinUpadate<T, TParam>(this StringBuilder stringBuilder, IEnumerable<T> values, TParam param, Action<StringBuilder, T, TParam> joinAction, string separator = ", ")
+        public static StringBuilder AppendJoin<T, TParam>(
+            this StringBuilder stringBuilder,
+            IEnumerable<T> values, TParam param,
+            Action<StringBuilder, T, TParam> joinAction, string separator = ", ")
         {
             var appended = false;
-
             foreach (var value in values)
             {
-                joinAction(stringBuilder,value, param);
+                joinAction(stringBuilder, value, param);
                 stringBuilder.Append(separator);
                 appended = true;
             }
@@ -80,7 +70,33 @@ namespace System.Text
             return stringBuilder;
         }
 
-        public static StringBuilder AppendJoin<T, TParam1, TParam2>(this StringBuilder stringBuilder, IEnumerable<T> values, TParam1 param1, TParam2 param2, Action<StringBuilder, T, TParam1, TParam2> joinAction, string separator = ", ")
+        public static StringBuilder AppendJoinUpadate<T, TParam>(
+            this StringBuilder stringBuilder,
+            IEnumerable<T> values, TParam param,
+            Action<StringBuilder, T, TParam> joinAction,
+            string separator = ", ")
+        {
+            var appended = false;
+
+            foreach (var value in values)
+            {
+                joinAction(stringBuilder, value, param);
+                stringBuilder.Append(separator);
+                appended = true;
+            }
+
+            if (appended)
+                stringBuilder.Length -= separator.Length;
+
+            return stringBuilder;
+        }
+
+        public static StringBuilder AppendJoin<T, TParam1, TParam2>(
+            this StringBuilder stringBuilder,
+            IEnumerable<T> values, TParam1 param1,
+            TParam2 param2,
+            Action<StringBuilder, T, TParam1, TParam2> joinAction,
+            string separator = ", ")
         {
             var appended = false;
 
@@ -91,8 +107,8 @@ namespace System.Text
                 appended = true;
             }
 
-            if (appended) 
-                stringBuilder.Length -= separator.Length; 
+            if (appended)
+                stringBuilder.Length -= separator.Length;
 
             return stringBuilder;
         }

@@ -13,7 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
- 
+
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -39,8 +39,8 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         Dictionary<string, DatabaseTable> _tables;
         Dictionary<string, DatabaseColumn> _tableColumns;
         private string TableKey(DatabaseTable table) => TableKey(table.Name, table.Schema);
-		private string TableKey(string name, string schema) => $"{name}";
-		private string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
+        private string TableKey(string name, string schema) => $"{name}";
+        private string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
 
         #region Declaration Query
         private readonly string GetTablesQuery = @"SELECT
@@ -332,8 +332,8 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                 table.Value.ForeignKeys.Add(foreignkey);
                             }
                         }
-                    } 
-                } 
+                    }
+                }
             }
         }
 

@@ -17,7 +17,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
-{ 
+{
     public interface IFbRelationalConnection : IRelationalConnection
     { }
 }

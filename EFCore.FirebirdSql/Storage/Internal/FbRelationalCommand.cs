@@ -25,12 +25,17 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FirebirdRelationalCommand : RelationalCommand
     {
-        public FirebirdRelationalCommand(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, string commandText, IReadOnlyList<IRelationalParameter> parameters)
+        public FirebirdRelationalCommand(
+            IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
+            string commandText, IReadOnlyList<IRelationalParameter> parameters)
             : base(logger, commandText, parameters)
         {
         }
 
-        protected override object Execute(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary<string, object> parameterValues)
-        => ExecuteAsync( connection, executeMethod, parameterValues).GetAwaiter().GetResult();
+        protected override object Execute(
+            IRelationalConnection connection,
+            DbCommandMethod executeMethod,
+            IReadOnlyDictionary<string, object> parameterValues)
+                => ExecuteAsync(connection, executeMethod, parameterValues).GetAwaiter().GetResult();
     }
 }

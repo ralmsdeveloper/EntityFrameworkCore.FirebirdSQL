@@ -24,10 +24,12 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
     public class TranslatorMethods
     {
         public static IEnumerable<Type> GetTranslatorMethods<TInteface>()
-            => typeof(TInteface).Assembly
+            => Assembly
+                .GetExecutingAssembly()
                 .GetTypes()
                 .Where(t =>
                     t.GetInterfaces().Any(i => i == typeof(TInteface)) &&
                     t.GetConstructors().Any(c => c.GetParameters().Length == 0));
+
     }
 }

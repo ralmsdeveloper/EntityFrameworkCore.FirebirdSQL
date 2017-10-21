@@ -39,7 +39,6 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             string columnName,
             string tableName)
         {
-
             var sequenceName = SequenceName(columnName, tableName);
             var triggerName = TriggerName(columnName, tableName);
 

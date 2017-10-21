@@ -34,11 +34,11 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 
         public override Expression VisitSelect(SelectExpression selectExpression)
         {
-            base.VisitSelect(selectExpression); 
+            base.VisitSelect(selectExpression);
             if (selectExpression.Type == typeof(bool))
             {
                 Sql.Append(" FROM RDB$DATABASE");
-            }    
+            }
             return selectExpression;
         }
 
@@ -58,7 +58,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
                 Sql.Append(" SKIP ");
                 Visit(selectExpression.Offset);
             }
-        } 
+        }
 
         protected override void GenerateProjection(Expression projection)
         {

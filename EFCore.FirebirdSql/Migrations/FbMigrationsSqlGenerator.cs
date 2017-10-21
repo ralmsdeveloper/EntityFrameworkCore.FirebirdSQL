@@ -72,7 +72,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                     {
                         var typeSequenceStrategy = columnAnnotation.Value as FbValueGenerationStrategy?;
 
-                        if (typeSequenceStrategy  == FbValueGenerationStrategy.SequenceTrigger || _options.ServerVersion.Major < 3)
+                        if (typeSequenceStrategy == FbValueGenerationStrategy.SequenceTrigger || _options.ServerVersion.Major < 3)
                         {
                             _behavior.CreateIdentityForColumn(builder, column.Name, column.Table);
                         }
@@ -275,7 +275,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override void ColumnDefinition(string schema, string table, string name, Type clrType, string type, bool? unicode, int? maxLength, bool rowVersion, bool nullable, object defaultValue, string defaultValueSql, string computedColumnSql, IAnnotatable annotatable, IModel model, MigrationCommandListBuilder builder)
-        { 
+        {
             var typeSequenceStrategy = annotatable[FbAnnotationNames.ValueGenerationStrategy] as FbValueGenerationStrategy?;
 
             builder

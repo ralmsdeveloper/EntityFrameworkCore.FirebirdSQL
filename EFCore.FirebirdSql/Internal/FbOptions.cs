@@ -32,7 +32,7 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
 
         public virtual void Initialize(IDbContextOptions options)
         {
-            Settings = GetOptions(options); 
+            Settings = GetOptions(options);
         }
 
         public virtual void Validate(IDbContextOptions options)
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         {
             if (ServerVersion != null)
                 return this;
-            
+
             try
             {
                 using (var connection = new Firebird.FbConnection(connectionString))
@@ -61,7 +61,7 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
             {
                 //
             }
-            return this; 
+            return this;
         }
     }
 }

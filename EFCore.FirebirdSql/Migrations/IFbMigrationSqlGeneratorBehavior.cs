@@ -15,7 +15,6 @@
  */
 
 using Microsoft.EntityFrameworkCore.Migrations;
-using System.Collections.Generic;
 
 namespace EntityFrameworkCore.FirebirdSql.Migrations
 {

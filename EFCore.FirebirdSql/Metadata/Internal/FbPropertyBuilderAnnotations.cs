@@ -17,7 +17,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
-{ 
+{
     public class FbPropertyBuilderAnnotations : FbPropertyAnnotations
     {
         public FbPropertyBuilderAnnotations(InternalPropertyBuilder internalBuilder, ConfigurationSource configurationSource)
@@ -44,8 +44,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
             if (!SetValueGenerationStrategy(value))
             {
                 return false;
-            }
-
+            } 
             return true;
         }
     }

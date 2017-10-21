@@ -22,10 +22,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
-{ 
+{
     public class FbValueGenerationStrategyConvention : DatabaseGeneratedAttributeConvention, IModelInitializedConvention
     {
-        public override InternalPropertyBuilder Apply(InternalPropertyBuilder propertyBuilder, DatabaseGeneratedAttribute attribute, MemberInfo clrMember)
+        public override InternalPropertyBuilder Apply(
+            InternalPropertyBuilder propertyBuilder,
+            DatabaseGeneratedAttribute attribute,
+            MemberInfo clrMember)
         {
             FbValueGenerationStrategy? valueGenerationStrategy = null;
             ValueGenerated valueGenerated = ValueGenerated.Never;
@@ -36,13 +39,13 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
             }
 
             propertyBuilder.ValueGenerated(valueGenerated, ConfigurationSource.Convention);
-            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy); 
+            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
             return base.Apply(propertyBuilder, attribute, clrMember);
         }
-         
+
         public virtual InternalModelBuilder Apply(InternalModelBuilder modelBuilder)
         {
-            modelBuilder.Firebird(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn); 
+            modelBuilder.Firebird(ConfigurationSource.Convention).ValueGenerationStrategy(FbValueGenerationStrategy.IdentityColumn);
             return modelBuilder;
         }
     }

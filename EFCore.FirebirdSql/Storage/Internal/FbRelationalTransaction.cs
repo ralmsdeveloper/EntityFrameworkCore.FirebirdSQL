@@ -35,7 +35,11 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private readonly bool _transactionOwned;
         private bool _connectionClosed;
 
-        public FbRelationalTransaction(IRelationalConnection connection, DbTransaction transaction, IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger, bool transactionOwned)
+        public FbRelationalTransaction(
+            IRelationalConnection connection,
+            DbTransaction transaction,
+            IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> logger,
+            bool transactionOwned)
             : base(connection, transaction, logger, transactionOwned)
         {
             if (connection.DbConnection != transaction.Connection)
@@ -59,7 +63,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             }
             catch (Exception e)
             {
-                _logger.TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(CommitAsync), e, startTime, stopwatch.Elapsed);
+                _logger
+                    .TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(CommitAsync), e, startTime, stopwatch.Elapsed);
                 throw;
             }
             ClearTransaction();
@@ -73,11 +78,13 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             try
             {
                 await Task.Run(() => (_dbTransaction as FbTransaction)?.Rollback(), cancellationToken);
-                _logger.TransactionRolledBack(_relationalConnection, _dbTransaction, TransactionId, startTime, stopwatch.Elapsed);
+                _logger
+                    .TransactionRolledBack(_relationalConnection, _dbTransaction, TransactionId, startTime, stopwatch.Elapsed);
             }
             catch (Exception e)
             {
-                _logger.TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(RollbackAsync), e, startTime, stopwatch.Elapsed);
+                _logger
+                    .TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(RollbackAsync), e, startTime, stopwatch.Elapsed);
                 throw;
             }
             ClearTransaction();
