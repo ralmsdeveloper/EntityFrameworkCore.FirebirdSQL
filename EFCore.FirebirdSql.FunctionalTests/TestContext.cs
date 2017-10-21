@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.FirebirdSql.Extensions;
 using EntityFrameworkCore.FirebirdSql;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -48,6 +49,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
             optionsBuilder
                 .UseFirebird(connectionBuilder)
                 .ConfigureWarnings(c => c.Log(CoreEventId.SaveChangesFailed));
+
+            var loggerFactory = new LoggerFactory().AddConsole().AddDebug();
+            optionsBuilder.UseLoggerFactory(loggerFactory); 
         }
 
         protected override void OnModelCreating(ModelBuilder modelo)
