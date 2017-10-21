@@ -3,7 +3,7 @@ image: Visual Studio 2017
 init:
   - git config --global core.autocrlf true
 configuration:
-  - Release
+  - Debug
 environment:
   matrix:  
   - name: FB 3.2
