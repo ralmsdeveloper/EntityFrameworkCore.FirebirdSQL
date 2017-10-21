@@ -47,7 +47,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             optionsBuilder
                 .UseFirebird(connectionBuilder)
-                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
+                .ConfigureWarnings(c => c.Log(CoreEventId.SaveChangesFailed));
         }
 
         protected override void OnModelCreating(ModelBuilder modelo)

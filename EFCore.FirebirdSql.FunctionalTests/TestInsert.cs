@@ -15,7 +15,8 @@
  */
 
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -32,7 +33,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 			{
 				context.Database.EnsureDeleted();
 				context.Database.EnsureCreated();
-			}
+            }
 
 			using (var context = CreateContext())
 			{
@@ -56,8 +57,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                             }
 						}
 					});
-				}
-                Assert.Equal(8000, context.SaveChanges());
+                    context.SaveChanges();
+                }
 			}
 
 			using (var context = CreateContext())
