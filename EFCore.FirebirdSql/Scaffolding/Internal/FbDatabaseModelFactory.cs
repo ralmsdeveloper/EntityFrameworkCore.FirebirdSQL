@@ -87,12 +87,13 @@ WHERE
     WHEN 261 THEN 'BLOB SUB_TYPE ' || (CASE WHEN F.RDB$FIELD_SUB_TYPE=0 THEN 'BINARY' ELSE 'TEXT' END)
     ELSE 'RDB$FIELD_TYPE: ' || F.RDB$FIELD_TYPE || '?'
     END FIELD_TYPE,
-    IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, NULL, 'NOT NULL') FIELD_NULL,
+    IIF(COALESCE(RF.RDB$NULL_FLAG, 0) = 0, 'NULL', 'NOT NULL') FIELD_NULL,
     CH.RDB$CHARACTER_SET_NAME FIELD_CHARSET,
     DCO.RDB$COLLATION_NAME FIELD_COLLATION,
     COALESCE(RF.RDB$DEFAULT_SOURCE, F.RDB$DEFAULT_SOURCE) FIELD_DEFAULT,
     F.RDB$VALIDATION_SOURCE FIELD_CHECK,
-    RF.RDB$DESCRIPTION FIELD_DESCRIPTION
+    RF.RDB$DESCRIPTION FIELD_DESCRIPTION,
+    COALESCE(RF.RDB$IDENTITY_TYPE, 0) IDENTITY
 FROM RDB$RELATION_FIELDS RF
 JOIN RDB$FIELDS F ON (F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE)
 LEFT OUTER JOIN RDB$CHARACTER_SETS CH ON (CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
@@ -113,7 +114,7 @@ SELECT
     I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME FROM  RDB$INDICES I
     LEFT JOIN RDB$INDEX_SEGMENTS SG ON I.RDB$INDEX_NAME = SG.RDB$INDEX_NAME
     LEFT JOIN RDB$RELATION_CONSTRAINTS RC ON RC.RDB$INDEX_NAME = I.RDB$INDEX_NAME AND RC.RDB$CONSTRAINT_TYPE = NULL
-WHERE I.RDB$RELATION_NAME = '{0}'  AND I.RDB$FOREIGN_KEY  = null 
+WHERE I.RDB$RELATION_NAME = '{0}'  AND I.RDB$FOREIGN_KEY  IS NULL
 GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME";
 
         private readonly string GetConstraintsQuery = @"
@@ -221,8 +222,13 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                 Table = table.Value,
                                 Name = rResult["FIELD_NAME"].ToString().Trim(),
                                 StoreType = rResult["FIELD_TYPE"].ToString().Trim(),
-                                IsNullable = rResult["FIELD_NULL"].ToString().Trim() == "NULL",
+                                IsNullable = rResult["FIELD_NULL"].ToString().Trim().Equals("NULL", StringComparison.InvariantCulture),
                                 DefaultValueSql = rResult["FIELD_DEFAULT"].ToString() == "" ? null : rResult["FIELD_DEFAULT"].ToString(),
+                                ComputedColumnSql = null,
+                                ValueGenerated =
+                                    int.Parse(rResult["IDENTITY"].ToString()) == 1
+                                        ? Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd
+                                        : default(Microsoft.EntityFrameworkCore.Metadata.ValueGenerated?)
                             };
 
                             if (!string.IsNullOrEmpty(rResult["FIELD_DESCRIPTION"].ToString()))
@@ -234,7 +240,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                             Logger.Logger.LogDebug($"Creating Column: {column.Name.Trim()}, Type:{column.StoreType} to table => {column.Table.Name}");
                         }
                     }
-                } 
+                }
             }
         }
 
@@ -263,7 +269,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                             if (findColumn != null)
                             {
                                 index.Columns.Add(findColumn);
-                            } 
+                            }
                         }
                     }
                 }
@@ -294,7 +300,6 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                     };
                                 }
 
-
                                 foreach (var column in rResult.GetString(3).Trim().Split(','))
                                 {
                                     var findColumn = table.Value.Columns
@@ -306,8 +311,6 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                     }
 
                                 }
-
-
                                 table.Value.Indexes.Add(index);
                             }
                             catch { }
@@ -354,7 +357,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                     if (findColumn != null)
                                     {
                                         foreignkey.Columns.Add(findColumn);
-                                    } 
+                                    }
                                 }
 
                                 var foreignkeyColsSecundary = rResult["COLUMN_NAME"].ToString().Split(',');
@@ -375,7 +378,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                     {
                                         foreignkey.PrincipalColumns.Add(findColumn);
                                     }
-                                } 
+                                }
                                 table.Value.ForeignKeys.Add(foreignkey);
                             }
                         }
