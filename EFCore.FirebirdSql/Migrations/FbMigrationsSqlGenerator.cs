@@ -115,11 +115,9 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 
             if (!type.StartsWith("BLOB", StringComparison.Ordinal))
             {
-                builder
-                    .Append($"ALTER TABLE {identifier} ALTER COLUMN ");
+                builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
 
-                builder
-                    .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
+                builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
 
                 if (operation.DefaultValue != null)
                 {
@@ -212,20 +210,23 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                 builder.Append("UNIQUE ");
             }
 
-            builder.Append("INDEX ")
-            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-            .Append(" ON ")
-            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
+            builder
+                .Append("INDEX ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                .Append(" ON ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema));
 
             if (method != null)
             {
-                builder.Append(" USING ")
-                .Append(method);
+                builder
+                    .Append(" USING ")
+                    .Append(method);
             }
 
-            builder.Append(" (")
-            .Append(ColumnList(operation.Columns))
-            .Append(")");
+            builder
+                .Append(" (")
+                .Append(ColumnList(operation.Columns))
+                .Append(")");
 
             if (terminate)
             {
@@ -252,11 +253,12 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
-            builder.Append("ALTER TABLE ")
-            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-            .Append(" DROP CONSTRAINT ")
-            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
+            builder
+                .Append("ALTER TABLE ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
+                .Append(" DROP CONSTRAINT ")
+                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+                .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
             EndStatement(builder);
         }
