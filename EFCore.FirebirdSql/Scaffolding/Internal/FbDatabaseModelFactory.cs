@@ -27,12 +27,12 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using FbClient = FirebirdSql.Data;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 {
     public class FbDatabaseModelFactory : IDatabaseModelFactory
     {
-
         FbConnection _connection;
         TableSelectionSet _tableSelectionSet;
         DatabaseModel _databaseModel;
@@ -41,7 +41,7 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         private string TableKey(DatabaseTable table) => TableKey(table.Name, table.Schema);
         private string TableKey(string name, string schema) => $"{name}";
         private string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
-
+        private static Version _version;
         #region Declaration Query
         private readonly string GetTablesQuery = @"SELECT
     RDB$RELATION_NAME
@@ -93,12 +93,12 @@ WHERE
     COALESCE(RF.RDB$DEFAULT_SOURCE, F.RDB$DEFAULT_SOURCE) FIELD_DEFAULT,
     F.RDB$VALIDATION_SOURCE FIELD_CHECK,
     RF.RDB$DESCRIPTION FIELD_DESCRIPTION,
-    COALESCE(RF.RDB$IDENTITY_TYPE, 0) IDENTITY
+    {0} IDENTITY
 FROM RDB$RELATION_FIELDS RF
 JOIN RDB$FIELDS F ON (F.RDB$FIELD_NAME = RF.RDB$FIELD_SOURCE)
 LEFT OUTER JOIN RDB$CHARACTER_SETS CH ON (CH.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID)
 LEFT OUTER JOIN RDB$COLLATIONS DCO ON ((DCO.RDB$COLLATION_ID = F.RDB$COLLATION_ID) AND (DCO.RDB$CHARACTER_SET_ID = F.RDB$CHARACTER_SET_ID))
-WHERE (COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0) AND RF.RDB$RELATION_NAME='{0}'
+WHERE (COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0) AND RF.RDB$RELATION_NAME='{1}'
 ORDER BY RF.RDB$FIELD_POSITION";
 
         private readonly string GetPrimaryQuery = @"
@@ -164,6 +164,8 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             if (_connection?.State != ConnectionState.Open)
                 _connection?.Open();
 
+            _version = FbClient.Services.FbServerProperties.ParseServerVersion(connection.ServerVersion);
+             
             try
             {
                 _tableSelectionSet = tableSelectionSet;
@@ -207,11 +209,13 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             }
         }
 
+        static string FieldIsIdentity => (_version.Major >= 3 ? "COALESCE(RF.RDB$IDENTITY_TYPE, 0)" : "0");
+
         private void GetColumns()
         {
             foreach (var table in _tables)
             {
-                using (var command = new FbCommand(string.Format(Columns, table.Key), _connection))
+                using (var command = new FbCommand(string.Format(Columns, FieldIsIdentity, table.Key), _connection))
                 {
                     using (var rResult = command.ExecuteReader())
                     {
