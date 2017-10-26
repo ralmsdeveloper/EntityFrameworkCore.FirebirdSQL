@@ -114,7 +114,7 @@ SELECT
     I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME FROM  RDB$INDICES I
     LEFT JOIN RDB$INDEX_SEGMENTS SG ON I.RDB$INDEX_NAME = SG.RDB$INDEX_NAME
     LEFT JOIN RDB$RELATION_CONSTRAINTS RC ON RC.RDB$INDEX_NAME = I.RDB$INDEX_NAME AND RC.RDB$CONSTRAINT_TYPE = NULL
-WHERE I.RDB$RELATION_NAME = '{0}'  AND I.RDB$FOREIGN_KEY  IS NULL
+WHERE I.RDB$RELATION_NAME = '{0}'  
 GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME";
 
         private readonly string GetConstraintsQuery = @"
@@ -165,7 +165,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 _connection?.Open();
 
             _version = FbClient.Services.FbServerProperties.ParseServerVersion(connection.ServerVersion);
-             
+
             try
             {
                 _tableSelectionSet = tableSelectionSet;
@@ -193,12 +193,14 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 {
                     while (rResult.Read())
                     {
+                        var tableName = rResult["RDB$RELATION_NAME"].ToString().Trim();
+
                         var table = new DatabaseTable
                         {
                             Schema = null,
-                            Name = rResult["RDB$RELATION_NAME"].ToString().Trim()
+                            Name = tableName
                         };
-                        Logger.Logger.LogDebug($"Creating => { rResult["RDB$RELATION_NAME"].ToString().Trim()} Model");
+                        Logger.Logger.LogDebug($"Creating => { tableName} Model");
                         if (_tableSelectionSet.Allows(table.Schema, table.Name))
                         {
                             _databaseModel.Tables.Add(table);
@@ -208,9 +210,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 }
             }
         }
-
-        static string FieldIsIdentity => (_version.Major >= 3 ? "COALESCE(RF.RDB$IDENTITY_TYPE, 0)" : "0");
-
+         
         private void GetColumns()
         {
             foreach (var table in _tables)
@@ -221,27 +221,40 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                     {
                         while (rResult.Read())
                         {
+                            var columnName = rResult["FIELD_NAME"].ToString().Trim();
+                            var storeType = rResult["FIELD_TYPE"].ToString().Trim();
+                            var isNullable = rResult["FIELD_NULL"].ToString().Trim();
+                            var valueDefault = rResult["FIELD_DEFAULT"].ToString().Trim();
+                            var isIdentity = int.Parse(rResult["IDENTITY"].ToString()) == 1;
+                            var description = rResult["FIELD_DESCRIPTION"].ToString().Trim();
+
                             var column = new DatabaseColumn
                             {
                                 Table = table.Value,
-                                Name = rResult["FIELD_NAME"].ToString().Trim(),
-                                StoreType = rResult["FIELD_TYPE"].ToString().Trim(),
-                                IsNullable = rResult["FIELD_NULL"].ToString().Trim().Equals("NULL", StringComparison.InvariantCulture),
-                                DefaultValueSql = rResult["FIELD_DEFAULT"].ToString() == "" ? null : rResult["FIELD_DEFAULT"].ToString(),
+                                Name = columnName,
+                                StoreType = storeType,
+                                IsNullable = isNullable.Equals("NULL", StringComparison.OrdinalIgnoreCase),
+                                DefaultValueSql
+                                    = string.IsNullOrWhiteSpace(valueDefault)
+                                        ? null
+                                        : valueDefault,
+
                                 ComputedColumnSql = null,
-                                ValueGenerated =
-                                    int.Parse(rResult["IDENTITY"].ToString()) == 1
+                                ValueGenerated
+                                    = isIdentity
                                         ? Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd
                                         : default(Microsoft.EntityFrameworkCore.Metadata.ValueGenerated?)
                             };
 
-                            if (!string.IsNullOrEmpty(rResult["FIELD_DESCRIPTION"].ToString()))
+                            if (!string.IsNullOrWhiteSpace(description))
                             {
-                                column.AddAnnotation("Description", rResult["FIELD_DESCRIPTION"].ToString().Trim().Replace("\n", "; "));
+                                column.AddAnnotation("Description", description.Replace("\n", "; "));
                             }
 
                             table.Value.Columns.Add(column);
-                            Logger.Logger.LogDebug($"Creating Column: {column.Name.Trim()}, Type:{column.StoreType} to table => {column.Table.Name}");
+                            Logger
+                                .Logger
+                                .LogDebug($"Creating Column: {column.Name.Trim()}, Type:{column.StoreType} to table => {column.Table.Name}");
                         }
                     }
                 }
@@ -259,16 +272,19 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                     {
                         while (rResult.Read())
                         {
+                            var pkName = rResult["INDEX_NAME"].ToString().Trim();
+                            var columnName = rResult["FIELD_NAME"].ToString().Trim();
+
                             if (index == null)
                             {
                                 index = new DatabasePrimaryKey
                                 {
                                     Table = table.Value,
-                                    Name = rResult.GetString(0).Trim()
+                                    Name = pkName
                                 };
                             }
                             var findColumn = table.Value.Columns
-                                        .FirstOrDefault(y => y.Name.Equals(rResult.GetString(1).Trim(), StringComparison.InvariantCulture));
+                                        .FirstOrDefault(y => y.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
 
                             if (findColumn != null)
                             {
@@ -294,30 +310,38 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                         {
                             try
                             {
+                                var indexName = rResult["RDB$INDEX_NAME"].ToString().Trim();
+                                var columnName = rResult["SG.RDB$FIELD_NAME"].ToString().Trim();
+                                var isUnique = Convert.ToBoolean(rResult["ISUNIQUE"].ToString());
+
                                 if (index == null)
                                 {
                                     index = new DatabaseIndex
                                     {
                                         Table = table.Value,
-                                        Name = rResult.GetString(0).Trim(),
-                                        IsUnique = !rResult.GetBoolean(1),
+                                        Name = indexName,
+                                        IsUnique = !isUnique,
                                     };
                                 }
 
-                                foreach (var column in rResult.GetString(3).Trim().Split(','))
+                                foreach (var column in columnName.Trim().Split(','))
                                 {
                                     var findColumn = table.Value.Columns
-                                        .FirstOrDefault(y => y.Name.Equals(column.Trim(), StringComparison.InvariantCulture));
+                                        .FirstOrDefault(y => y.Name.Equals(column.Trim(), StringComparison.OrdinalIgnoreCase));
 
-                                    if (findColumn != null)
+                                    if (findColumn != null
+                                        && !index.Columns.Where(i => i.Name == findColumn.Name).Any())
                                     {
                                         index.Columns.Add(findColumn);
                                     }
-
                                 }
+
                                 table.Value.Indexes.Add(index);
+
                             }
-                            catch { }
+                            catch
+                            {
+                            }
                         }
                     }
                 }
@@ -336,35 +360,41 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                         {
                             if (_tables.ContainsKey(table.Key))
                             {
+                                var columnName = rResult["COLUMN_NAME"].ToString();
+                                var fkName = rResult["RDB$CONSTRAINT_NAME"].ToString().Trim();
+                                var onDelete = rResult["RDB$DELETE_RULE"].ToString().Trim();
+                                var principalTable = rResult["RDB$RELATION_NAME"].ToString().Trim();
+
                                 var foreignkey = new DatabaseForeignKey
                                 {
                                     Table = table.Value,
-                                    Name = rResult["RDB$CONSTRAINT_NAME"].ToString().Trim(),
-                                    OnDelete = ConvertToReferentialAction(rResult["RDB$DELETE_RULE"].ToString()),
-                                    PrincipalTable = _tables[rResult["RDB$RELATION_NAME"].ToString().Trim()]
+                                    Name = fkName,
+                                    OnDelete = ConvertToReferentialAction(onDelete),
+                                    PrincipalTable = _tables[principalTable]
                                 };
 
-                                var foreignkeyCols = rResult["COLUMN_NAME"].ToString().Split(',');
+                                var foreignkeyCols = columnName.Split(',');
                                 var columns = new string[foreignkeyCols.Length];
-
                                 foreach (var positionCol in foreignkeyCols)
                                 {
                                     var split = positionCol.Split('$');
-                                    columns[int.Parse(split[1])] = split[0];
+                                    columns[int.Parse(split[1])] = split[0].Trim();
                                 }
 
                                 foreach (var column in columns)
                                 {
                                     var findColumn = table.Value.Columns
-                                        .FirstOrDefault(y => y.Name.Equals(column.Trim(), StringComparison.InvariantCulture));
+                                        .FirstOrDefault(y => y.Name.Equals(column, StringComparison.OrdinalIgnoreCase));
 
-                                    if (findColumn != null)
+                                    if (findColumn != null
+                                        && !foreignkey.Columns.Where(i =>
+                                            i.Name.Equals(findColumn.Name, StringComparison.OrdinalIgnoreCase)).Any())
                                     {
                                         foreignkey.Columns.Add(findColumn);
                                     }
                                 }
 
-                                var foreignkeyColsSecundary = rResult["COLUMN_NAME"].ToString().Split(',');
+                                var foreignkeyColsSecundary = columnName.Split(',');
                                 var columnsSecundary = new string[foreignkeyColsSecundary.Length];
 
                                 foreach (var positionCol in foreignkeyColsSecundary)
@@ -376,20 +406,25 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                 foreach (var column in columnsSecundary)
                                 {
                                     var findColumn = table.Value.Columns
-                                        .FirstOrDefault(y => y.Name.Equals(column.Trim(), StringComparison.InvariantCulture));
+                                        .FirstOrDefault(y => y.Name.Equals(column.Trim(), StringComparison.OrdinalIgnoreCase));
 
-                                    if (findColumn != null)
+                                    if (findColumn != null
+                                        && !foreignkey.PrincipalColumns.Where(i => i.Name == findColumn.Name).Any())
                                     {
                                         foreignkey.PrincipalColumns.Add(findColumn);
                                     }
                                 }
+
                                 table.Value.ForeignKeys.Add(foreignkey);
+
                             }
                         }
                     }
                 }
             }
         }
+
+        private static string FieldIsIdentity => (_version.Major >= 3 ? "COALESCE(RF.RDB$IDENTITY_TYPE, 0)" : "0");
 
         private static ReferentialAction? ConvertToReferentialAction(string onDeleteAction)
         {
