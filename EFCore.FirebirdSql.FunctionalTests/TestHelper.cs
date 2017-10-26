@@ -40,6 +40,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public double TestDouble { get; set; }
 
+        public Int32? TestInt32Nullable { get; set; }
+
+        public int? TestIntNullable { get; set; }
+
+        public double? TestdoubleNullable { get; set; }
+
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 
