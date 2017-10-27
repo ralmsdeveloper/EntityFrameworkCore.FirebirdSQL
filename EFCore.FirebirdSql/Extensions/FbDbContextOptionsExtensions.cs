@@ -18,11 +18,10 @@ using System;
 using System.Data.Common;
 using EntityFrameworkCore.FirebirdSql.Infrastructure;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace EntityFrameworkCore.FirebirdSql.Extensions
+namespace Microsoft.EntityFrameworkCore
 {
     public static class FbDbContextOptionsExtensions
     {

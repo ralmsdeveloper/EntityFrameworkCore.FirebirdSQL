@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Threading;
 using System;
-using EntityFrameworkCore.FirebirdSql.Extensions;
 using Microsoft.EntityFrameworkCore.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
