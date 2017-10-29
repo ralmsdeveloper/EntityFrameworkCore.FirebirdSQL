@@ -49,14 +49,14 @@ namespace System
             type = type.UnwrapNullableType();
 
             return (type == typeof(int))
-                   || (type == typeof(long))
-                   || (type == typeof(short))
-                   || (type == typeof(byte))
-                   || (type == typeof(uint))
-                   || (type == typeof(ulong))
-                   || (type == typeof(ushort))
-                   || (type == typeof(sbyte))
-                   || (type == typeof(char));
+                || (type == typeof(long))
+                || (type == typeof(short))
+                || (type == typeof(byte))
+                || (type == typeof(uint))
+                || (type == typeof(ulong))
+                || (type == typeof(ushort))
+                || (type == typeof(sbyte))
+                || (type == typeof(char));
         }
 
         public static bool IsIntegerForIdentity(this Type type)

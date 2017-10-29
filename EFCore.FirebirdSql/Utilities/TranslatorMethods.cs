@@ -26,10 +26,9 @@ namespace EntityFrameworkCore.FirebirdSql.Utilities
         public static IEnumerable<Type> GetTranslatorMethods<TInteface>()
             => Assembly
                 .GetExecutingAssembly()
-                .GetTypes()
-                .Where(t =>
-                    t.GetInterfaces().Any(i => i == typeof(TInteface)) &&
-                    t.GetConstructors().Any(c => c.GetParameters().Length == 0));
+                .GetTypes().Where(t =>
+                    t.GetInterfaces().Any(i => i == typeof(TInteface))
+                        && t.GetConstructors().Any(c => c.GetParameters().Length == 0));
 
     }
 }

@@ -20,6 +20,6 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
     {
 		None,
 		IdentityColumn,
-        SequenceTrigger,
+        SequenceTrigger
     }
 }

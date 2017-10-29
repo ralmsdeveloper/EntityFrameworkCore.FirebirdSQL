@@ -32,7 +32,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             => $"GEN_{column}_{table}";
 
         private string TriggerName(string column, string table)
-            => $"TR_{column}_{table}";
+            => $"TRG_{column}_{table}";
 
         public virtual void CreateIdentityForColumn(
             MigrationCommandListBuilder builder,

@@ -35,9 +35,9 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
                 : Expression.Add(methodCallExpression.Arguments[0], Expression.Constant(1));
 
             return new FbSubStringExpression(
-                    methodCallExpression.Object,
-                    from,
-                    methodCallExpression.Arguments[1]);
+                methodCallExpression.Object,
+                from,
+                methodCallExpression.Arguments[1]);
         }
     }
 }

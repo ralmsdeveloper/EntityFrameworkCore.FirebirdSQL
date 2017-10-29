@@ -47,7 +47,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             optionsBuilder
                 .UseFirebird(connectionBuilder)
-                .ConfigureWarnings(c => c.Log(CoreEventId.SaveChangesFailed));
+                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
 
             var loggerFactory = new LoggerFactory().AddConsole().AddDebug();
             optionsBuilder.UseLoggerFactory(loggerFactory);

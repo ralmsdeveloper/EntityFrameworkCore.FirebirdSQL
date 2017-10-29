@@ -40,5 +40,4 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
     }
-
 }

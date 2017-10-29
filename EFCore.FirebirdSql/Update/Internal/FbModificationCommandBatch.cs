@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
-using FirebirdSql.Data.FirebirdClient;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
@@ -43,7 +42,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             : base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
         {
             if (maxBatchSize.HasValue && maxBatchSize.Value <= 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(maxBatchSize), RelationalStrings.InvalidMaxBatchSize);
+            }
 
             _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
             _variablesParameters = new StringBuilder();
@@ -53,9 +54,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         protected new virtual IFbUpdateSqlGenerator UpdateSqlGenerator()
-        {
-            return (IFbUpdateSqlGenerator)base.UpdateSqlGenerator;
-        }
+            => (IFbUpdateSqlGenerator)base.UpdateSqlGenerator;
 
         protected override bool CanAddCommand(ModificationCommand modificationCommand)
         {
@@ -314,9 +313,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                         if (!dataReader.Read())
                         {
                             throw new DbUpdateConcurrencyException(
-                                        RelationalStrings.UpdateConcurrencyException(
-                                        ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
-                                        ModificationCommands[commandIndex].Entries);
+                                RelationalStrings.UpdateConcurrencyException(
+                                ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+                                ModificationCommands[commandIndex].Entries);
                         }
                     }
 
@@ -330,9 +329,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     if (!relationalReader.Read())
                     {
                         throw new DbUpdateConcurrencyException(
-                                RelationalStrings.UpdateConcurrencyException(
-                                ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
-                                ModificationCommands[commandIndex].Entries);
+                            RelationalStrings.UpdateConcurrencyException(
+                            ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+                            ModificationCommands[commandIndex].Entries);
                     }
 
                     var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
@@ -384,9 +383,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                         if (!(await relationalReader.ReadAsync()))
                         {
                             throw new DbUpdateConcurrencyException(
-                                    RelationalStrings.UpdateConcurrencyException(
-                                    ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
-                                    ModificationCommands[commandIndex].Entries);
+                                RelationalStrings.UpdateConcurrencyException(
+                                ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+                                ModificationCommands[commandIndex].Entries);
                         }
                     }
 
@@ -399,9 +398,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     if (!(await relationalReader.ReadAsync()))
                     {
                         throw new DbUpdateConcurrencyException(
-                                RelationalStrings.UpdateConcurrencyException(
-                                ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
-                                ModificationCommands[commandIndex].Entries);
+                            RelationalStrings.UpdateConcurrencyException(
+                            ModificationCommands.Count(m => m.RequiresResultPropagation), 0),
+                            ModificationCommands[commandIndex].Entries);
                     }
 
                     var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
@@ -417,8 +416,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             catch (Exception ex)
             {
                 throw new DbUpdateException(
-                RelationalStrings.UpdateStoreException,
-                ex, ModificationCommands[commandIndex].Entries);
+                    RelationalStrings.UpdateStoreException,
+                    ex, ModificationCommands[commandIndex].Entries);
             }
         }
     }

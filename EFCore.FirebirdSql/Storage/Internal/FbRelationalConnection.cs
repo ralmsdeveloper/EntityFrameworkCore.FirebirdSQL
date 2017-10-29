@@ -33,7 +33,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         {
         }
 
-        protected override DbConnection CreateDbConnection() => new FbConnection(ConnectionString);
+        protected override DbConnection CreateDbConnection()
+            => new FbConnection(ConnectionString);
 
         public virtual IFbRelationalConnection CreateMasterConnection()
         {

@@ -132,6 +132,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         }
 
         public override IByteArrayRelationalTypeMapper ByteArrayMapper { get; }
+
         public override IStringRelationalTypeMapper StringMapper { get; }
 
         public override void ValidateTypeName(string storeType)

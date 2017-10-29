@@ -30,7 +30,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             var recordAffecteds = 0;
 
-            IDbContextTransaction currentTransaction = null;
+            IDbContextTransaction currentTransaction = default;
             try
             {
                 if (connection?.DbConnection?.State != System.Data.ConnectionState.Open)
@@ -72,7 +72,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             try
             {
                 if (connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                {
                     await connection.OpenAsync(cancellationToken, false).ConfigureAwait(false);
+                } 
 
                 if (connection.CurrentTransaction == null)
                 {

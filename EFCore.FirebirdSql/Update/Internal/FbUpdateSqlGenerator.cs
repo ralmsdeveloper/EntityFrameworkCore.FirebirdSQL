@@ -238,14 +238,19 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     }
 
                     else if (property.ClrType == typeof(byte[]))
+                    {
                         typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(false, false, null).StoreType;
+                    }
                     else
+                    {
                         typeName = _typeMapperRelational.FindMapping(property.ClrType).StoreType;
+                    }
                 }
             }
             if (property.ClrType == typeof(byte[]) && typeName != null)
+            {
                 return "BLOB SUB_TYPE BINARY";
-
+            }
             return typeName;
         }
     }

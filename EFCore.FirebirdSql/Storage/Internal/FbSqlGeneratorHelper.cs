@@ -51,7 +51,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             => $"@{name.MaxLength(_options.ObjectLengthName)}";
 
         public override void GenerateParameterName(StringBuilder builder, string name)
-            => builder.Append("@").Append(name.MaxLength(_options.ObjectLengthName));
-
+            => builder.Append("@").Append(name.MaxLength(_options.ObjectLengthName)); 
     }
 }

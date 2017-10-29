@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 {
     public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
     {
-        private IFbOptions _options { get; set; }
+        readonly IFbOptions _options;
         readonly IFbMigrationSqlGeneratorBehavior _behavior;
 
         public FbMigrationsSqlGenerator(
@@ -52,7 +52,6 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                 builder.EndCommand();
                 return;
             }
-
             base.Generate(operation, model, builder);
         }
 
@@ -139,7 +138,6 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                     builder.Append(" DROP DEFAULT;");
                 }
             }
-
             EndStatement(builder);
         }
 

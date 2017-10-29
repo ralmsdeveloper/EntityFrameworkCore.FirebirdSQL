@@ -20,9 +20,10 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.0.10-preview5</Version>
+    <Version>2.0.10</Version>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
+    <PackageReleaseNotes>*Adjustments and improvements</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
