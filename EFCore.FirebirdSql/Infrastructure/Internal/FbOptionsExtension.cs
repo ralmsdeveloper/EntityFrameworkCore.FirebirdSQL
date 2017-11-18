@@ -28,10 +28,7 @@ namespace EntityFrameworkCore.FirebirdSql.Infrastructure.Internal
             : base(copyFrom)
         { }
 
-        protected override RelationalOptionsExtension Clone()
-        {
-            return new FbOptionsExtension(this);
-        }
+        protected override RelationalOptionsExtension Clone() => new FbOptionsExtension(this);
 
         public override bool ApplyServices(IServiceCollection services)
         {

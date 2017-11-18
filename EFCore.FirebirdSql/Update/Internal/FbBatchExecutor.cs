@@ -34,10 +34,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             try
             {
                 if (connection?.DbConnection?.State != System.Data.ConnectionState.Open)
+                {
                     connection.Open();
+                }
 
                 if (connection.CurrentTransaction == null)
+                {
                     currentTransaction = connection.BeginTransaction();
+                }
 
                 foreach (var commandbatch in commandBatches)
                 {

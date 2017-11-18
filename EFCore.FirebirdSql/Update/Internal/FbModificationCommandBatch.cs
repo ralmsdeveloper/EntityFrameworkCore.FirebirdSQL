@@ -18,10 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Internal;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
 
@@ -252,37 +252,31 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         private static bool CanBeDeleteInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-        {
-            return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
+            => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
                    && firstCommand.ColumnModifications.Where(o => o.IsWrite)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
                    && firstCommand.ColumnModifications.Where(o => o.IsRead)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-        }
 
         private static bool CanBeUpdateInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-        {
-            return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
+            => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
                    && firstCommand.ColumnModifications.Where(o => o.IsWrite)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
                    && firstCommand.ColumnModifications.Where(o => o.IsRead)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-        }
 
         private static bool CanBeInsertedInSameStatement(ModificationCommand firstCommand, ModificationCommand secondCommand)
-        {
-            return string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
+            => string.Equals(firstCommand.TableName, secondCommand.TableName, StringComparison.Ordinal)
                    && firstCommand.ColumnModifications.Where(o => o.IsWrite)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsWrite).Select(o => o.ColumnName))
                    && firstCommand.ColumnModifications.Where(o => o.IsRead)
                                   .Select(o => o.ColumnName)
                                   .SequenceEqual(secondCommand.ColumnModifications.Where(o => o.IsRead).Select(o => o.ColumnName));
-        }
 
         protected override void Consume(RelationalDataReader relationalReader)
         {

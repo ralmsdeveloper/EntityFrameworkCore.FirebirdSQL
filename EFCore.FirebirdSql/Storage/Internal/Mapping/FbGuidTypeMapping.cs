@@ -27,8 +27,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage
         { }
 
         protected override void ConfigureParameter(DbParameter parameter)
-        {
-            ((FbParameter)parameter).FbDbType = FbDbType.Guid;
-        } 
+            => ((FbParameter)parameter).FbDbType = FbDbType.Guid;
     }
 }

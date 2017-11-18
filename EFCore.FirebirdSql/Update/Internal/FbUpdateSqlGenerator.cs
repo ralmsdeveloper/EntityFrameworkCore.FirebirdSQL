@@ -30,13 +30,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
     public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
     {
         private readonly IRelationalTypeMapper _typeMapperRelational;
-        private string commaAppend;
+        private string _commaAppend;
 
         public FbUpdateSqlGenerator(UpdateSqlGeneratorDependencies dependencies, IRelationalTypeMapper typeMapper)
             : base(dependencies)
-        {
-            _typeMapperRelational = typeMapper;
-        }
+            => _typeMapperRelational = typeMapper;
 
         public ResultSetMapping AppendBulkInsertOperation(
             StringBuilder commandStringBuilder,
@@ -45,7 +43,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             int commandPosition)
         {
             commandStringBuilder.Clear();
-            commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
+            _commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             var resultMapping = ResultSetMapping.LastInResultSet;
             for (var i = 0; i < modificationCommands.Count; i++)
             {
@@ -82,7 +80,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             int commandPosition)
         {
             commandStringBuilder.Clear();
-            commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
+            _commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var name = modificationCommands[i].TableName;
@@ -123,7 +121,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         public ResultSetMapping AppendBulkDeleteOperation(StringBuilder commandStringBuilder, StringBuilder variablesParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
         {
             var name = modificationCommands[0].TableName;
-            commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
+            _commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
             {
                 var operations = modificationCommands[i].ColumnModifications;
@@ -147,9 +145,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             foreach (var column in operations)
             {
                 var _type = GetDataType(column.Property);
-                variablesParameters.Append(commaAppend);
+                variablesParameters.Append(_commaAppend);
                 variablesParameters.Append($"{column.ParameterName}  {_type}=@{column.ParameterName}");
-                commaAppend = ",";
+                _commaAppend = ",";
             }
         }
 
@@ -185,11 +183,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
-        {
-            commandStringBuilder
+            => commandStringBuilder
                 .AppendLine("IF (ROW_COUNT > 0) THEN")
                 .AppendLine("   AffectedRows=AffectedRows+1;");
-        }
 
         private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
         {
@@ -212,14 +208,10 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
 
         protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
 
         private string GetDataType(IProperty property)
         {

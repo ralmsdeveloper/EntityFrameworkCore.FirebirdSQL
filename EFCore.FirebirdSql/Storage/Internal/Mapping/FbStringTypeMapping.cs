@@ -13,8 +13,8 @@
  * modified is included with the above copyright notice.
  *
  */
-  
-using System.Data.Common; 
+
+using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -22,26 +22,19 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbStringTypeMapping : StringTypeMapping
     {
-        readonly FbDbType _fbDbType;
+        private readonly FbDbType _fbDbType;
 
         public FbStringTypeMapping(string storeType, FbDbType fbDbType, int? size = null)
             : base(storeType, unicode: true, size: size)
-        {
-            _fbDbType = fbDbType;
-        }
+            => _fbDbType = fbDbType;
 
         protected override void ConfigureParameter(DbParameter parameter)
-        {
-            ((FbParameter)parameter).FbDbType = _fbDbType;
-        }
+            => ((FbParameter)parameter).FbDbType = _fbDbType;
 
         protected override string GenerateNonNullSqlLiteral(object value)
-        {
-            //Credit Jiri Cincura
-            return IsUnicode
-                       ? $"_UTF8'{EscapeSqlLiteral((string)value)}'"
-                       : $"'{EscapeSqlLiteral((string)value)}'";
-        }
+            => IsUnicode
+                ? $"_UTF8'{EscapeSqlLiteral((string)value)}'"
+                : $"'{EscapeSqlLiteral((string)value)}'";
     }
- 
+
 }

@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
     public class FbTypeMapper : RelationalTypeMapper
     {
-        public const int BinaryMaxSize = Int32.MaxValue;
+        public const int BinaryMaxSize = int.MaxValue;
         public const int VarcharMaxSize = 32765;
         public const int NVarcharMaxSize = VarcharMaxSize / 4;
         public const int DefaultDecimalPrecision = 18;

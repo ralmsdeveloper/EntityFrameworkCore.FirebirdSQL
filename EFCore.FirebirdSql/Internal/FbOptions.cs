@@ -30,15 +30,9 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         public int ObjectLengthName
             => (ServerVersion ?? GetSettings(Settings.ConnectionString).ServerVersion).Major == 3 ? 31 : 63;
 
-        public virtual void Initialize(IDbContextOptions options)
-        {
-            Settings = GetOptions(options);
-        }
+        public virtual void Initialize(IDbContextOptions options) => Settings = GetOptions(options);
 
-        public virtual void Validate(IDbContextOptions options)
-        {
-            Settings = GetOptions(options);
-        }
+        public virtual void Validate(IDbContextOptions options) => Settings = GetOptions(options);
 
         private FbOptionsExtension GetOptions(IDbContextOptions options)
             => options.FindExtension<FbOptionsExtension>() ?? new FbOptionsExtension();
@@ -46,7 +40,9 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
         private FbOptions GetSettings(string connectionString)
         {
             if (ServerVersion != null)
+            {
                 return this;
+            }
 
             try
             {

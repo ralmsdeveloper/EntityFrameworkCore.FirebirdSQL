@@ -14,22 +14,28 @@
  *
  */
 
+using System;
+using System.Data.Common; 
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage
 {
     public class FbBoolTypeMapping : BoolTypeMapping
     {
-        public const string TrueLiteral = "TRUE";
-        public const string FalseLiteral = "FALSE";
+        public const string TrueLiteral = "T";
+        public const string FalseLiteral = "F";
 
         public FbBoolTypeMapping()
-            : base("BOOLEAN", System.Data.DbType.Boolean)
-        { }
+            : base("CHAR(1)", System.Data.DbType.Boolean)
+        {}
+
+        protected override void ConfigureParameter(DbParameter parameter)
+        { 
+            ((FbParameter)parameter).Value = Convert.ToBoolean(parameter.Value) ? 'T' : 'F';
+        }
 
         protected override string GenerateNonNullSqlLiteral(object value)
-        {
-            return (bool)value ? TrueLiteral : FalseLiteral;
-        }
+            => (bool)value ? $"'{TrueLiteral}'" : $"'{FalseLiteral}'";
     }
 }

@@ -38,13 +38,13 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public decimal TestDecimal { get; set; }
 
-        public double TestDouble { get; set; }
-
-        public Int32? TestInt32Nullable { get; set; }
+        public double TestDouble { get; set; } 
 
         public int? TestIntNullable { get; set; }
 
         public double? TestdoubleNullable { get; set; }
+
+        public bool Active { get; set; }
 
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
