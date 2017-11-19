@@ -22,7 +22,7 @@ using EntityFrameworkCore.FirebirdSql.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage; 
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
@@ -34,35 +34,35 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         public const int DefaultDecimalPrecision = 18;
         public const int DefaultDecimalScale = 2;
 
-        readonly FbBoolTypeMapping _boolean = new FbBoolTypeMapping();
+        private readonly FbBoolTypeMapping _boolean = new FbBoolTypeMapping();
 
-        readonly ShortTypeMapping _smallint = new ShortTypeMapping("SMALLINT", DbType.Int16);
-        readonly IntTypeMapping _integer = new IntTypeMapping("INTEGER", DbType.Int32);
-        readonly LongTypeMapping _bigint = new LongTypeMapping("BIGINT", DbType.Int64);
+        private readonly ShortTypeMapping _smallint = new ShortTypeMapping("SMALLINT", DbType.Int16);
+        private readonly IntTypeMapping _integer = new IntTypeMapping("INTEGER", DbType.Int32);
+        private readonly LongTypeMapping _bigint = new LongTypeMapping("BIGINT", DbType.Int64);
 
-        readonly FbStringTypeMapping _char = new FbStringTypeMapping("CHAR", FbDbType.Char);
-        readonly FbStringTypeMapping _varchar = new FbStringTypeMapping("VARCHAR", FbDbType.VarChar);
-        readonly FbStringTypeMapping _varcharMax = new FbStringTypeMapping($"VARCHAR({VarcharMaxSize})", FbDbType.VarChar, size: VarcharMaxSize);
-        readonly FbStringTypeMapping _nvarcharMax = new FbStringTypeMapping($"VARCHAR({NVarcharMaxSize})", FbDbType.VarChar, size: NVarcharMaxSize);
-        readonly FbStringTypeMapping _varchar256 = new FbStringTypeMapping($"VARCHAR(256)", FbDbType.VarChar, size: 256);
-        readonly FbStringTypeMapping _nvarchar256 = new FbStringTypeMapping($"VARCHAR(256)", FbDbType.VarChar, size: 256);
-        readonly FbStringTypeMapping _clob = new FbStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
+        private readonly FbStringTypeMapping _char = new FbStringTypeMapping("CHAR", FbDbType.Char);
+        private readonly FbStringTypeMapping _varchar = new FbStringTypeMapping("VARCHAR", FbDbType.VarChar);
+        private readonly FbStringTypeMapping _varcharMax = new FbStringTypeMapping($"VARCHAR({VarcharMaxSize})", FbDbType.VarChar, size: VarcharMaxSize);
+        private readonly FbStringTypeMapping _nvarcharMax = new FbStringTypeMapping($"VARCHAR({NVarcharMaxSize})", FbDbType.VarChar, size: NVarcharMaxSize);
+        private readonly FbStringTypeMapping _varchar256 = new FbStringTypeMapping($"VARCHAR(256)", FbDbType.VarChar, size: 256);
+        private readonly FbStringTypeMapping _nvarchar256 = new FbStringTypeMapping($"VARCHAR(256)", FbDbType.VarChar, size: 256);
+        private readonly FbStringTypeMapping _clob = new FbStringTypeMapping("BLOB SUB_TYPE TEXT", FbDbType.Text);
 
-        readonly FbByteArrayTypeMapping _binary = new FbByteArrayTypeMapping();
+        private readonly FbByteArrayTypeMapping _binary = new FbByteArrayTypeMapping();
 
-        readonly FloatTypeMapping _float = new FloatTypeMapping("FLOAT");
-        readonly DoubleTypeMapping _double = new DoubleTypeMapping("DOUBLE PRECISION");
-        readonly DecimalTypeMapping _decimal = new DecimalTypeMapping($"DECIMAL({DefaultDecimalPrecision},{DefaultDecimalScale})");
+        private readonly FloatTypeMapping _float = new FloatTypeMapping("FLOAT");
+        private readonly DoubleTypeMapping _double = new DoubleTypeMapping("DOUBLE PRECISION");
+        private readonly DecimalTypeMapping _decimal = new DecimalTypeMapping($"DECIMAL({DefaultDecimalPrecision},{DefaultDecimalScale})");
 
-        readonly FbDateTimeTypeMapping _timeStamp = new FbDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
-        readonly FbDateTimeTypeMapping _date = new FbDateTimeTypeMapping("DATE", FbDbType.Date);
-        readonly FbDateTimeTypeMapping _time = new FbDateTimeTypeMapping("TIME", FbDbType.Time);
+        private readonly FbDateTimeTypeMapping _timeStamp = new FbDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
+        private readonly FbDateTimeTypeMapping _date = new FbDateTimeTypeMapping("DATE", FbDbType.Date);
+        private readonly FbDateTimeTypeMapping _time = new FbDateTimeTypeMapping("TIME", FbDbType.Time);
 
-        readonly FbGuidTypeMapping _guid = new FbGuidTypeMapping();
+        private readonly FbGuidTypeMapping _guid = new FbGuidTypeMapping();
 
-        readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
-        readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
-        readonly HashSet<string> _disallowedMappings;
+        private readonly Dictionary<string, RelationalTypeMapping> _storeTypeMappings;
+        private readonly Dictionary<Type, RelationalTypeMapping> _clrTypeMappings;
+        private readonly HashSet<string> _disallowedMappings;
 
         public FbTypeMapper(RelationalTypeMapperDependencies dependencies)
             : base(dependencies)
@@ -70,9 +70,10 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             _storeTypeMappings = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
             {
                 { "BOOLEAN", _boolean },
+                { "CHAR(1)", _boolean },
                 { "SMALLINT", _smallint },
                 { "INTEGER", _integer },
-                { "BIGINT", _bigint }, 
+                { "BIGINT", _bigint },
                 { "CHAR", _char },
                 { "VARCHAR", _varchar },
                 { "BLOB SUB_TYPE TEXT", _clob },

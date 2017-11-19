@@ -55,10 +55,8 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         }
 
         static bool EqualsWithQuotes(string expr, string name)
-        {
-            return expr[0] == '"' && expr[expr.Length - 1] == '"'
+            => expr[0] == '"' && expr[expr.Length - 1] == '"'
                 ? expr.Substring(0, expr.Length - 2).Equals(name)
                 : expr.Equals(name, StringComparison.OrdinalIgnoreCase);
-        }
     }
 }

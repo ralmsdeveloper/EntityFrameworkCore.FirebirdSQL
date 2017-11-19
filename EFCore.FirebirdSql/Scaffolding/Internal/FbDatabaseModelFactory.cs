@@ -15,13 +15,13 @@
  */
 
 using System;
+using System.Data;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System.Data;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
@@ -43,14 +43,14 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         private string ColumnKey(DatabaseTable table, string columnName) => $"{TableKey(table)}.{columnName}";
         private static Version _version;
         #region Declaration Query
-        private readonly string GetTablesQuery = @"SELECT
+        private readonly string _getTablesQuery = @"SELECT
     RDB$RELATION_NAME
 FROM
     RDB$RELATIONS
 WHERE 
     RDB$VIEW_BLR IS NULL AND (RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0)";
 
-        private readonly string Columns = @"SELECT
+        private readonly string _columns = @"SELECT
     RF.RDB$RELATION_NAME,
     RF.RDB$FIELD_NAME FIELD_NAME,
     RF.RDB$FIELD_POSITION FIELD_POSITION,
@@ -101,14 +101,14 @@ LEFT OUTER JOIN RDB$COLLATIONS DCO ON ((DCO.RDB$COLLATION_ID = F.RDB$COLLATION_I
 WHERE (COALESCE(RF.RDB$SYSTEM_FLAG, 0) = 0) AND RF.RDB$RELATION_NAME='{1}'
 ORDER BY RF.RDB$FIELD_POSITION";
 
-        private readonly string GetPrimaryQuery = @"
+        private readonly string _getPrimaryQuery = @"
 SELECT I.RDB$INDEX_NAME AS INDEX_NAME,SG.RDB$FIELD_NAME AS FIELD_NAME
 FROM RDB$INDICES I
     LEFT JOIN RDB$INDEX_SEGMENTS SG ON I.RDB$INDEX_NAME = SG.RDB$INDEX_NAME
     LEFT JOIN RDB$RELATION_CONSTRAINTS RC ON RC.RDB$INDEX_NAME = I.RDB$INDEX_NAME
 WHERE RC.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY' AND I.RDB$RELATION_NAME = '{0}'";
 
-        private readonly string GetIndexesQuery = @"
+        private readonly string _getIndexesQuery = @"
 SELECT
     I.RDB$INDEX_NAME, COALESCE(I.RDB$UNIQUE_FLAG, 0) AS ISUNIQUE,
     I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME FROM  RDB$INDICES I
@@ -117,7 +117,7 @@ SELECT
 WHERE I.RDB$RELATION_NAME = '{0}'  
 GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME";
 
-        private readonly string GetConstraintsQuery = @"
+        private readonly string _getConstraintsQuery = @"
 SELECT
     CONST.RDB$CONSTRAINT_NAME,RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RULE,
     LIST(DISTINCT TRIM(IDX.RDB$FIELD_NAME)||'$'||IDX.RDB$FIELD_POSITION,',') COLUMN_NAME
@@ -187,7 +187,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
 
         private void GetTables()
         {
-            using (var command = new FbCommand(GetTablesQuery, _connection))
+            using (var command = new FbCommand(_getTablesQuery, _connection))
             {
                 using (var rResult = command.ExecuteReader())
                 {
@@ -210,12 +210,12 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                 }
             }
         }
-         
+
         private void GetColumns()
         {
             foreach (var table in _tables)
             {
-                using (var command = new FbCommand(string.Format(Columns, FieldIsIdentity, table.Key), _connection))
+                using (var command = new FbCommand(string.Format(_columns, FieldIsIdentity, table.Key), _connection))
                 {
                     using (var rResult = command.ExecuteReader())
                     {
@@ -243,7 +243,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                 ValueGenerated
                                     = isIdentity
                                         ? Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd
-                                        : default(Microsoft.EntityFrameworkCore.Metadata.ValueGenerated?)
+                                        : default
                             };
 
                             if (!string.IsNullOrWhiteSpace(description))
@@ -266,7 +266,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             foreach (var table in _tables)
             {
                 DatabasePrimaryKey index = null;
-                using (var command = new FbCommand(string.Format(GetPrimaryQuery, table.Key.Replace("\"", "")), _connection))
+                using (var command = new FbCommand(string.Format(_getPrimaryQuery, table.Key.Replace("\"", "")), _connection))
                 {
                     using (var rResult = command.ExecuteReader())
                     {
@@ -284,7 +284,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                 };
                             }
                             var findColumn = table.Value.Columns
-                                        .FirstOrDefault(y => y.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+                                .FirstOrDefault(y => y.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
 
                             if (findColumn != null)
                             {
@@ -302,7 +302,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
             foreach (var table in _tables)
             {
                 DatabaseIndex index = null;
-                using (var command = new FbCommand(string.Format(GetIndexesQuery, table.Key), _connection))
+                using (var command = new FbCommand(string.Format(_getIndexesQuery, table.Key), _connection))
                 {
                     using (var rResult = command.ExecuteReader())
                     {
@@ -352,7 +352,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
         {
             foreach (var table in _tables)
             {
-                using (var command = new FbCommand(string.Format(GetConstraintsQuery, table.Key), _connection))
+                using (var command = new FbCommand(string.Format(_getConstraintsQuery, table.Key), _connection))
                 {
                     using (var rResult = command.ExecuteReader())
                     {
@@ -415,8 +415,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
                                     }
                                 }
 
-                                table.Value.ForeignKeys.Add(foreignkey);
-
+                                table.Value.ForeignKeys.Add(foreignkey); 
                             }
                         }
                     }

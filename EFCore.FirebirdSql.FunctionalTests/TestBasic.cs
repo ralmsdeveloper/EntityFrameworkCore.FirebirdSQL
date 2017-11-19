@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EFCore.FirebirdSql.FunctionalTests
@@ -59,7 +58,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                         },
                         Active = true
                     });
-                    context.SaveChanges(); 
+                    context.SaveChanges();
                 }
             }
 

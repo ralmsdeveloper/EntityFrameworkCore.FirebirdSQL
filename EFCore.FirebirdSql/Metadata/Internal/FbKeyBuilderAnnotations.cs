@@ -24,6 +24,6 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
             : base(new RelationalAnnotationsBuilder(internalBuilder, configurationSource))
         { }
 
-        public virtual bool Name(string value) => SetName(value); 
+        public new virtual bool Name(string value) => SetName(value); 
     }
 }
