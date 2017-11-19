@@ -24,13 +24,11 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public sealed class FbCompositeMethodCallTranslator : RelationalCompositeMethodCallTranslator
     {
-        static readonly List<Type> TranslatorsMethods
+        private static readonly List<Type> _translatorsMethods
             = TranslatorMethods.GetTranslatorMethods<IMethodCallTranslator>().ToList();
 
         public FbCompositeMethodCallTranslator(RelationalCompositeMethodCallTranslatorDependencies dependencies)
             : base(dependencies)
-        {
-            AddTranslators(TranslatorsMethods.Select(type => (IMethodCallTranslator)Activator.CreateInstance(type)));
-        }
+            => AddTranslators(_translatorsMethods.Select(type => (IMethodCallTranslator)Activator.CreateInstance(type)));
     }
 }

@@ -151,10 +151,10 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
             return true;
         }
 
-        static bool IsCompatibleIdentityColumn(Type type)
+        private static bool IsCompatibleIdentityColumn(Type type)
             => type.IsInteger() || type == typeof(decimal);
 
-        static bool IsCompatibleSequenceTrigger(Type type)
+        private static bool IsCompatibleSequenceTrigger(Type type)
             => true;
     }
 }

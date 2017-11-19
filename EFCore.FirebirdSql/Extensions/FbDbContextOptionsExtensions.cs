@@ -54,18 +54,14 @@ namespace Microsoft.EntityFrameworkCore
             string connectionString,
             Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
             where TContext : DbContext
-        {
-            return (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connectionString, fbOptionsAction);
-        }
+            => (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connectionString, fbOptionsAction);
 
         public static DbContextOptionsBuilder<TContext> UseFirebird<TContext>(
             this DbContextOptionsBuilder<TContext> optionsBuilder,
             DbConnection connection,
             Action<FbDbContextOptionsBuilder> fbOptionsAction = null)
             where TContext : DbContext
-        {
-            return (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connection, fbOptionsAction);
-        }
+            => (DbContextOptionsBuilder<TContext>)UseFirebird((DbContextOptionsBuilder)optionsBuilder, connection, fbOptionsAction);
 
         private static FbOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.Options.FindExtension<FbOptionsExtension>()

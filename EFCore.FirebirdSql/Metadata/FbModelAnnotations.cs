@@ -36,8 +36,6 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata
         }
 
         protected virtual bool SetValueGenerationStrategy(FbValueGenerationStrategy? value)
-        {
-            return Annotations.SetAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
-        }
+            => Annotations.SetAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
     }
 }

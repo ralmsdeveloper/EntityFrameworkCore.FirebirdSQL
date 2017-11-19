@@ -74,12 +74,10 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         }
 
         private Expression ExplicitCastToBool(Expression expression)
-        {
-            return (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
+            => (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
                    && expression.Type.UnwrapNullableType() == typeof(bool)
                 ? new ExplicitCastExpression(expression, expression.Type)
                 : expression;
-        }
 
         protected override Expression VisitBinary(BinaryExpression binaryExpression)
         {

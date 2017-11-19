@@ -23,12 +23,15 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbStringSubstringTranslator : IMethodCallTranslator
     {
-        private static readonly MethodInfo _methodInfo = typeof(string).GetRuntimeMethod(nameof(string.Substring), new[] { typeof(int), typeof(int) });
+        private static readonly MethodInfo _methodInfo
+            = typeof(string).GetRuntimeMethod(nameof(string.Substring), new[] { typeof(int), typeof(int) });
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
             if (!_methodInfo.Equals(methodCallExpression.Method))
+            {
                 return null;
+            }
 
             var from = methodCallExpression.Arguments[0].NodeType == ExpressionType.Constant
                 ? (Expression)Expression.Constant((int)((ConstantExpression)methodCallExpression.Arguments[0]).Value + 1)

@@ -16,12 +16,12 @@
 
 using EntityFrameworkCore.FirebirdSql.Metadata;
 using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure; 
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal; 
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql
-{   
+{
     public static class FbPropertyBuilderExtensions
     {
         public static PropertyBuilder UseFirebirdIdentityColumn(this PropertyBuilder propertyBuilder)
@@ -30,10 +30,8 @@ namespace EntityFrameworkCore.FirebirdSql
             return propertyBuilder;
         }
 
-        public static PropertyBuilder<TProperty> UseFirebirdIdentityColumn<TProperty>( this PropertyBuilder<TProperty> propertyBuilder)
-        {
-            return (PropertyBuilder<TProperty>)UseFirebirdIdentityColumn((PropertyBuilder) propertyBuilder);
-        }
+        public static PropertyBuilder<TProperty> UseFirebirdIdentityColumn<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
+            => (PropertyBuilder<TProperty>)UseFirebirdIdentityColumn((PropertyBuilder)propertyBuilder);
 
         public static PropertyBuilder UseFirebirdSequenceTrigger(this PropertyBuilder propertyBuilder)
         {
@@ -42,13 +40,9 @@ namespace EntityFrameworkCore.FirebirdSql
         }
 
         public static PropertyBuilder<TProperty> UseFirebirdSequenceTrigger<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
-        {
-            return (PropertyBuilder<TProperty>)UseFirebirdSequenceTrigger((PropertyBuilder) propertyBuilder);
-        }
+            => (PropertyBuilder<TProperty>)UseFirebirdSequenceTrigger((PropertyBuilder)propertyBuilder);
 
         private static FbPropertyBuilderAnnotations GetFbInternalBuilder(PropertyBuilder propertyBuilder)
-        {
-            return propertyBuilder.GetInfrastructure<InternalPropertyBuilder>().Firebird(ConfigurationSource.Explicit);
-        }
+            => propertyBuilder.GetInfrastructure<InternalPropertyBuilder>().Firebird(ConfigurationSource.Explicit);
     }
 }

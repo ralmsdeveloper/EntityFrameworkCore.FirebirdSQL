@@ -21,14 +21,10 @@ namespace System.Text
     internal static class StringBuilderExtensions
     {
         public static StringBuilder AppendJoin(this StringBuilder stringBuilder, IEnumerable<string> values, string separator = ", ")
-        {
-            return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
-        }
+            => stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
 
         public static StringBuilder AppendJoin(this StringBuilder stringBuilder, string separator, params string[] values)
-        {
-            return stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
-        }
+            => stringBuilder.AppendJoin(values, (sb, value) => sb.Append(value), separator);
 
         public static StringBuilder AppendJoin<T>(
             this StringBuilder stringBuilder,
@@ -66,7 +62,9 @@ namespace System.Text
             }
 
             if (appended)
+            {
                 stringBuilder.Length -= separator.Length;
+            }
 
             return stringBuilder;
         }

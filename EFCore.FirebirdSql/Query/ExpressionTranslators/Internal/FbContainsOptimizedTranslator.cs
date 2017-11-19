@@ -23,12 +23,15 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbContainsOptimizedTranslator : IMethodCallTranslator
     {
-        static readonly MethodInfo MethodInfo = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
+        private static readonly MethodInfo _methodInfo
+            = typeof(string).GetRuntimeMethod(nameof(string.Contains), new[] { typeof(string) });
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
         {
-            if (!methodCallExpression.Method.Equals(MethodInfo))
+            if (!methodCallExpression.Method.Equals(_methodInfo))
+            {
                 return null;
+            }
 
             return Expression.GreaterThan(
                 new SqlFunctionExpression("POSITION", typeof(int), new[]

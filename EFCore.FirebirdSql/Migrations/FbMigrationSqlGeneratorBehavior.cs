@@ -21,12 +21,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 {
     public class FbMigrationSqlGeneratorBehavior : IFbMigrationSqlGeneratorBehavior
     {
-        readonly ISqlGenerationHelper _sqlHelper;
+        private readonly ISqlGenerationHelper _sqlHelper;
 
         public FbMigrationSqlGeneratorBehavior(ISqlGenerationHelper sqlHelper)
-        {
-            _sqlHelper = sqlHelper;
-        }
+            => _sqlHelper = sqlHelper;
 
         private string SequenceName(string column, string table)
             => $"GEN_{column}_{table}";

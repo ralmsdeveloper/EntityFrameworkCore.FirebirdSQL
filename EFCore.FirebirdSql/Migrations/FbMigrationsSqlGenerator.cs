@@ -234,14 +234,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override void Generate(CreateIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            Generate(operation, model, builder, true);
-        }
+            => Generate(operation, model, builder, true);
 
         public virtual void Generate(FbCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            FbConnection.CreateDatabase(operation.ConnectionStringBuilder.ToString());
-        }
+            => FbConnection.CreateDatabase(operation.ConnectionStringBuilder.ToString());
 
         public virtual void Generate(FbDropDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
@@ -377,14 +373,12 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         public virtual void Rename(string schema, string name, string newName, string type, MigrationCommandListBuilder builder)
-        {
-            builder
+            => builder
                 .Append("ALTER ")
                 .Append(type)
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(name, schema))
                 .Append(" TO ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(newName, schema));
-        }
 
         protected override void ForeignKeyAction(ReferentialAction referentialAction, MigrationCommandListBuilder builder)
         {

@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbConvertTranslator : IMethodCallTranslator
     {
-        static readonly Dictionary<string, string> TypeMapping = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> TypeMapping = new Dictionary<string, string>
         {
             [nameof(Convert.ToByte)] = "SMALLINT",
             [nameof(Convert.ToDecimal)] = $"DECIMAL({FbTypeMapper.DefaultDecimalPrecision},{FbTypeMapper.DefaultDecimalScale})",
@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
             [nameof(Convert.ToString)] = $"VARCHAR({FbTypeMapper.VarcharMaxSize})"
         };
 
-        static readonly HashSet<Type> SuportedTypes = new HashSet<Type>
+        private static readonly HashSet<Type> _suportedTypes = new HashSet<Type>
         {
             typeof(bool),
             typeof(byte),
@@ -51,14 +51,15 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
             typeof(string)
         };
 
-        static readonly IEnumerable<MethodInfo> SupportedMethods
-            = TypeMapping.Keys
-                         .SelectMany(t => typeof(Convert).GetTypeInfo()
-                         .GetDeclaredMethods(t)
-                         .Where(m => m.GetParameters().Length == 1 && SuportedTypes.Contains(m.GetParameters().First().ParameterType)));
+        private static readonly IEnumerable<MethodInfo> _supportedMethods
+            = TypeMapping
+                .Keys
+                .SelectMany(t => typeof(Convert).GetTypeInfo()
+                .GetDeclaredMethods(t)
+                .Where(m => m.GetParameters().Length == 1 && _suportedTypes.Contains(m.GetParameters().First().ParameterType)));
 
         public virtual Expression Translate(MethodCallExpression methodCallExpression)
-            => SupportedMethods.Contains(methodCallExpression.Method)
+            => _supportedMethods.Contains(methodCallExpression.Method)
                    ? new ExplicitCastExpression(methodCallExpression.Arguments[0], methodCallExpression.Type)
                    : null;
     }
