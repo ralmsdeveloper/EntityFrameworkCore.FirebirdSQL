@@ -95,15 +95,18 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
                 commandStringBuilder
                     .Append($"UPDATE {SqlGenerationHelper.DelimitIdentifier(name)} SET ")
-                    .AppendJoinUpadate(writeOperations, SqlGenerationHelper, (sb, o, helper) =>
-                    {
-                        if (o.IsWrite)
+                    .AppendJoinUpadate(
+                        writeOperations,
+                        SqlGenerationHelper,
+                        (sb, o, helper) =>
                         {
-                            sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
-                                .Append(" = ")
-                                .Append($":{o.ParameterName}");
-                        }
-                    });
+                            if (o.IsWrite)
+                            {
+                                sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
+                                    .Append(" = ")
+                                    .Append($":{o.ParameterName}");
+                            }
+                        });
 
                 if (conditionsOperations.Any())
                 {

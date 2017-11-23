@@ -37,7 +37,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             using (var context = CreateContext())
             {
-                for (var i = 1; i <= 4000; i++)
+                for (var i = 1; i <= 1000; i++)
                 {
                     context.Author.Add(new Author
                     {
@@ -97,13 +97,13 @@ namespace EFCore.FirebirdSql.FunctionalTests
             var removed = 0;
             using (var context = CreateContext())
             {
-                for (var i = 1; i <= 4000; i++)
+                for (var i = 1; i <= 1000; i++)
                 {
                     context.Author.Remove(context.Author.Single(r => r.AuthorId == i));
                     removed += context.SaveChanges();
                 }
             }
-            Assert.Equal(4000, removed);
+            Assert.Equal(1000, removed);
         }
     }
 }

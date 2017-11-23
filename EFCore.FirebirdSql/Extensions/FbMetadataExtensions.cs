@@ -15,31 +15,28 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata; 
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace EntityFrameworkCore.FirebirdSql.Extensions
-{ 
+{
     public static class FbMetadataExtensions
     {
-        public static FbPropertyAnnotations Firebird(this IMutableProperty property)
-            => (FbPropertyAnnotations)Firebird((IProperty)property);
-        
-        public static IFbPropertyAnnotations Firebird(this IProperty property)
+        public static FbPropertyAnnotations Firebird(this IProperty property)
             => new FbPropertyAnnotations(property);
-        
-        public static FbEntityTypeAnnotations Firebird(this IMutableEntityType entityType)
-            => (FbEntityTypeAnnotations)Firebird((IEntityType)entityType);
-        
-        public static IFbEntityTypeAnnotations Firebird(this IEntityType entityType)
-            => new FbEntityTypeAnnotations(entityType);
-        
+
         public static RelationalKeyAnnotations Firebird(this IKey key)
             => new RelationalKeyAnnotations(key);
-        
-        public static FbModelAnnotations Firebird(this IMutableModel model)
-            => (FbModelAnnotations)Firebird((IModel)model);
-        
-        public static IFbModelAnnotations Firebird(this IModel model)
+
+        public static RelationalForeignKeyAnnotations Firebird(this IForeignKey foreignKey)
+            => new RelationalForeignKeyAnnotations(foreignKey);
+
+        public static RelationalIndexAnnotations Firebird(this IIndex index)
+            => new RelationalIndexAnnotations(index);
+
+        public static FbModelAnnotations Firebird(this IModel model)
             => new FbModelAnnotations(model);
+
+        public static RelationalEntityTypeAnnotations Firebird(this IEntityType entityType)
+            => new RelationalEntityTypeAnnotations(entityType);
     }
 }

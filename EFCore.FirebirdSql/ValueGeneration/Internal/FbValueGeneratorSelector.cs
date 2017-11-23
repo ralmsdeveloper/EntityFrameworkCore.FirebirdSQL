@@ -28,9 +28,7 @@ namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 
         public FbValueGeneratorSelector(ValueGeneratorSelectorDependencies dependencies, IFbOptions options)
             : base(dependencies)
-        {
-            _options = options;
-        }
+            => _options = options;
 
         public override ValueGenerator Create(IProperty property, IEntityType entityType)
         {

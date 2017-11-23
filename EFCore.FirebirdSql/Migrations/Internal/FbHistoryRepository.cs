@@ -58,18 +58,12 @@ WHERE
         public override string GetCreateIfNotExistsScript() => GetCreateScript();
 
         public override string GetBeginIfExistsScript(string migrationId)
-        {
-            throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
-        }
+            => throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
 
         public override string GetBeginIfNotExistsScript(string migrationId)
-        {
-            throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
-        }
+            => throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
 
         public override string GetEndIfScript()
-        {
-            throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
-        }
+            => throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
     }
 }

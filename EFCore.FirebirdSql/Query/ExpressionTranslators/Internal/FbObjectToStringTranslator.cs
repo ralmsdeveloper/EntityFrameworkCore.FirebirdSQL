@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 { 
     public class FbObjectToStringTranslator : IMethodCallTranslator
     {
-        static readonly List<Type> SupportedTypes = new List<Type>
+        static readonly List<Type> _supportedTypes = new List<Type>
         {
             typeof(int),
             typeof(long),
@@ -51,7 +51,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
             => methodCallExpression.Method.Name == nameof(ToString) &&
                methodCallExpression.Arguments.Count == 0 &&
                methodCallExpression.Object != null &&
-               SupportedTypes.Contains(methodCallExpression.Object.Type.UnwrapNullableType().UnwrapEnumType())
+               _supportedTypes.Contains(methodCallExpression.Object.Type.UnwrapNullableType().UnwrapEnumType())
                 ? new ExplicitCastExpression(methodCallExpression.Object, typeof(string))
                 : null;
     }

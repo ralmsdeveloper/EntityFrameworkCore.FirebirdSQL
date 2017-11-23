@@ -159,14 +159,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override void Generate(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            throw new NotImplementedException("The create sequence feature is not yet implemented.");
-        }
+            => throw new NotImplementedException("The create sequence feature is not yet implemented.");
 
         protected override void Generate(RenameIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            throw new NotImplementedException("The RenameIndexOperation feature is not yet implemented.");
-        }
+            => throw new NotImplementedException("The RenameIndexOperation feature is not yet implemented.");
 
         protected override void Generate(RenameSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
@@ -193,9 +189,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override void Generate(RenameTableOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            throw new NotImplementedException("The rename table feature is not yet implemented.");
-        }
+            => throw new NotImplementedException("The rename table feature is not yet implemented.");
 
         protected override void Generate(CreateIndexOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate)
         {
