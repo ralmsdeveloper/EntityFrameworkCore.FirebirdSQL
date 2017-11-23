@@ -29,8 +29,8 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Internal
         public static FbEntityTypeBuilderAnnotations Firebird(this InternalEntityTypeBuilder builder, ConfigurationSource configurationSource)
             => new FbEntityTypeBuilderAnnotations(builder, configurationSource);
          
-        public static FbKeyBuilderAnnotations Firebird(this InternalKeyBuilder builder, ConfigurationSource configurationSource)
-            => new FbKeyBuilderAnnotations(builder, configurationSource);
+        public static RelationalKeyBuilderAnnotations Firebird(this InternalKeyBuilder builder, ConfigurationSource configurationSource)
+            => new RelationalKeyBuilderAnnotations(builder, configurationSource);
 
         public static RelationalIndexBuilderAnnotations Firebird(this InternalIndexBuilder builder, ConfigurationSource configurationSource)
             => new RelationalIndexBuilderAnnotations(builder, configurationSource);

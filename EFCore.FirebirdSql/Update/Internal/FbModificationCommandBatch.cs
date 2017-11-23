@@ -341,8 +341,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             catch (Exception ex)
             {
                 throw new DbUpdateException(
-                RelationalStrings.UpdateStoreException,
-                ex, ModificationCommands[commandIndex].Entries);
+                    RelationalStrings.UpdateStoreException,
+                    ex, ModificationCommands[commandIndex].Entries);
             }
         }
 
@@ -354,6 +354,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             {
                 throw new ArgumentNullException(nameof(relationalReader));
             }
+
             var dataReader = relationalReader.DbDataReader;
             var commandIndex = 0;
             try

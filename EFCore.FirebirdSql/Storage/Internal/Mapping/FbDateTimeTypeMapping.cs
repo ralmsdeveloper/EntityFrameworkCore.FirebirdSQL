@@ -23,13 +23,11 @@ namespace EntityFrameworkCore.FirebirdSql.Storage
 { 
     public class FbDateTimeTypeMapping : DateTimeTypeMapping
     {
-        readonly FbDbType _fbDbType;
+       private readonly FbDbType _fbDbType;
 
         public FbDateTimeTypeMapping(string storeType, FbDbType fbDbType)
             : base(storeType)
-        {
-            _fbDbType = fbDbType;
-        }
+            => _fbDbType = fbDbType;
 
         protected override void ConfigureParameter(DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;

@@ -33,11 +33,8 @@ namespace EntityFrameworkCore.FirebirdSql.Extensions
         public static IFbEntityTypeAnnotations Firebird(this IEntityType entityType)
             => new FbEntityTypeAnnotations(entityType);
         
-        public static FbKeyAnnotations Firebird(this IMutableKey key)
-            => (FbKeyAnnotations)Firebird((IKey)key);
-        
-        public static IFbKeyAnnotations Firebird(this IKey key)
-            => new FbKeyAnnotations(key);
+        public static RelationalKeyAnnotations Firebird(this IKey key)
+            => new RelationalKeyAnnotations(key);
         
         public static FbModelAnnotations Firebird(this IMutableModel model)
             => (FbModelAnnotations)Firebird((IModel)model);

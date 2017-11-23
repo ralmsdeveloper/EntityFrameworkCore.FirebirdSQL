@@ -160,7 +160,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     .AppendJoin(operations, SqlGenerationHelper, (sb, o, helper) =>
                     {
                         if (o.IsWrite)
+                        {
                             sb.Append(":").Append(o.ParameterName);
+                        } 
                     })
                     .Append(")");
             }
@@ -169,16 +171,20 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         private void AppendWhereClauseCustom(StringBuilder commandStringBuilder, ColumnModification[] columns)
         {
             if (columns.FirstOrDefault(p => p.IsCondition) == null)
+            {
                 return;
+            }
 
             commandStringBuilder
                 .Append(" WHERE ")
                 .AppendJoin(columns, SqlGenerationHelper, (sb, o, helper) =>
                 {
                     if (o.IsCondition)
+                    {
                         sb.Append(SqlGenerationHelper.DelimitIdentifier(o.ColumnName))
                             .Append(" = ")
                             .Append($":{o.ParameterName}");
+                    }
                 }, " AND ");
         }
 

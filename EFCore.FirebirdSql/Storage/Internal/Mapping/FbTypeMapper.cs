@@ -139,7 +139,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         public override void ValidateTypeName(string storeType)
         {
             if (_disallowedMappings.Contains(storeType))
+            {
                 throw new ArgumentException($"Data type '{storeType}' is invalid.");
+            }
         }
 
         protected override string GetColumnType(IProperty property)

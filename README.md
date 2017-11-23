@@ -108,7 +108,7 @@ IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
  var cx = new BlogContext();  
   
  var blog = cx.Blog.Find(1);
- cx.Attach(registro);
+ cx.Attach(blog);
  blog.Url = "www.ralms.net";
  cx.SaveChanges(); 
 ```
@@ -127,5 +127,5 @@ IDENTITY INCREMENT FOR FIREBIRD 3.X And 4.0 (Alpha)
 //Sample Use
  var cx = new BlogContext();  
   
- var blog = cx.Blog.Where(p => p.BlogId == 1).ToList(); 
+ var blogs = cx.Blog.Where(p => p.BlogId > 0).ToList(); 
 ```
