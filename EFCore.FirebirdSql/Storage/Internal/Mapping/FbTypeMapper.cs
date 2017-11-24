@@ -70,7 +70,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             _storeTypeMappings = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
             {
                 { "BOOLEAN", _boolean },
-                { "CHAR(1)", _boolean },
                 { "SMALLINT", _smallint },
                 { "INTEGER", _integer },
                 { "BIGINT", _bigint },
