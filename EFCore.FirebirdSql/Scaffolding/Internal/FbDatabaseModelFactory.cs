@@ -248,7 +248,7 @@ GROUP BY CONST.RDB$CONSTRAINT_NAME, RELCONST.RDB$RELATION_NAME,REF.RDB$DELETE_RU
 
                             if (!string.IsNullOrWhiteSpace(description))
                             {
-                                column.AddAnnotation("Description", description.Replace("\n", "; "));
+                                column.AddAnnotation("Description", description.Replace(System.Environment.NewLine, "; "));
                             }
 
                             table.Value.Columns.Add(column);
