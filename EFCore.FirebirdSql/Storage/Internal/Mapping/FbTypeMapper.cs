@@ -53,6 +53,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         private readonly FloatTypeMapping _float = new FloatTypeMapping("FLOAT");
         private readonly DoubleTypeMapping _double = new DoubleTypeMapping("DOUBLE PRECISION");
         private readonly DecimalTypeMapping _decimal = new DecimalTypeMapping($"DECIMAL({DefaultDecimalPrecision},{DefaultDecimalScale})");
+        private readonly DecimalTypeMapping _numeric = new DecimalTypeMapping($"NUMERIC({DefaultDecimalPrecision},{DefaultDecimalScale})");
 
         private readonly FbDateTimeTypeMapping _timeStamp = new FbDateTimeTypeMapping("TIMESTAMP", FbDbType.TimeStamp);
         private readonly FbDateTimeTypeMapping _date = new FbDateTimeTypeMapping("DATE", FbDbType.Date);
@@ -80,6 +81,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
                 { "FLOAT", _float },
                 { "DOUBLE PRECISION", _double },
                 { "DECIMAL", _decimal },
+                { "NUMERIC", _decimal },
                 { "TIMESTAMP", _timeStamp },
                 { "DATE", _date },
                 { "TIME", _time },
