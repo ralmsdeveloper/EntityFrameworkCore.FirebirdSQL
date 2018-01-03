@@ -80,6 +80,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
                 { "FLOAT", _float },
                 { "DOUBLE PRECISION", _double },
                 { "DECIMAL", _decimal },
+                { "NUMERIC", _decimal },
                 { "TIMESTAMP", _timeStamp },
                 { "DATE", _date },
                 { "TIME", _time },
