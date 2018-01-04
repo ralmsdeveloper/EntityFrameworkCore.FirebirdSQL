@@ -142,9 +142,8 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         }
 
         protected override void SequenceOptions(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
-        {
-            base.SequenceOptions(operation, model, builder);
-        }
+            => base.SequenceOptions(operation, model, builder);
+
         protected override void SequenceOptions(
             string schema,
             string name,
