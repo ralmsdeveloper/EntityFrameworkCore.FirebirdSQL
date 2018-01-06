@@ -56,10 +56,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
                                 Title = $"Firebird 3.0.2 {i}"
                             }
                         },
-                        Active = true
+                       // Active = true
                     });
-                    context.SaveChanges();
                 }
+                context.SaveChanges();
             }
 
             using (var context = CreateContext())

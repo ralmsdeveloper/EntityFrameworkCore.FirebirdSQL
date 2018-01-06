@@ -44,7 +44,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public double? TestdoubleNullable { get; set; }
 
-        public bool Active { get; set; }
+        //public bool Active { get; set; }
 
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
