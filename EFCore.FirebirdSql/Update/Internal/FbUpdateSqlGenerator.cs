@@ -5,7 +5,7 @@
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -39,6 +39,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         public ResultSetMapping AppendBulkInsertOperation(
             StringBuilder commandStringBuilder,
             StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
@@ -52,10 +53,17 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 var operations = modificationCommands[i].ColumnModifications;
                 var writeOperations = operations.Where(o => o.IsWrite).ToArray();
                 var readOperations = operations.Where(o => o.IsRead).ToArray();
+
+                if (readOperations.Length > 0 && dataReturnField.Length == 0)
+                {
+                    AppendReturnOutputBlock(dataReturnField, readOperations, operations);
+                }
+
                 if (writeOperations.Any())
                 {
                     AppendBlockVariable(variablesParameters, writeOperations);
                 }
+
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, writeOperations);
                 AppendValuesInsert(commandStringBuilder, writeOperations);
@@ -202,17 +210,42 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             }
             else
             {
-                var primaryKey = allOperations.First();
-                if (primaryKey.IsKey)
-                {
-                    commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(primaryKey.ColumnName)} INTO :AffectedRows;");
-                }
-                else
-                {
-                    throw new Exception("Error primary key read!");
-                }
+                commandStringBuilder
+                    .Append(" RETURNING ")
+                    .AppendJoin(operations, (b, e) =>
+                    {
+                        b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
+                    }, ", ")
+                    .Append(" INTO ")
+                    .AppendJoin(operations, (b, e) =>
+                    {
+                        b.Append($":{e.ColumnName}");
+                    }, ", ")
+                    .AppendLine(SqlGenerationHelper.StatementTerminator);
             }
             commandStringBuilder.AppendLine("SUSPEND;");
+        }
+
+        private void AppendReturnOutputBlock(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
+        {
+            if (allOperations.Count > 0 && allOperations[0] == operations[0])
+            {
+                commandStringBuilder.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
+                commandStringBuilder.AppendLine("AffectedRows=0;");
+            }
+            else
+            {
+                commandStringBuilder
+                    .Append(" RETURNS (")
+                    .AppendJoin(operations, (b, e) =>
+                    {
+                        b.Append(e.ColumnName);
+                        b.Append(" ");
+                        b.Append(GetDataType(e.Property));
+
+                    }, ", ")
+                    .AppendLine(") AS BEGIN");
+            }
         }
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)

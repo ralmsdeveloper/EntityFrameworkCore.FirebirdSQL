@@ -25,6 +25,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         ResultSetMapping AppendBulkInsertOperation(
             StringBuilder commandStringBuilder,
             StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
 

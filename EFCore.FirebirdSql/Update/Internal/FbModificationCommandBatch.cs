@@ -37,6 +37,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         private readonly List<ModificationCommand> _bulkUpdateCommands;
         private readonly List<ModificationCommand> _bulkDeleteCommands;
         private readonly StringBuilder _variablesParameters;
+        private readonly StringBuilder _dataReturnField;
 
         public FbModificationCommandBatch(IRelationalCommandBuilderFactory commandBuilderFactory, ISqlGenerationHelper sqlGenerationHelper, IFbUpdateSqlGenerator updateSqlGenerator, IRelationalValueBufferFactoryFactory valueBufferFactoryFactory, int? maxBatchSize)
             : base(commandBuilderFactory, sqlGenerationHelper, updateSqlGenerator, valueBufferFactoryFactory)
@@ -48,6 +49,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
             _maxBatchSize = Math.Min(maxBatchSize ?? int.MaxValue, MaxRowCount);
             _variablesParameters = new StringBuilder();
+            _dataReturnField = new StringBuilder();
             _bulkInsertCommands = new List<ModificationCommand>();
             _bulkUpdateCommands = new List<ModificationCommand>();
             _bulkDeleteCommands = new List<ModificationCommand>();
@@ -99,6 +101,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             base.ResetCommandText();
             _variablesParameters.Clear();
+            _dataReturnField.Clear();
             _bulkInsertCommands.Clear();
             _bulkUpdateCommands.Clear();
             _bulkDeleteCommands.Clear();
@@ -109,6 +112,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             var sbCommands = new StringBuilder();
             var sbExecuteBlock = new StringBuilder();
             _variablesParameters.Clear();
+            _dataReturnField.Clear();
 
             //Commands Insert/Update/Delete
             sbCommands.AppendLine(base.GetCommandText());
@@ -125,8 +129,8 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 sbExecuteBlock.Append(parameters);
                 sbExecuteBlock.AppendLine(") ");
             }
-            sbExecuteBlock.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
-            sbExecuteBlock.AppendLine("AffectedRows=0;");
+
+            sbExecuteBlock.Append(_dataReturnField);
             sbExecuteBlock.Append(sbCommands);
             sbExecuteBlock.AppendLine("END;");
 
@@ -191,7 +195,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
             var stringBuilder = new StringBuilder();
             var resultSetMapping = UpdateSqlGenerator()
-                .AppendBulkInsertOperation(stringBuilder, _variablesParameters, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
+                .AppendBulkInsertOperation(stringBuilder, _variablesParameters, _dataReturnField, _bulkInsertCommands, lastIndex - _bulkInsertCommands.Count);
 
             for (var i = lastIndex - _bulkInsertCommands.Count; i < lastIndex; i++)
             {
@@ -329,8 +333,10 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                     }
 
                     var bufferFactory = CreateValueBufferFactory(modifications.ColumnModifications);
+                    var buffer = bufferFactory.Create(dataReader);
                     modifications.PropagateResults(bufferFactory.Create(dataReader));
                     dataReader.NextResult();
+
                     commandIndex++;
                 }
             }
