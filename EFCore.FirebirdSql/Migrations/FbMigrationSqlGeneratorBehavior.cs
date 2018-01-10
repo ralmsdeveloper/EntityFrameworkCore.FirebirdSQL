@@ -50,7 +50,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             builder.AppendLine("begin");
             builder.Indent();
             builder.Append("execute statement 'create sequence ");
-            builder.Append(sequenceName);
+            builder.Append(_sqlHelper.DelimitIdentifier(sequenceName));
             builder.Append("';");
             builder.DecrementIndent();
             builder.AppendLine();
@@ -74,7 +74,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             builder.Append("new.");
             builder.Append(_sqlHelper.DelimitIdentifier(columnName));
             builder.Append(" = next value for ");
-            builder.Append(sequenceName);
+            builder.Append(_sqlHelper.DelimitIdentifier(sequenceName));
             builder.Append(";");
             builder.DecrementIndent();
             builder.AppendLine();

@@ -192,9 +192,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
-            => commandStringBuilder
-                .AppendLine("IF (ROW_COUNT > 0) THEN")
-                .AppendLine("   AffectedRows=AffectedRows+1;");
+            => commandStringBuilder.AppendLine("   AffectedRows=AffectedRows+1;");
 
         private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
         {
@@ -202,8 +200,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             {
                 commandStringBuilder
                     .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
-                    .AppendLine("IF (ROW_COUNT > 0) THEN")
-                    .AppendLine("   SUSPEND;");
+                    .AppendLine("SUSPEND;");
             }
         }
 
@@ -211,7 +208,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             commandStringBuilder
                 .AppendLine(" RETURNING ROW_COUNT INTO :AffectedRows;")
-                .AppendLine("   SUSPEND;");
+                .AppendLine("SUSPEND;");
 
             return ResultSetMapping.LastInResultSet;
         }

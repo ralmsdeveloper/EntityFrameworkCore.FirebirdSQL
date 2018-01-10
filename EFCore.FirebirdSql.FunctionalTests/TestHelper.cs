@@ -38,7 +38,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public decimal TestDecimal { get; set; }
 
-        public double TestDouble { get; set; } 
+        public double TestDouble { get; set; }
 
         public int? TestIntNullable { get; set; }
 
