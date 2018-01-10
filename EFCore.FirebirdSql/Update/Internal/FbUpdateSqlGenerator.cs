@@ -165,7 +165,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                         if (o.IsWrite)
                         {
                             sb.Append(":").Append(o.ParameterName);
-                        } 
+                        }
                     })
                     .Append(")");
             }
@@ -198,10 +198,21 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
-                commandStringBuilder
-                    .AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;")
-                    .AppendLine("SUSPEND;");
+                commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;");
             }
+            else
+            {
+                var primaryKey = allOperations.First();
+                if (primaryKey.IsKey)
+                {
+                    commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(primaryKey.ColumnName)} INTO :AffectedRows;");
+                }
+                else
+                {
+                    throw new Exception("Error primary key read!");
+                }
+            }
+            commandStringBuilder.AppendLine("SUSPEND;");
         }
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)
