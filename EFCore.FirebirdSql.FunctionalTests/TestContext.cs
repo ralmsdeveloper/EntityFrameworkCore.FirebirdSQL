@@ -29,7 +29,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = @"User=SYSDBA;Password=masterkey;Database=C:\firebirdefcore\EFCoreSample.fdb;DataSource=localhost;Port=3050;";
+            var connectionString = $"User=SYSDBA;Password=masterkey;Database={System.AppDomain.CurrentDomain.BaseDirectory}EFCoreSample.fdb;DataSource=localhost;Port=3050;";
 
             optionsBuilder
                 .UseFirebird(connectionString)
