@@ -26,9 +26,8 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
     {
         public FbOptionsExtension Settings { get; private set; }
         public Version ServerVersion { get; private set; }
-
-        public int ObjectLengthName
-            => (ServerVersion ?? GetSettings(Settings.ConnectionString).ServerVersion).Major == 3 ? 31 : 63;
+        public bool IsLegacyDialect { get; private set; }
+        public int ObjectLengthName => (ServerVersion ?? GetSettings(Settings.ConnectionString).ServerVersion).Major == 3 ? 31 : 63;
 
         public virtual void Initialize(IDbContextOptions options) => Settings = GetOptions(options);
 
@@ -50,6 +49,11 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
                 {
                     connection.Open();
                     ServerVersion = Data.FbServerProperties.ParseServerVersion(connection.ServerVersion);
+                    using (var cmd = connection.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT MON$SQL_DIALECT FROM MON$DATABASE";
+                        IsLegacyDialect = Convert.ToInt32(cmd.ExecuteScalar()) == 1;
+                    }
                     connection.Close();
                 }
             }

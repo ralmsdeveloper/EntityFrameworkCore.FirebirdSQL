@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Update;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
@@ -31,10 +32,17 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
     {
         private readonly IRelationalTypeMapper _typeMapperRelational;
         private string _commaAppend;
+        private string _typeReturn;
 
-        public FbUpdateSqlGenerator(UpdateSqlGeneratorDependencies dependencies, IRelationalTypeMapper typeMapper)
+        public FbUpdateSqlGenerator(
+            UpdateSqlGeneratorDependencies dependencies,
+            IRelationalTypeMapper typeMapper,
+            IFbOptions fbOptions)
             : base(dependencies)
-            => _typeMapperRelational = typeMapper;
+        {
+            _typeMapperRelational = typeMapper;
+            _typeReturn = fbOptions.IsLegacyDialect ? "INT" : "BIGINT";
+        }
 
         public ResultSetMapping AppendBulkInsertOperation(
             StringBuilder commandStringBuilder,
@@ -230,7 +238,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         {
             if (allOperations.Count > 0 && allOperations[0] == operations[0])
             {
-                commandStringBuilder.AppendLine("RETURNS (AffectedRows BIGINT) AS BEGIN");
+                commandStringBuilder.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
                 commandStringBuilder.AppendLine("AffectedRows=0;");
             }
             else
