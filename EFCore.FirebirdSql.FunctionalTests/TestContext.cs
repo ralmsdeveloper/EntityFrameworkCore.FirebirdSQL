@@ -29,8 +29,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var connectionString = $"User=SYSDBA;Password=masterkey;Database={System.AppDomain.CurrentDomain.BaseDirectory}\\EFCoreSample.fdb;DataSource=localhost;Port=3050;";
+
             optionsBuilder
-                .UseFirebird("User=SYSDBA;Password=masterkey;Database=EFCoreSample.fdb;DataSource=localhost;Port=3050;")
+                .UseFirebird(connectionString)
                 .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
 
             var loggerFactory = new LoggerFactory().AddConsole().AddDebug();

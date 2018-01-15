@@ -146,7 +146,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
             var stringBuilder = new StringBuilder();
             var resultSetMapping = UpdateSqlGenerator()
-                .AppendBulkDeleteOperation(stringBuilder, _variablesParameters, _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
+                .AppendBulkDeleteOperation(stringBuilder, _variablesParameters, _dataReturnField, _bulkDeleteCommands, lastIndex - _bulkDeleteCommands.Count);
 
             for (var i = lastIndex - _bulkDeleteCommands.Count; i < lastIndex; i++)
             {
@@ -171,7 +171,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             var stringBuilder = new StringBuilder();
             var headStringBuilder = new StringBuilder();
             var resultSetMapping = UpdateSqlGenerator()
-                .AppendBulkUpdateOperation(stringBuilder, _variablesParameters, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
+                .AppendBulkUpdateOperation(stringBuilder, _variablesParameters, _dataReturnField, _bulkUpdateCommands, lastIndex - _bulkUpdateCommands.Count);
 
             for (var i = lastIndex - _bulkUpdateCommands.Count; i < lastIndex; i++)
             {

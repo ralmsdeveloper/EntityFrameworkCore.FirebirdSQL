@@ -32,12 +32,14 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         ResultSetMapping AppendBulkUpdateOperation(
             StringBuilder commandStringBuilder,
             StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
 
         ResultSetMapping AppendBulkDeleteOperation(
             StringBuilder commandStringBuilder,
             StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition);
     }

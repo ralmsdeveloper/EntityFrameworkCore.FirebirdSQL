@@ -66,6 +66,11 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 {
                     AppendReturnOutputBlock(dataReturnField, readOperations, operations);
                 }
+                else if(readOperations.Length == 0 && dataReturnField.Length == 0)
+                {
+                    dataReturnField.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
+                    dataReturnField.AppendLine("AffectedRows=0;");
+                }
 
                 if (writeOperations.Any())
                 {
@@ -92,9 +97,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         public ResultSetMapping AppendBulkUpdateOperation(
             StringBuilder commandStringBuilder,
             StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
             IReadOnlyList<ModificationCommand> modificationCommands,
             int commandPosition)
         {
+            if (dataReturnField.Length == 0)
+            {
+                dataReturnField.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
+                dataReturnField.AppendLine("AffectedRows=0;");
+            }
             commandStringBuilder.Clear();
             _commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
@@ -137,8 +148,19 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             return ResultSetMapping.NotLastInResultSet;
         }
 
-        public ResultSetMapping AppendBulkDeleteOperation(StringBuilder commandStringBuilder, StringBuilder variablesParameters, IReadOnlyList<ModificationCommand> modificationCommands, int commandPosition)
+        public ResultSetMapping AppendBulkDeleteOperation(
+            StringBuilder commandStringBuilder,
+            StringBuilder variablesParameters,
+            StringBuilder dataReturnField,
+            IReadOnlyList<ModificationCommand> modificationCommands,
+            int commandPosition)
         {
+            if (dataReturnField.Length == 0)
+            {
+                dataReturnField.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
+                dataReturnField.AppendLine("AffectedRows=0;");
+            }
+
             var name = modificationCommands[0].TableName;
             _commaAppend = variablesParameters.Length > 0 ? "," : string.Empty;
             for (var i = 0; i < modificationCommands.Count; i++)
