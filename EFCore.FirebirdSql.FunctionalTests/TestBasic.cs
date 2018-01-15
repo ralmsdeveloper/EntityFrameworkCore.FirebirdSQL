@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -36,6 +37,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             using (var context = CreateContext())
             {
+                // Issue #21
+                context.Author.Any();
+
                 for (var i = 1; i <= 100; i++)
                 {
                     context.Author.Add(new Author

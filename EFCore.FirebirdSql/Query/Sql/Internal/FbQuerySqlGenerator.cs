@@ -25,8 +25,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
     {
-        protected override string TypedTrueLiteral => "TRUE";
-        protected override string TypedFalseLiteral => "FALSE";
+        protected override string TypedTrueLiteral => "1";
+        protected override string TypedFalseLiteral => "0";
 
         public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, SelectExpression selectExpression)
             : base(dependencies, selectExpression)
