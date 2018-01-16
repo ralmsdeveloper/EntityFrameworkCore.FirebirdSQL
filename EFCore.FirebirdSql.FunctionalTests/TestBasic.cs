@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EFCore.FirebirdSql.FunctionalTests
@@ -33,6 +34,27 @@ namespace EFCore.FirebirdSql.FunctionalTests
             {
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
+
+                // Repro Issue #23
+                if (!context.Courses.Any())
+                {
+                    var courses = new List<Course>
+                    {
+                        new Course{CourseID=1050,Credits=3,Title="Chemistry"},
+                        new Course{CourseID=4022,Credits=3,Title="Microeconomics"},
+                        new Course{CourseID=4041,Credits=3,Title="Macroeconomics"},
+                        new Course{CourseID=1045,Credits=4,Title="Calculus"},
+                        new Course{CourseID=3141,Credits=4,Title="Trigonometry"},
+                        new Course{CourseID=2021,Credits=3,Title="Composition"},
+                        new Course{CourseID=2042,Credits=4,Title="Literature"}
+                    };
+
+                    context.Courses.AddRange(courses);
+                    int r = context.SaveChanges();
+                    Assert.Equal(7, r);
+                    var list = context.Courses.AsNoTracking().ToList();
+                    Assert.Equal(7, list.Count);
+                }
             }
 
             using (var context = CreateContext())
@@ -59,7 +81,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                                 Title = $"Firebird 3.0.2 {i}"
                             }
                         },
-                       // Active = true
+                        // Active = true
                     });
                 }
                 context.SaveChanges();

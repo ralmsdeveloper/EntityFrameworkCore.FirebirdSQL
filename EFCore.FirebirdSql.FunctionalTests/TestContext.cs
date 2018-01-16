@@ -27,6 +27,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public DbSet<Book> Book { get; set; }
         public DbSet<Person> Person { get; set; }
 
+        public DbSet<Course> Courses { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = $"User=SYSDBA;Password=masterkey;Database={System.AppDomain.CurrentDomain.BaseDirectory}EFCoreSample.fdb;DataSource=localhost;Port=3050;";

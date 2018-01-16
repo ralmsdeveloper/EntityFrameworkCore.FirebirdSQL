@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -68,5 +69,16 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         [StringLength(100)]
         public string LastName { get; set; }
+    }
+
+    public class Course
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int CourseID { get; set; }
+        public int Credits { get; set; }
+        [StringLength(100)]
+        public string Title { get; set; }
+
+        public ICollection<Person> Enrollments { get; set; }
     }
 }

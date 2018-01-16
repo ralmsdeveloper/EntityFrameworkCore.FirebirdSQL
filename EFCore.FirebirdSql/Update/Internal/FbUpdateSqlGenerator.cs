@@ -88,7 +88,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 else if (readOperations.Length == 0)
                 {
                     AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
-                    resultMapping = ResultSetMapping.NoResultSet;
+                    resultMapping = ResultSetMapping.NotLastInResultSet;
                 }
             }
             return resultMapping;
