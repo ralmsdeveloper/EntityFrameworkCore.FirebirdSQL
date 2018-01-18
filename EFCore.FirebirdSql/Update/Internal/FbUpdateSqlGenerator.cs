@@ -66,7 +66,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 {
                     AppendReturnOutputBlock(dataReturnField, readOperations, operations);
                 }
-                else if(readOperations.Length == 0 && dataReturnField.Length == 0)
+                else if (readOperations.Length == 0 && dataReturnField.Length == 0)
                 {
                     dataReturnField.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
                     dataReturnField.AppendLine("AffectedRows=0;");
@@ -233,50 +233,32 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             => commandStringBuilder.AppendLine("   AffectedRows=AffectedRows+1;");
 
         private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
-        {
-            if (allOperations.Count > 0 && allOperations[0] == operations[0])
-            {
-                commandStringBuilder.AppendLine($" RETURNING {SqlGenerationHelper.DelimitIdentifier(operations.First().ColumnName)} INTO :AffectedRows;");
-            }
-            else
-            {
-                commandStringBuilder
-                    .Append(" RETURNING ")
-                    .AppendJoin(operations, (b, e) =>
-                    {
-                        b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
-                    }, ", ")
-                    .Append(" INTO ")
-                    .AppendJoin(operations, (b, e) =>
-                    {
-                        b.Append($":{e.ColumnName}");
-                    }, ", ")
-                    .AppendLine(SqlGenerationHelper.StatementTerminator);
-            }
-            commandStringBuilder.AppendLine("SUSPEND;");
-        }
+            => commandStringBuilder
+                .Append(" RETURNING ")
+                .AppendJoin(operations, (b, e) =>
+                {
+                    b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
+                }, ", ")
+                .Append(" INTO ")
+                .AppendJoin(operations, (b, e) =>
+                {
+                    b.Append($":{e.ColumnName}");
+                }, ", ")
+                .AppendLine(SqlGenerationHelper.StatementTerminator)
+                .AppendLine("SUSPEND;");
+
 
         private void AppendReturnOutputBlock(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
-        {
-            if (allOperations.Count > 0 && allOperations[0] == operations[0])
-            {
-                commandStringBuilder.AppendLine($"RETURNS (AffectedRows {_typeReturn}) AS BEGIN");
-                commandStringBuilder.AppendLine("AffectedRows=0;");
-            }
-            else
-            {
-                commandStringBuilder
-                    .Append(" RETURNS (")
-                    .AppendJoin(operations, (b, e) =>
-                    {
-                        b.Append(e.ColumnName);
-                        b.Append(" ");
-                        b.Append(GetDataType(e.Property));
+            => commandStringBuilder
+                .Append(" RETURNS (")
+                .AppendJoin(operations, (b, e) =>
+                {
+                    b.Append(e.ColumnName);
+                    b.Append(" ");
+                    b.Append(GetDataType(e.Property));
 
-                    }, ", ")
-                    .AppendLine(") AS BEGIN");
-            }
-        }
+                }, ", ")
+                .AppendLine(") AS BEGIN");
 
         protected override ResultSetMapping AppendSelectAffectedCountCommand(StringBuilder commandStringBuilder, string name, string schema, int commandPosition)
         {

@@ -20,10 +20,10 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage
-{ 
+{
     public class FbDateTimeTypeMapping : DateTimeTypeMapping
     {
-       private readonly FbDbType _fbDbType;
+        private readonly FbDbType _fbDbType;
 
         public FbDateTimeTypeMapping(string storeType, FbDbType fbDbType)
             : base(storeType)
@@ -39,15 +39,15 @@ namespace EntityFrameworkCore.FirebirdSql.Storage
                 switch (_fbDbType)
                 {
                     case FbDbType.TimeStamp:
-                        return "{0:yyyy-MM-dd HH:mm:ss}";
+                        return "'{0:yyyy-MM-dd HH:mm:ss}'";
                     case FbDbType.Date:
-                        return "{0:yyyy-MM-dd}";
+                        return "'{0:yyyy-MM-dd}'";
                     case FbDbType.Time:
-                        return "{0:HH:mm:ss}";
+                        return "'{0:HH:mm:ss}'";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
-        } 
+        }
     }
 }
