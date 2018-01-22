@@ -32,13 +32,27 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public static FirebirdTestStore GetNorthwindStore() => GetOrCreateShared("northwind", () => { });
 
         public static FirebirdTestStore GetOrCreateShared(string name, Action initializeDatabase = null)
-            => GetOrCreateShared(name, initializeDatabase);
+            => new FirebirdTestStore(name).CreateShared(initializeDatabase, true);
 
         public const int CommandTimeout = 30;
 
         private FirebirdTestStore(string name) => _name = name;
 
         public override string ConnectionString => Connection.ConnectionString;
+
+        private FirebirdTestStore CreateShared(Action initializeDatabase, bool openConnection)
+        {
+            CreateShared(typeof(FirebirdTestStore).Name + _name, initializeDatabase);
+
+            CreateConnection();
+
+            if (openConnection)
+            {
+                OpenConnection();
+            }
+
+            return this;
+        }
 
         private FirebirdTestStore CreateTransient()
         {
@@ -56,7 +70,13 @@ namespace EFCore.FirebirdSql.FunctionalTests
             OpenConnection();
         }
 
-        public override void OpenConnection() => _connection.Open();
+        public override void OpenConnection()
+        {
+            if(_connection?.State != System.Data.ConnectionState.Open)
+            {
+                _connection.Open();
+            }
+        }
 
         public int ExecuteNonQuery(string sql, params object[] parameters)
         {
@@ -89,12 +109,13 @@ namespace EFCore.FirebirdSql.FunctionalTests
             Transaction?.Dispose();
             Connection?.Dispose();
             base.Dispose();
-
-            FbConnection.ClearAllPools();
-            FbConnection.DropDatabase(ConnectionString);
         }
 
         public static string CreateConnectionString(string name)
-            => $"User=SYSDBA;Password=masterkey;Database={AppDomain.CurrentDomain.BaseDirectory}{name}.fdb;DataSource=localhost;Port=3050;";
+        =>  new FbConnectionStringBuilder("User=SYSDBA;Password=masterkey;")
+            {
+                Database = $"{AppDomain.CurrentDomain.BaseDirectory}{name}.fdb",
+                Port = 3050
+            }.ConnectionString;
     }
 }

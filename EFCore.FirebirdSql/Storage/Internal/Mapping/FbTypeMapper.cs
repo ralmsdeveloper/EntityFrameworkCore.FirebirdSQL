@@ -1,12 +1,12 @@
 /*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *                               Jiri Cincura   (juri@cincura.net)
- *                               
+ *
  *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -29,8 +29,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
     public class FbTypeMapper : RelationalTypeMapper
     {
         public const int BinaryMaxSize = int.MaxValue;
-        public const int VarcharMaxSize = 32765;
-        public const int NVarcharMaxSize = VarcharMaxSize / 4;
+        public const int VarcharMaxSize = 32764;
+        public const int NVarcharMaxSize = 4000; //See this after!
         public const int DefaultDecimalPrecision = 18;
         public const int DefaultDecimalScale = 2;
 

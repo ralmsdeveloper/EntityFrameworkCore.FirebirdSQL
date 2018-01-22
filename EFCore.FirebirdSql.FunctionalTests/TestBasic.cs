@@ -85,6 +85,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     });
                 }
                 context.SaveChanges();
+
+                var take = context.Author.Skip(6).Take(4).ToList();
             }
 
             using (var context = CreateContext())

@@ -53,10 +53,9 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 
             if (selectExpression.Offset != null)
             {
-                if (selectExpression.Limit == null)
-                    Sql.AppendLine().Append("FIRST ").Append(1000000).Append(" ");
-                Sql.Append(" SKIP ");
+                Sql.Append("SKIP ");
                 Visit(selectExpression.Offset);
+                Sql.Append(" ");
             }
         }
 
@@ -120,6 +119,10 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             Visit(extractExpression.ValueExpression);
             Sql.Append(")");
             return extractExpression;
+        }
+
+        protected override void GenerateLimitOffset(SelectExpression selectExpression)
+        {
         }
     }
 }
