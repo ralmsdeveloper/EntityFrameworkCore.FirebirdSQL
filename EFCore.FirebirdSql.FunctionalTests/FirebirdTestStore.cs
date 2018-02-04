@@ -18,65 +18,74 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
+using Microsoft.EntityFrameworkCore.TestUtilities;
+using EFCore.FirebirdSql.FunctionalTests.TestUtilities;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
     public class FirebirdTestStore : RelationalTestStore
     {
-        private FbConnection _connection;
-        private readonly string _name;
-        private bool _deleteDatabase;
-        private static int _scratchCount;
-        private static string BaseDirectory => AppContext.BaseDirectory;
-
-        public static FirebirdTestStore GetNorthwindStore() => GetOrCreateShared("northwind", () => { });
-
-        public static FirebirdTestStore GetOrCreateShared(string name, Action initializeDatabase = null)
-            => new FirebirdTestStore(name).CreateShared(initializeDatabase, true);
-
         public const int CommandTimeout = 30;
 
-        private FirebirdTestStore(string name) => _name = name;
+        public static FirebirdTestStore GetOrCreate(string name, bool sharedCache = true)
+            => new FirebirdTestStore(name, sharedCache: sharedCache);
 
-        public override string ConnectionString => Connection.ConnectionString;
+        public static FirebirdTestStore GetOrCreateInitialized(string name)
+            => new FirebirdTestStore(name).InitializeFirebird(null, (Func<DbContext>)null, null);
 
-        private FirebirdTestStore CreateShared(Action initializeDatabase, bool openConnection)
+        public static FirebirdTestStore GetExisting(string name)
+            => new FirebirdTestStore(name, seed: false);
+
+        public static FirebirdTestStore Create(string name, bool sharedCache = true)
+            => new FirebirdTestStore(name, sharedCache: sharedCache, shared: false);
+
+        public static FirebirdTestStore CreateInitialized(string name)
+            => new FirebirdTestStore(name, shared: false).InitializeFirebird(null, (Func<DbContext>)null, null);
+
+        private readonly bool _seed;
+
+        private FirebirdTestStore(string name, bool seed = true, bool sharedCache = true, bool shared = true)
+            : base(name, shared)
         {
-            CreateShared(typeof(FirebirdTestStore).Name + _name, initializeDatabase);
+            _seed = seed;
 
-            CreateConnection();
-
-            if (openConnection)
+            ConnectionString = new FbConnectionStringBuilder
             {
-                OpenConnection();
-            }
+                DataSource = Name + ".fdb"
+            }.ToString();
 
-            return this;
+            Connection = new FbConnection(ConnectionString);
         }
 
-        private FirebirdTestStore CreateTransient()
+        public override DbContextOptionsBuilder AddProviderOptions(DbContextOptionsBuilder builder)
+            => builder.UseFirebird(Connection, b => b.CommandTimeout(CommandTimeout));
+
+        public FirebirdTestStore InitializeFirebird(IServiceProvider serviceProvider, Func<DbContext> createContext, Action<DbContext> seed)
+            => (FirebirdTestStore)Initialize(serviceProvider, createContext, seed);
+
+        public FirebirdTestStore InitializeFirebird(IServiceProvider serviceProvider, Func<FirebirdTestStore, DbContext> createContext, Action<DbContext> seed)
+            => (FirebirdTestStore)Initialize(serviceProvider, () => createContext(this), seed);
+
+        protected override void Initialize(Func<DbContext> createContext, Action<DbContext> seed)
         {
-            CreateConnection();
-            OpenConnection();
-
-            _deleteDatabase = true;
-            return this;
-        }
-
-        private void CreateConnection()
-        {
-            _connection = new FbConnection(CreateConnectionString(_name));
-
-            OpenConnection();
-        }
-
-        public override void OpenConnection()
-        {
-            if(_connection?.State != System.Data.ConnectionState.Open)
+            if (!_seed)
             {
-                _connection.Open();
+                return;
+            }
+            using (var context = createContext())
+            {
+                if (!context.Database.EnsureCreated())
+                {
+                    Clean(context);
+                }
+                seed(context);
             }
         }
+
+        public override void Clean(DbContext context)
+            => context.Database.EnsureClean();
+
+        public override void OpenConnection() => Connection.Open();
 
         public int ExecuteNonQuery(string sql, params object[] parameters)
         {
@@ -88,7 +97,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         private DbCommand CreateCommand(string commandText, object[] parameters)
         {
-            var command = _connection.CreateCommand();
+            var command = (FbCommand)Connection.CreateCommand();
 
             command.CommandText = commandText;
             command.CommandTimeout = CommandTimeout;
@@ -100,22 +109,5 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             return command;
         }
-
-        public override DbConnection Connection => _connection;
-        public override DbTransaction Transaction => null;
-
-        public override void Dispose()
-        {
-            Transaction?.Dispose();
-            Connection?.Dispose();
-            base.Dispose();
-        }
-
-        public static string CreateConnectionString(string name)
-        =>  new FbConnectionStringBuilder("User=SYSDBA;Password=masterkey;")
-            {
-                Database = $"{AppDomain.CurrentDomain.BaseDirectory}{name}.fdb",
-                Port = 3050
-            }.ConnectionString;
     }
 }

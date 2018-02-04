@@ -29,7 +29,7 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
             => serviceCollection
                 .AddSingleton<IRelationalTypeMapper, FbTypeMapper>()
                 .AddSingleton<IDatabaseModelFactory, FbDatabaseModelFactory>()
-                .AddSingleton<IScaffoldingProviderCodeGenerator, FbScaffoldingCodeGenerator>()
+                .AddSingleton<ProviderCodeGenerator, FbScaffoldingCodeGenerator>()
                 .AddSingleton<IAnnotationCodeGenerator, FbAnnotationCodeGenerator>();
     }
 }

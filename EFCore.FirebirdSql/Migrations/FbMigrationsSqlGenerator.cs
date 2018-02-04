@@ -99,9 +99,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                 var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
 
                 type = property != null
-                    ? Dependencies.TypeMapper.GetMapping(property).StoreType
-                    : Dependencies.TypeMapper.GetMapping(operation.ClrType).StoreType;
+                    ? Dependencies.CoreTypeMapper.GetMapping(property).StoreType
+                    : Dependencies.CoreTypeMapper.GetMapping(operation.ClrType).StoreType;
             }
+
             var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
             builder.Append($"ALTER TABLE {identifier} ALTER COLUMN ");
             builder.Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name));
@@ -120,7 +121,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 
                 if (operation.DefaultValue != null)
                 {
-                    var typeMapping = Dependencies.TypeMapper.GetMapping(operation.DefaultValue.GetType());
+                    var typeMapping = Dependencies.CoreTypeMapper.GetMapping(operation.DefaultValue.GetType());
                     builder
                         .Append(" SET DEFAULT ")
                         .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
@@ -152,10 +153,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             long? maximumValue,
             bool cycle,
             IModel model,
-            MigrationCommandListBuilder builder)
-        {
-            base.SequenceOptions(schema, name, increment, minimumValue, maximumValue, cycle, model, builder);
-        }
+            MigrationCommandListBuilder builder) => base.SequenceOptions(schema, name, increment, minimumValue, maximumValue, cycle, model, builder);
 
         protected override void Generate(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
             => throw new NotImplementedException("The create sequence feature is not yet implemented.");
@@ -301,7 +299,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var defaultValueLiteral = Dependencies.TypeMapper.GetMapping(clrType);
+                var defaultValueLiteral = Dependencies.CoreTypeMapper.GetMapping(clrType);
                 builder
                     .Append(" DEFAULT ")
                     .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
@@ -323,7 +321,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var typeMapping = Dependencies.TypeMapper.GetMapping(defaultValue.GetType());
+                var typeMapping = Dependencies.CoreTypeMapper.GetMapping(defaultValue.GetType());
                 builder
                     .Append(" DEFAULT ")
                     .Append(typeMapping.GenerateSqlLiteral(defaultValue));

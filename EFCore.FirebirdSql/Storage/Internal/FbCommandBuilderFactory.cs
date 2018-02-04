@@ -24,9 +24,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
     public class FbCommandBuilderFactory : IRelationalCommandBuilderFactory
     {
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger;
-        private readonly IRelationalTypeMapper _typeMapper;
+        private readonly IRelationalCoreTypeMapper _typeMapper;
 
-        public FbCommandBuilderFactory(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper typeMapper)
+        public FbCommandBuilderFactory(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalCoreTypeMapper typeMapper)
         {
             _logger = logger;
             _typeMapper = typeMapper;
@@ -40,7 +40,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 
         protected virtual IRelationalCommandBuilder CreateCore(
             IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger,
-            IRelationalTypeMapper relationalTypeMapper)
+            IRelationalCoreTypeMapper relationalTypeMapper)
                 => new FbCommandBuilder(logger, relationalTypeMapper);
     }
 }

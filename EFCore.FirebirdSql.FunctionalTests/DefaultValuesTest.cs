@@ -77,11 +77,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             public DbSet<KettleChips> Chips { get; set; }
 
-            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-                => optionsBuilder
-                    .UseFirebird(FirebirdTestStore.CreateConnectionString(_databaseName))
-                    .UseInternalServiceProvider(_serviceProvider);
-
             protected override void OnModelCreating(ModelBuilder modelBuilder)
                 => modelBuilder.Entity<KettleChips>()
                     .Property(e => e.BestBuyDate)

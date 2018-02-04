@@ -1,11 +1,11 @@
-/*
+﻿/*
  *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -14,20 +14,18 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Design;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace EntityFrameworkCore.FirebirdSql.Design.Internal
+namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
 {
-    public class FbAnnotationCodeGenerator : AnnotationCodeGenerator
+    public static class FirebirdDatabaseFacadeExtensions
     {
-        public FbAnnotationCodeGenerator(AnnotationCodeGeneratorDependencies dependencies)
-            : base(dependencies)
-        { }
-
-        public override bool IsHandledByConvention(IModel model, IAnnotation annotation) => true;
-
-        public override MethodCallCodeFragment GenerateFluentApi(IIndex index, IAnnotation annotation) => null;
+        public static void EnsureClean(this DatabaseFacade databaseFacade)
+           => databaseFacade.CreateExecutionStrategy()
+               .Execute(databaseFacade, database => new FirebirdDatabaseCleaner().Clean(database));
     }
 }

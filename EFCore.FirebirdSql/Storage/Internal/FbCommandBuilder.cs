@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _logger;
         private readonly IndentedStringBuilder _commandTextBuilder = new IndentedStringBuilder();
 
-        public FbCommandBuilder(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalTypeMapper typeMapper)
+        public FbCommandBuilder(IDiagnosticsLogger<DbLoggerCategory.Database.Command> logger, IRelationalCoreTypeMapper typeMapper)
         {
             _logger = logger;
             ParameterBuilder = new RelationalParameterBuilder(typeMapper);
