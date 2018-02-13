@@ -57,9 +57,9 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
                     connection.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                //
+                throw ex;
             }
             return this;
         }
