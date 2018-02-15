@@ -1,11 +1,11 @@
 /*
- *          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
+ *          Copyright (c) 2017-2018 Rafael Almeida (ralms@ralms.net)
  *
  *                    EntityFrameworkCore.FirebirdSql
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
     RDB$RELATION_NAME
 FROM
     RDB$RELATIONS
-WHERE 
+WHERE
     RDB$VIEW_BLR IS NULL AND (RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0)";
 
         private readonly string _columns = @"SELECT
@@ -114,7 +114,7 @@ SELECT
     I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME FROM  RDB$INDICES I
     LEFT JOIN RDB$INDEX_SEGMENTS SG ON I.RDB$INDEX_NAME = SG.RDB$INDEX_NAME
     LEFT JOIN RDB$RELATION_CONSTRAINTS RC ON RC.RDB$INDEX_NAME = I.RDB$INDEX_NAME AND RC.RDB$CONSTRAINT_TYPE = NULL
-WHERE I.RDB$RELATION_NAME = '{0}'  
+WHERE I.RDB$RELATION_NAME = '{0}'
 GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME";
 
         private readonly string _getConstraintsQuery = @"
@@ -136,13 +136,12 @@ FROM
             detail_relation_constraints.RDB$RELATION_NAME AS REFERENCE_TABLE_NAME
         FROM
             rdb$relation_constraints detail_relation_constraints
-            JOIN rdb$index_segments detail_index_segments ON detail_relation_constraints.rdb$index_name = detail_index_segments.rdb$index_name 
+            JOIN rdb$index_segments detail_index_segments ON detail_relation_constraints.rdb$index_name = detail_index_segments.rdb$index_name
             JOIN rdb$ref_constraints ON detail_relation_constraints.rdb$constraint_name = rdb$ref_constraints.rdb$constraint_name -- Master indeksas
             JOIN rdb$relation_constraints master_relation_constraints ON rdb$ref_constraints.rdb$const_name_uq = master_relation_constraints.rdb$constraint_name
-            JOIN rdb$index_segments master_index_segments ON master_relation_constraints.rdb$index_name = master_index_segments.rdb$index_name 
+            JOIN rdb$index_segments master_index_segments ON master_relation_constraints.rdb$index_name = master_index_segments.rdb$index_name
         WHERE
             detail_relation_constraints.rdb$constraint_type = 'FOREIGN KEY' AND detail_relation_constraints.RDB$RELATION_NAME = '{0}'
-            
     ) FORAIGN
 WHERE
     rc.rdb$constraint_type = 'PRIMARY KEY' AND FORAIGN.REFERENCE_TABLE_NAME = rc.rdb$relation_name";

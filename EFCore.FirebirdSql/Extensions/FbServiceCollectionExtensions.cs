@@ -1,5 +1,5 @@
 /*
-*          Copyright (c) 2017 Rafael Almeida (ralms@ralms.net)
+*          Copyright (c) 2017-2018 Rafael Almeida (ralms@ralms.net)
 *
 *                    EntityFrameworkCore.FirebirdSql
 *
