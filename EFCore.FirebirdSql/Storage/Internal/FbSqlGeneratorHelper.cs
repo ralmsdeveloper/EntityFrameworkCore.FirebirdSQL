@@ -5,7 +5,7 @@
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -26,10 +26,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private readonly IFbOptions _options;
 
         public FbSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies, IFbOptions options)
-            : base(dependencies)
-        {
-            _options = options;
-        }
+            : base(dependencies) => _options = options;
 
         public override string EscapeIdentifier(string identifier)
             => identifier.MaxLength(_options.ObjectLengthName); 

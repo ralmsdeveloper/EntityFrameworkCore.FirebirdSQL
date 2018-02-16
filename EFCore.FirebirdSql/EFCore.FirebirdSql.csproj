@@ -6,8 +6,8 @@
     <AssemblyName>EntityFrameworkCore.FirebirdSql</AssemblyName>
     <RootNamespace>EntityFrameworkCore.FirebirdSql</RootNamespace>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile> 
-    <Copyright>Copyright © 2017 Rafael Almeida</Copyright>
+    <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile>
+    <Copyright>Copyright © 2017-2018 Rafael Almeida</Copyright>
     <Company>Ralms.net - ralms@ralms.net</Company>
     <Authors>Rafael Almeida</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -33,10 +33,25 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup> 
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" /> 
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-28228" /> 
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview1-28228" />
+  <ItemGroup>
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-28285" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview1-28285" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\FbStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FbStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\FbStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FbStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

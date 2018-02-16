@@ -5,7 +5,7 @@
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -16,9 +16,9 @@
 
 using EntityFrameworkCore.FirebirdSql.Design.Internal;
 using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
-using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping; 
-using Microsoft.EntityFrameworkCore.Scaffolding; 
-using Microsoft.EntityFrameworkCore.Storage;  
+using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
+using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.EntityFrameworkCore.Design.Internal
@@ -33,4 +33,4 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
                 .AddSingleton<IAnnotationCodeGenerator, FbAnnotationCodeGenerator>();
     }
 }
- 
+

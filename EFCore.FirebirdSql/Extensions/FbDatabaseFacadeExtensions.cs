@@ -5,7 +5,7 @@
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
- * 
+ *
  * Permission is hereby granted to use or copy this program
  * for any purpose,  provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
@@ -16,16 +16,16 @@
 
 using System;
 using System.Reflection;
-using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal; 
-using Microsoft.EntityFrameworkCore.Infrastructure; 
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.FirebirdSql.Extensions
-{ 
+{
     public static class FbDatabaseFacadeExtensions
     {
         public static bool IsFirebird(this DatabaseFacade database)
             => database.ProviderName
                 .Equals(typeof(FbOptionsExtension)
-                    .GetTypeInfo().Assembly.GetName().Name, StringComparison.Ordinal); 
+                    .GetTypeInfo().Assembly.GetName().Name, StringComparison.Ordinal);
     }
 }
