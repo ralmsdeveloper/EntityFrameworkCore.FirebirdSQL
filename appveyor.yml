@@ -1,11 +1,9 @@
 version: '2.1.0.{build}'
 image: Visual Studio 2017 Preview
-init:
-  - git config --global core.autocrlf true
 configuration:
   - Debug
 environment:
-  matrix:  
+  matrix:
   - name: FB 3.2
     fb_download: https://www.dropbox.com/s/4o6nvoahmlegv64/binarios.7z?dl=1
 cache:
