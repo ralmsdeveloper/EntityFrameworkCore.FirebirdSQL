@@ -91,6 +91,30 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
                 Sql.Append(")");
                 return exp;
             }
+            
+            if (binaryExpression.NodeType == ExpressionType.And &&
+                binaryExpression.Left.Type == typeof(System.Int32) &&
+                binaryExpression.Right.Type == typeof(System.Int32))
+            {
+                Sql.Append("(BIN_AND(");
+                Visit(binaryExpression.Left);
+                Sql.Append(",");
+                var exp = Visit(binaryExpression.Right);
+                Sql.Append("))");
+                return exp;
+            }
+
+            if (binaryExpression.NodeType == ExpressionType.Or &&
+                binaryExpression.Left.Type == typeof(System.Int32) &&
+                binaryExpression.Right.Type == typeof(System.Int32))
+            {
+                Sql.Append("(BIN_OR (");
+                Visit(binaryExpression.Left);
+                Sql.Append(",");
+                var exp = Visit(binaryExpression.Right);
+                Sql.Append("))");
+                return exp;
+            }
 
             var expr = base.VisitBinary(binaryExpression);
             return expr;
