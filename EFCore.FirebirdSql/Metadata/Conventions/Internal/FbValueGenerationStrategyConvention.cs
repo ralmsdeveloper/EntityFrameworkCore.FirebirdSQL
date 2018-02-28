@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
             MemberInfo clrMember)
         {
             FbValueGenerationStrategy? valueGenerationStrategy = null;
-            ValueGenerated valueGenerated = ValueGenerated.Never;
+            var valueGenerated = ValueGenerated.Never;
             if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
             {
                 valueGenerated = ValueGenerated.OnAdd;

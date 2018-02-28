@@ -34,24 +34,39 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="5.12.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-28285" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview1-28285" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview1-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\FbStrings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>FbStrings.resx</DependentUpon>
+      <DependentUpon>FbStrings.Designer.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Resources.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\FbStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>FbStrings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.EntityFrameworkCore.Internal</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Properties\Resources.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Resources.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+ 
 </Project>

@@ -38,6 +38,10 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
 
         private FbOptions GetSettings(string connectionString)
         {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = Settings.Connection.ConnectionString;
+            }
             if (ServerVersion != null)
             {
                 return this;

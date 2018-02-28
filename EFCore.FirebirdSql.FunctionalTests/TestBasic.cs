@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EFCore.FirebirdSql.FunctionalTests
@@ -38,7 +37,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 // Repro Issue #23
                 if (!context.Courses.Any())
                 {
-                    var courses = new List<Course>
+                    var courses = new[]
                     {
                         new Course{CourseID=1050,Credits=3,Title="Chemistry"},
                         new Course{CourseID=4022,Credits=3,Title="Microeconomics"},
@@ -50,10 +49,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     };
 
                     context.Courses.AddRange(courses);
-                    int r = context.SaveChanges();
-                    Assert.Equal(7, r);
-                    var list = context.Courses.AsNoTracking().ToList();
-                    Assert.Equal(7, list.Count);
+                    var save = context.SaveChanges();
+                    Assert.Equal(7, save);
                 }
             }
 
@@ -66,11 +63,11 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 {
                     context.Author.Add(new Author
                     {
-                        TestString = "Rafael",
+                        TestString = "EFCore FirebirdSQL 2.x",
                         TestInt = i,
                         TestDate = DateTime.Now.AddMilliseconds(1),
                         TestGuid = Guid.NewGuid(),
-                        TestBytes = Encoding.UTF8.GetBytes("RAFAEL ALMEIDA"),
+                        TestBytes = Encoding.UTF8.GetBytes("EntityFrameworkCore.FirebirdSQL"),
                         TestDecimal = i,
                         TestDouble = i,
                         Books = new List<Book>
@@ -80,13 +77,21 @@ namespace EFCore.FirebirdSql.FunctionalTests
                                 AuthorId= i,
                                 Title = $"Firebird 3.0.2 {i}"
                             }
-                        },
-                        // Active = true
+                        }
                     });
                 }
-                context.SaveChanges();
+                var save = context.SaveChanges();
+                Assert.Equal(200, save);
 
-                var take = context.Author.Skip(6).Take(4).ToList();
+                for (var i = 1; i <= 100; i++)
+                {
+                    var author = context.Author.Find((long)i);
+                    author.TestString = "EFCore FirebirdSQL Preview1";
+                    context.Author.Attach(author);
+                }
+                var update = context.SaveChanges();
+                Assert.Equal(100, update);
+
             }
 
             using (var context = CreateContext())

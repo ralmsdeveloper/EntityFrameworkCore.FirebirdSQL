@@ -20,11 +20,15 @@
 using System.Diagnostics;
 using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design.Internal;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.Converters;
 using Microsoft.EntityFrameworkCore.TestUtilities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
@@ -37,6 +41,24 @@ namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
                     loggerFactory,
                     new LoggingOptions(),
                     new DiagnosticListener("Fake")));
+
+        //protected override IDatabaseModelFactory CreateDatabaseModelFactory(ILoggerFactory loggerFactory)
+        //{
+        //    // NOTE: You may need to update AddEntityFrameworkDesignTimeServices() too
+        //    var services = new ServiceCollection()
+        //        .AddSingleton<ValueConverterSelectorDependencies>()
+        //        .AddSingleton<DiagnosticSource>(new DiagnosticListener(DbLoggerCategory.Name))
+        //        .AddSingleton<ILoggingOptions, LoggingOptions>()
+        //        .AddSingleton(typeof(IDiagnosticsLogger<>), typeof(DiagnosticsLogger<>))
+        //        .AddSingleton<IValueConverterSelector, ValueConverterSelector>()
+        //        .AddLogging();
+
+        //    new FbDesignTimeServices().ConfigureDesignTimeServices(services);
+
+        //    return services
+        //        .BuildServiceProvider()
+        //        .GetRequiredService<IDatabaseModelFactory>();
+        //}
 
         protected override bool AcceptIndex(DatabaseIndex index)
             => false;

@@ -48,11 +48,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
             : base(name, shared)
         {
             _seed = seed;
-
-            ConnectionString = new FbConnectionStringBuilder
+            ConnectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
             {
-                DataSource = Name + ".fdb"
-            }.ToString();
+                Database = $@"..\..\..\{Name}.fdb"
+            }.ConnectionString;
 
             Connection = new FbConnection(ConnectionString);
         }
@@ -74,10 +73,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
             }
             using (var context = createContext())
             {
-                if (!context.Database.EnsureCreated())
-                {
-                    Clean(context);
-                }
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
                 seed(context);
             }
         }

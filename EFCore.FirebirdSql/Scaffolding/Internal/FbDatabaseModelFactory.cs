@@ -307,8 +307,8 @@ GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME, SG.RDB$FIELD_NAME";
                     while (reader.Read())
                     {
                         var indexName = reader["RDB$INDEX_NAME"].ToString().Trim();
-                        var columnName = reader["SG.RDB$FIELD_NAME"].ToString().Trim();
-                        var isUnique = Convert.ToBoolean(reader["ISUNIQUE"].ToString());
+                        var columnName = reader["RDB$FIELD_NAME"].ToString().Trim();
+                        var isUnique = reader["ISUNIQUE"].ToString().Equals("1");
 
                         var index = new DatabaseIndex
                         {

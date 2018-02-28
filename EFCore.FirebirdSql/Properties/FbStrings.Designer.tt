@@ -1,0 +1,4 @@
+<#
+    Session["ResourceFile"] = "FbStrings.resx";
+#>
+<#@ include file="Resources.tt" #>

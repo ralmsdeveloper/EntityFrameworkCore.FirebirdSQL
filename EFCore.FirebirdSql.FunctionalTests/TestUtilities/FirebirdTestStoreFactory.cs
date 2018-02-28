@@ -14,6 +14,14 @@
  *
  */
 
+using System.Diagnostics;
+using EntityFrameworkCore.FirebirdSql.Migrations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design.Internal;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.Converters;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,7 +43,20 @@ namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
             => FirebirdTestStore.GetOrCreate(storeName);
 
         public virtual IServiceCollection AddProviderServices(IServiceCollection serviceCollection)
-            => serviceCollection.AddEntityFrameworkFirebird()
+        {
+            serviceCollection
+                .AddSingleton<ValueConverterSelectorDependencies>()
+                .AddSingleton<DiagnosticSource>(new DiagnosticListener(DbLoggerCategory.Name))
+                .AddSingleton<ILoggingOptions, LoggingOptions>()
+                .AddSingleton(typeof(IDiagnosticsLogger<>), typeof(DiagnosticsLogger<>))
+                .AddSingleton(typeof(IFbMigrationSqlGeneratorBehavior), typeof(FbMigrationSqlGeneratorBehavior))
+                .AddSingleton<IValueConverterSelector, ValueConverterSelector>()
+                .AddLogging();
+
+            new FbDesignTimeServices().ConfigureDesignTimeServices(serviceCollection);
+
+            return serviceCollection.AddEntityFrameworkFirebird()
                 .AddSingleton<ILoggerFactory>(new TestSqlLoggerFactory());
+        }
     }
 }

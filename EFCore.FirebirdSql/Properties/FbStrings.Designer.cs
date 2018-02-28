@@ -16,7 +16,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
     public static class FbStrings
     {
         private static readonly ResourceManager _resourceManager
-            = new ResourceManager("Microsoft.EntityFrameworkCore.Properties.FbStrings", typeof(FbStrings).GetTypeInfo().Assembly);
+            = new ResourceManager("EntityFrameworkCore.FirebirdSql.Properties.FbStrings", typeof(FbStrings).GetTypeInfo().Assembly);
 
         /// <summary>
         ///     SQLite does not support this migration operation ('{operation}'). For more information, see http://go.microsoft.com/fwlink/?LinkId=723262.
