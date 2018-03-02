@@ -15,6 +15,7 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
@@ -26,6 +27,7 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         {
         }
 
-        public override string UseProviderMethod => nameof(FbDbContextOptionsExtensions.UseFirebird);
+        public override MethodCallCodeFragment GenerateUseProvider(string connectionString)
+            => new MethodCallCodeFragment(nameof(FbDbContextOptionsExtensions.UseFirebird), connectionString);
     }
 }

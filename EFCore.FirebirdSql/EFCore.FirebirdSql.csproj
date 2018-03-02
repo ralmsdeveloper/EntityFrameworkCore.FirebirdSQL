@@ -35,8 +35,8 @@
 
   <ItemGroup>
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview2-30192" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview2-30192" />
   </ItemGroup>
 
   <ItemGroup>

@@ -118,7 +118,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
                         Title = $"Test Insert Book {i}"
                     });
                 }
-
                 Assert.Equal(10, context.SaveChanges());
             }
         }

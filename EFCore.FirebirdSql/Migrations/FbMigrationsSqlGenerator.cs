@@ -99,8 +99,8 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
                 var property = FindProperty(model, operation.Schema, operation.Table, operation.Name);
 
                 type = property != null
-                    ? Dependencies.CoreTypeMapper.GetMapping(property).StoreType
-                    : Dependencies.CoreTypeMapper.GetMapping(operation.ClrType).StoreType;
+                    ? Dependencies.TypeMappingSource.GetMapping(property).StoreType
+                    : Dependencies.TypeMappingSource.GetMapping(operation.ClrType).StoreType;
             }
 
             var identifier = Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema);
@@ -121,10 +121,11 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
 
                 if (operation.DefaultValue != null)
                 {
-                    var typeMapping = Dependencies.CoreTypeMapper.GetMapping(operation.DefaultValue.GetType());
+                    var stringTypeMapping = Dependencies.TypeMappingSource.FindMapping(typeof(string));
+
                     builder
                         .Append(" SET DEFAULT ")
-                        .Append(typeMapping.GenerateSqlLiteral(operation.DefaultValue))
+                        .Append(stringTypeMapping.GenerateSqlLiteral(operation.DefaultValue))
                         .AppendLine(Dependencies.SqlGenerationHelper.BatchTerminator);
                 }
                 else if (!string.IsNullOrWhiteSpace(operation.DefaultValueSql))
@@ -299,10 +300,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var defaultValueLiteral = Dependencies.CoreTypeMapper.GetMapping(clrType);
+                var stringTypeMapping = Dependencies.TypeMappingSource.FindMapping(typeof(string));
                 builder
                     .Append(" DEFAULT ")
-                    .Append(defaultValueLiteral.GenerateSqlLiteral(defaultValue));
+                    .Append(stringTypeMapping.GenerateSqlLiteral(defaultValue));
             }
 
             if (!nullable)
@@ -321,10 +322,11 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var typeMapping = Dependencies.CoreTypeMapper.GetMapping(defaultValue.GetType());
+                var stringTypeMapping = Dependencies.TypeMappingSource.FindMapping(typeof(string));
+
                 builder
                     .Append(" DEFAULT ")
-                    .Append(typeMapping.GenerateSqlLiteral(defaultValue));
+                    .Append(stringTypeMapping.GenerateSqlLiteral(defaultValue));
             }
         }
 

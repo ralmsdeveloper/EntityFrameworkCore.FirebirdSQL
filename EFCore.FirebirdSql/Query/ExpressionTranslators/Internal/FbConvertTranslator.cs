@@ -30,12 +30,12 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
         private static readonly Dictionary<string, string> TypeMapping = new Dictionary<string, string>
         {
             [nameof(Convert.ToByte)] = "SMALLINT",
-            [nameof(Convert.ToDecimal)] = $"DECIMAL({FbTypeMapper.DefaultDecimalPrecision},{FbTypeMapper.DefaultDecimalScale})",
+            [nameof(Convert.ToDecimal)] = $"DECIMAL({FbTypeMappingSource.DefaultDecimalPrecision},{FbTypeMappingSource.DefaultDecimalScale})",
             [nameof(Convert.ToDouble)] = "DOUBLE PRECISION",
             [nameof(Convert.ToInt16)] = "SMALLINT",
             [nameof(Convert.ToInt32)] = "INTEGER",
             [nameof(Convert.ToInt64)] = "BIGINT",
-            [nameof(Convert.ToString)] = $"VARCHAR({FbTypeMapper.VarcharMaxSize})"
+            [nameof(Convert.ToString)] = $"VARCHAR({FbTypeMappingSource.VarcharMaxSize})"
         };
 
         private static readonly HashSet<Type> _suportedTypes = new HashSet<Type>

@@ -27,7 +27,7 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
     {
         public virtual void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
             => serviceCollection
-                .AddSingleton<IRelationalTypeMapper, FbTypeMapper>()
+                .AddSingleton<IRelationalTypeMappingSource, FbTypeMappingSource>()
                 .AddSingleton<IDatabaseModelFactory, FbDatabaseModelFactory>()
                 .AddSingleton<ProviderCodeGenerator, FbScaffoldingCodeGenerator>()
                 .AddSingleton<IAnnotationCodeGenerator, FbAnnotationCodeGenerator>();
