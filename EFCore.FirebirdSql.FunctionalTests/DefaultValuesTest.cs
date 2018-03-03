@@ -30,7 +30,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
             .AddEntityFrameworkFirebird()
             .BuildServiceProvider();
 
-        [Fact(Skip = "Todo - Implementation")]
         public void Can_use_Firebird_default_values()
         {
             using (var context = new ChipsContext(_serviceProvider, "DefaultKettleChips"))

@@ -18,11 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EntityFrameworkCore.FirebirdSql.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Update;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 
@@ -30,17 +27,17 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
     {
-        private readonly IRelationalTypeMapper _typeMapperRelational;
+        private readonly IRelationalTypeMappingSource _typeMapper;
         private string _commaAppend;
         private string _typeReturn;
 
         public FbUpdateSqlGenerator(
             UpdateSqlGeneratorDependencies dependencies,
-            IRelationalTypeMapper typeMapper,
+            IRelationalTypeMappingSource typeMapper,
             IFbOptions fbOptions)
             : base(dependencies)
         {
-            _typeMapperRelational = typeMapper;
+            _typeMapper = typeMapper;
             _typeReturn = fbOptions.IsLegacyDialect ? "INT" : "BIGINT";
         }
 
@@ -276,36 +273,6 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             => throw new NotImplementedException();
 
         private string GetDataType(IProperty property)
-        {
-            var typeName = property.Firebird().ColumnType;
-            if (typeName == null)
-            {
-                var propertyDefault = property.FindPrincipal();
-                typeName = propertyDefault?.Firebird().ColumnType;
-                if (typeName == null)
-                {
-                    if (property.ClrType == typeof(string))
-                    {
-                        typeName = _typeMapperRelational.StringMapper?.FindMapping(property.IsUnicode()
-                            ?? propertyDefault?.IsUnicode()
-                            ?? true, false, null).StoreType;
-                    }
-
-                    else if (property.ClrType == typeof(byte[]))
-                    {
-                        typeName = _typeMapperRelational.ByteArrayMapper?.FindMapping(false, false, null).StoreType;
-                    }
-                    else
-                    {
-                        typeName = _typeMapperRelational.FindMapping(property.ClrType).StoreType;
-                    }
-                }
-            }
-            if (property.ClrType == typeof(byte[]) && typeName != null)
-            {
-                return "BLOB SUB_TYPE BINARY";
-            }
-            return typeName;
-        }
+            => _typeMapper.GetMapping(property).StoreType;
     }
 }
