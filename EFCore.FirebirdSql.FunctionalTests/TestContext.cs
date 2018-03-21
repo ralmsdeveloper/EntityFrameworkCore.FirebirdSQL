@@ -15,7 +15,6 @@
  */
 
 using Microsoft.EntityFrameworkCore;
-using EntityFrameworkCore.FirebirdSql;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
