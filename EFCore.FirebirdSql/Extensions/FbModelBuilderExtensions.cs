@@ -15,9 +15,8 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Metadata;
-using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.FirebirdSql.Extensions
+namespace Microsoft.EntityFrameworkCore
 {
     public static class FbModelBuilderExtensions
     {

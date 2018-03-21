@@ -27,8 +27,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using FbClient = FirebirdSql.Data;
 using System.Text;
-using Microsoft.EntityFrameworkCore.Internal;
 using System.Diagnostics;
+using EntityFrameworkCore.FirebirdSql.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
 {

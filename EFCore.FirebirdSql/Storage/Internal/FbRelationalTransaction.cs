@@ -94,7 +94,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         {
             _relationalConnection.UseTransaction(null);
             if (_connectionClosed)
+            {
                 return;
+            }
 
             _connectionClosed = true;
             _relationalConnection.Close();

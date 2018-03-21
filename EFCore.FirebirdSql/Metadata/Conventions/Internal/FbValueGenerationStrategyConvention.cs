@@ -14,7 +14,6 @@
  *
  */
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -23,25 +22,25 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal
 {
-    public class FbValueGenerationStrategyConvention : DatabaseGeneratedAttributeConvention, IModelInitializedConvention
+    public class FbValueGenerationStrategyConvention : IModelInitializedConvention
     {
-        public override InternalPropertyBuilder Apply(
-            InternalPropertyBuilder propertyBuilder,
-            DatabaseGeneratedAttribute attribute,
-            MemberInfo clrMember)
-        {
-            FbValueGenerationStrategy? valueGenerationStrategy = null;
-            var valueGenerated = ValueGenerated.Never;
-            if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
-            {
-                valueGenerated = ValueGenerated.OnAdd;
-                valueGenerationStrategy = FbValueGenerationStrategy.IdentityColumn;
-            }
+        //public override InternalPropertyBuilder Apply(
+        //    InternalPropertyBuilder propertyBuilder,
+        //    DatabaseGeneratedAttributeConvention attribute,
+        //    MemberInfo clrMember)
+        //{
+        //    FbValueGenerationStrategy? valueGenerationStrategy = null;
+        //    var valueGenerated = ValueGenerated.Never;
+        //    if (attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
+        //    {
+        //        valueGenerated = ValueGenerated.OnAdd;
+        //        valueGenerationStrategy = FbValueGenerationStrategy.IdentityColumn;
+        //    }
 
-            propertyBuilder.ValueGenerated(valueGenerated, ConfigurationSource.Convention);
-            propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
-            return base.Apply(propertyBuilder, attribute, clrMember);
-        }
+        //    propertyBuilder.ValueGenerated(valueGenerated, ConfigurationSource.Convention);
+        //    propertyBuilder.Firebird(ConfigurationSource.DataAnnotation).ValueGenerationStrategy(valueGenerationStrategy);
+        //    return base.Apply(propertyBuilder, attribute, clrMember);
+        //}
 
         public virtual InternalModelBuilder Apply(InternalModelBuilder modelBuilder)
         {

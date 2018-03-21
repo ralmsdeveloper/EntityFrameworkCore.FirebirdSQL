@@ -19,9 +19,9 @@ using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Converters;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
     public class FbStringTypeMapping : StringTypeMapping
     {
@@ -35,20 +35,20 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             string storeType,
             ValueConverter converter,
             ValueComparer comparer,
+            ValueComparer keyComparer,
             DbType? dbType,
             bool unicode = false,
             int? size = null,
             bool fixedLength = false)
-            : base(storeType, converter, comparer, dbType, unicode, size, fixedLength)
+            : base(storeType, converter, comparer, keyComparer, dbType, unicode, size, fixedLength)
         {
-
         }
 
-        public override RelationalTypeMapping Clone(string storeType, int? size)
-            => new FbStringTypeMapping(storeType, Converter, Comparer, DbType, IsUnicode, size, IsFixedLength);
-
         public override CoreTypeMapping Clone(ValueConverter converter)
-            => new FbStringTypeMapping(StoreType, ComposeConverter(converter), Comparer, DbType, IsUnicode, Size, IsFixedLength);
+           => new FbStringTypeMapping(StoreType, ComposeConverter(converter), Comparer, KeyComparer, DbType, IsUnicode, Size, IsFixedLength);
+
+        public override RelationalTypeMapping Clone(string storeType, int? size)
+            => new FbStringTypeMapping(storeType, Converter, Comparer, KeyComparer, DbType, IsUnicode, size, IsFixedLength);
 
         protected override void ConfigureParameter(DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;

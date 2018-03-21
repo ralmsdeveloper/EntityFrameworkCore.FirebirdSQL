@@ -19,7 +19,7 @@ using System.Reflection;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace EntityFrameworkCore.FirebirdSql.Extensions
+namespace Microsoft.EntityFrameworkCore
 {
     public static class FbDatabaseFacadeExtensions
     {

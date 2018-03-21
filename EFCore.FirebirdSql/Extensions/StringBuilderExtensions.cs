@@ -42,7 +42,9 @@ namespace System.Text
             }
 
             if (appended)
+            {
                 stringBuilder.Length -= separator.Length;
+            }
 
             return stringBuilder;
         }
@@ -85,7 +87,9 @@ namespace System.Text
             }
 
             if (appended)
+            {
                 stringBuilder.Length -= separator.Length;
+            }
 
             return stringBuilder;
         }
@@ -107,7 +111,9 @@ namespace System.Text
             }
 
             if (appended)
+            {
                 stringBuilder.Length -= separator.Length;
+            }
 
             return stringBuilder;
         }

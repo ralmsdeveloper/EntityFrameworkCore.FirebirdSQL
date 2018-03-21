@@ -18,11 +18,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace Microsoft.EntityFrameworkCore.Internal
+namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     /// <summary>
     ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -48,17 +50,6 @@ namespace Microsoft.EntityFrameworkCore.Internal
                     diagnostics,
                     warningBehavior,
                     entityType.DisplayName(), schema);
-            }
-
-            if (diagnostics.DiagnosticSource.IsEnabled(definition.EventId.Name))
-            {
-                diagnostics.DiagnosticSource.Write(
-                    definition.EventId.Name,
-                    new EntityTypeSchemaEventData(
-                        definition,
-                        SchemaConfiguredWarning,
-                        entityType,
-                        schema));
             }
         }
 
@@ -88,16 +79,6 @@ namespace Microsoft.EntityFrameworkCore.Internal
                     diagnostics,
                     warningBehavior,
                     sequence.Name);
-            }
-
-            if (diagnostics.DiagnosticSource.IsEnabled(definition.EventId.Name))
-            {
-                diagnostics.DiagnosticSource.Write(
-                    definition.EventId.Name,
-                    new SequenceEventData(
-                        definition,
-                        SequenceConfiguredWarning,
-                        sequence));
             }
         }
 

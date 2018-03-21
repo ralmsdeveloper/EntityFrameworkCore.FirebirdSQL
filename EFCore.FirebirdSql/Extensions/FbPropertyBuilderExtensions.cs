@@ -14,13 +14,14 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Metadata;
-using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace EntityFrameworkCore.FirebirdSql
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal; 
+using Microsoft.EntityFrameworkCore.Infrastructure; 
+using EntityFrameworkCore.FirebirdSql.Metadata;
+using EntityFrameworkCore.FirebirdSql.Metadata.Internal; 
+
+namespace Microsoft.EntityFrameworkCore
 {
     public static class FbPropertyBuilderExtensions
     {

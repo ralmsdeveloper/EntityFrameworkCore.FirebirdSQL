@@ -15,10 +15,10 @@
  */
 
 using System;
-using EntityFrameworkCore.FirebirdSql.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal
 {

@@ -15,8 +15,10 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Metadata.Conventions.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 {
@@ -32,9 +34,25 @@ namespace EntityFrameworkCore.FirebirdSql.Metadata.Conventions
 
             var valueGenerationStrategyConvention = new FbValueGenerationStrategyConvention();
             conventionSet.ModelInitializedConventions.Add(valueGenerationStrategyConvention);
-            ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
-            ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
+            // ReplaceConvention(conventionSet.PropertyAddedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
+            // ReplaceConvention(conventionSet.PropertyFieldChangedConventions, (DatabaseGeneratedAttributeConvention)valueGenerationStrategyConvention);
             return conventionSet;
+        }
+
+        public static ConventionSet Build()
+        {
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkFirebird()
+                .AddDbContext<DbContext>(o => o.UseFirebird("DataSource=."))
+                .BuildServiceProvider();
+
+            using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<DbContext>())
+                {
+                    return ConventionSet.CreateConventionSet(context);
+                }
+            }
         }
     }
 }

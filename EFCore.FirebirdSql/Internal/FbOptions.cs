@@ -16,9 +16,9 @@
 
 using System;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Firebird = FirebirdSql.Data.FirebirdClient;
 using Data = FirebirdSql.Data.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
 {

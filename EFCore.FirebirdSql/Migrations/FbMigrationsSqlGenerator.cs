@@ -20,12 +20,12 @@ using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Metadata;
 using EntityFrameworkCore.FirebirdSql.Metadata.Internal;
 using EntityFrameworkCore.FirebirdSql.Migrations.Operations;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.FirebirdSql.Migrations
 {

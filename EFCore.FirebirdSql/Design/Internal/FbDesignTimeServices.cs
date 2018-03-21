@@ -17,11 +17,12 @@
 using EntityFrameworkCore.FirebirdSql.Design.Internal;
 using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.EntityFrameworkCore.Design.Internal
+namespace Microsoft.EntityFrameworkCore.Firebird.Design.Internal
 {
     public class FbDesignTimeServices : IDesignTimeServices
     {

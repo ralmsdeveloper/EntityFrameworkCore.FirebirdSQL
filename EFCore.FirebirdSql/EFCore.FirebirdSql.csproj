@@ -5,6 +5,7 @@
     <MinClientVersion>3.6</MinClientVersion>
     <AssemblyName>EntityFrameworkCore.FirebirdSql</AssemblyName>
     <RootNamespace>EntityFrameworkCore.FirebirdSql</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile>
     <Copyright>Copyright © 2017-2018 Rafael Almeida</Copyright>
@@ -21,7 +22,7 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1-preview2-001</Version>
+    <Version>2.1-preview2</Version>
     <AssemblyVersion>2.1.0.1</AssemblyVersion>
     <FileVersion>2.1.0.1</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>
@@ -35,8 +36,9 @@
 
   <ItemGroup>
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview2-30192" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview2-30192" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview2-30366" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-preview2-30366" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.0-preview2-30366" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,7 +60,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\FbStrings.resx">
-      <CustomToolNamespace>Microsoft.EntityFrameworkCore.Internal</CustomToolNamespace>
+      <CustomToolNamespace>EntityFrameworkCore.FirebirdSql.Internal</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
 
