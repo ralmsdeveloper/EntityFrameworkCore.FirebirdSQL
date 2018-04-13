@@ -33,22 +33,33 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 
         public FbStringTypeMapping(
             string storeType,
-            ValueConverter converter,
-            ValueComparer comparer,
-            ValueComparer keyComparer,
             DbType? dbType,
             bool unicode = false,
             int? size = null,
             bool fixedLength = false)
-            : base(storeType, converter, comparer, keyComparer, dbType, unicode, size, fixedLength)
+            : this(
+                new RelationalTypeMappingParameters(
+                    new CoreTypeMappingParameters(typeof(string)),
+                    storeType,
+                   StoreTypePostfix.None,
+                    dbType,
+                    unicode,
+                    size,
+                    fixedLength))
+        {
+        }
+
+
+        protected FbStringTypeMapping(RelationalTypeMappingParameters parameters)
+            : base(parameters)
         {
         }
 
         public override CoreTypeMapping Clone(ValueConverter converter)
-           => new FbStringTypeMapping(StoreType, ComposeConverter(converter), Comparer, KeyComparer, DbType, IsUnicode, Size, IsFixedLength);
+            => new FbStringTypeMapping(Parameters.WithComposedConverter(converter));
 
         public override RelationalTypeMapping Clone(string storeType, int? size)
-            => new FbStringTypeMapping(storeType, Converter, Comparer, KeyComparer, DbType, IsUnicode, size, IsFixedLength);
+           => new FbStringTypeMapping(Parameters.WithStoreTypeAndSize(storeType, size));
 
         protected override void ConfigureParameter(DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;

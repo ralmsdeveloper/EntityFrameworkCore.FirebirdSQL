@@ -103,26 +103,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         }
 
         protected override RelationalTypeMapping FindMapping(RelationalTypeMappingInfo mappingInfo)
-        {
-            var mapping = FindRawMapping(mappingInfo);
-
-            if (mapping == null)
-            {
-                return null;
-            }
-
-            mapping = mapping.CloneWithFacetedName(mappingInfo);
-
-            if (_disallowedMappings.Contains(mapping.StoreType))
-            {
-                var propertyName = mappingInfo.Property?.Name
-                                   ?? mappingInfo.MemberInfo?.Name;
-
-                throw new ArgumentException($"FindMapping: {propertyName}");
-            }
-
-            return mapping;
-        }
+            => FindRawMapping(mappingInfo);
 
         private RelationalTypeMapping FindRawMapping(RelationalTypeMappingInfo mappingInfo)
         {
