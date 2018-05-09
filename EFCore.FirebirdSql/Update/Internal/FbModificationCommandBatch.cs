@@ -65,26 +65,6 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 return false;
             }
 
-            //if (ModificationCommands.Count > 1)
-            //{
-            //    var newCommand = ModificationCommands[ModificationCommands.Count-2]
-            //        .ColumnModifications
-            //        .Where(p => p.IsRead)
-            //        .ToArray();
-
-            //    var oldCommand = ModificationCommands[ModificationCommands.Count - 1]
-            //        .ColumnModifications
-            //        .Where(p => p.IsRead)
-            //        .ToArray();
-
-
-            //    if (oldCommand.Length == 0 && newCommand.Length > 0)
-            //    {
-            //        _countParameter = MaxParameterCount;
-            //        return false;
-            //    }
-            //}
-
             var additionalParameterCount = CountParameters(modificationCommand);
             if (_countParameter + additionalParameterCount >= MaxParameterCount)
             {

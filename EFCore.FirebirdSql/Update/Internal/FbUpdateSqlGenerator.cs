@@ -85,21 +85,9 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 }
                 else if (readOperations.Length == 0 || isMultipleInsert)
                 {
-                    if(readOperations.Length == 1)
+                    if (readOperations.Length == 1)
                     {
-                        commandStringBuilder
-                            .Append(" RETURNING ")
-                            .AppendJoin(readOperations, (b, e) =>
-                            {
-                                b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
-                            }, ", ")
-                            .Append(" INTO ")
-                            .AppendJoin(readOperations, (b, e) =>
-                            {
-                                b.Append($":AffectedRows");
-                            }, ", ")
-                            .AppendLine(SqlGenerationHelper.StatementTerminator)
-                            .AppendLine("SUSPEND;");
+                        AppendInsertOutputGenericClause(commandStringBuilder, readOperations, operations);
                         resultMapping = ResultSetMapping.LastInResultSet;
                     }
                     else
@@ -107,7 +95,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                         AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
                         resultMapping = ResultSetMapping.NotLastInResultSet;
                     }
-                    
+
                 }
             }
             return resultMapping;
@@ -250,6 +238,21 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 
         private void AppendUpdateOrDeleteOutputClause(StringBuilder commandStringBuilder)
             => commandStringBuilder.AppendLine("   AffectedRows=AffectedRows+1;");
+
+        private void AppendInsertOutputGenericClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
+            => commandStringBuilder
+                .Append(" RETURNING ")
+                .AppendJoin(operations, (b, e) =>
+                {
+                    b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
+                }, ", ")
+                .Append(" INTO ")
+                .AppendJoin(operations, (b, e) =>
+                {
+                    b.Append($":AffectedRows");
+                }, ", ")
+                .AppendLine(SqlGenerationHelper.StatementTerminator)
+                .AppendLine("SUSPEND;");
 
         private void AppendInsertOutputClause(StringBuilder commandStringBuilder, IReadOnlyList<ColumnModification> operations, IReadOnlyList<ColumnModification> allOperations)
             => commandStringBuilder
