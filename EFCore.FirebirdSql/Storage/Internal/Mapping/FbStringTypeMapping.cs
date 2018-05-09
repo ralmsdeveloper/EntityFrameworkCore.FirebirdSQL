@@ -50,6 +50,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         }
 
 
+        protected override void ConfigureParameter(DbParameter parameter)
+            => ((FbParameter)parameter).FbDbType = _fbDbType;
+
         protected FbStringTypeMapping(RelationalTypeMappingParameters parameters)
             : base(parameters)
         {
@@ -60,9 +63,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 
         public override RelationalTypeMapping Clone(string storeType, int? size)
            => new FbStringTypeMapping(Parameters.WithStoreTypeAndSize(storeType, size));
-
-        protected override void ConfigureParameter(DbParameter parameter)
-            => ((FbParameter)parameter).FbDbType = _fbDbType;
+         
 
         protected override string GenerateNonNullSqlLiteral(object value)
             => IsUnicode

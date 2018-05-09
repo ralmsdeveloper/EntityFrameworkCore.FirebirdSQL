@@ -85,8 +85,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
                 for (var i = 1; i <= 100; i++)
                 {
-                    var author = context.Author.Find((long)i);
-                    author.TestString = "EFCore FirebirdSQL Preview1";
+                    var author = context.Author.FirstOrDefault(p=>p.AuthorId == i);
+                    author.TestString = "EFCore FirebirdSQL 2.1-rc1";
                     context.Author.Attach(author);
                 }
                 var update = context.SaveChanges();
@@ -130,8 +130,11 @@ namespace EFCore.FirebirdSql.FunctionalTests
             {
                 for (long i = 1; i <= 100; i++)
                 {
-                    var author = context.Author.Find(i);
-                    context.Author.Remove(author);
+                    var author = context.Author.FirstOrDefault(p=>p.AuthorId == i);
+                    if (author != null)
+                    {
+                        context.Author.Remove(author);
+                    } 
                     removed += context.SaveChanges();
                 }
             }

@@ -102,9 +102,17 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             };
         }
 
-        protected override RelationalTypeMapping FindMapping(RelationalTypeMappingInfo mappingInfo)
-            => FindRawMapping(mappingInfo);
+        protected override RelationalTypeMapping FindMapping(in RelationalTypeMappingInfo mappingInfo)
+        {
+            var mapping = FindRawMapping(mappingInfo)?.Clone(mappingInfo);
 
+            if (_disallowedMappings.Contains(mapping?.StoreType))
+            {
+                throw new ArgumentException($"not enable: {mapping.StoreType}");
+            }
+
+            return mapping;
+        }
         private RelationalTypeMapping FindRawMapping(RelationalTypeMappingInfo mappingInfo)
         {
             var clrType = mappingInfo.ClrType;
@@ -143,7 +151,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             {
                 if (clrType == typeof(string))
                 {
-                    var size = mappingInfo.Size ?? (mappingInfo.IsKeyOrIndex ? (int?)(256) : null);
+                    var size = mappingInfo.Size ?? (mappingInfo.IsKeyOrIndex ? (int?)(256) : NVarcharMaxSize);
                     return new FbStringTypeMapping(
                         $"VARCHAR({size})",
                         FbDbType.VarChar,

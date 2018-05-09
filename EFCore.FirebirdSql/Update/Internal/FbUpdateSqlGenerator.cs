@@ -77,15 +77,37 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 AppendInsertCommandHeader(commandStringBuilder, name, schema, writeOperations);
                 AppendValuesHeader(commandStringBuilder, writeOperations);
                 AppendValuesInsert(commandStringBuilder, writeOperations);
-                if (readOperations.Length > 0)
+                var isMultipleInsert = dataReturnField.ToString().Contains("AffectedRows=0;");
+                if (readOperations.Length > 0 && !isMultipleInsert)
                 {
                     AppendInsertOutputClause(commandStringBuilder, readOperations, operations);
                     resultMapping = ResultSetMapping.LastInResultSet;
                 }
-                else if (readOperations.Length == 0)
+                else if (readOperations.Length == 0 || isMultipleInsert)
                 {
-                    AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
-                    resultMapping = ResultSetMapping.NotLastInResultSet;
+                    if(readOperations.Length == 1)
+                    {
+                        commandStringBuilder
+                            .Append(" RETURNING ")
+                            .AppendJoin(readOperations, (b, e) =>
+                            {
+                                b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
+                            }, ", ")
+                            .Append(" INTO ")
+                            .AppendJoin(readOperations, (b, e) =>
+                            {
+                                b.Append($":AffectedRows");
+                            }, ", ")
+                            .AppendLine(SqlGenerationHelper.StatementTerminator)
+                            .AppendLine("SUSPEND;");
+                        resultMapping = ResultSetMapping.LastInResultSet;
+                    }
+                    else
+                    {
+                        AppendSelectAffectedCountCommand(commandStringBuilder, name, schema, commandPosition);
+                        resultMapping = ResultSetMapping.NotLastInResultSet;
+                    }
+                    
                 }
             }
             return resultMapping;

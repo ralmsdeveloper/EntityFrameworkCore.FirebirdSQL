@@ -20,6 +20,7 @@ using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using EFCore.FirebirdSql.FunctionalTests.TestUtilities;
+using System.IO;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -50,7 +51,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
             _seed = seed;
             ConnectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
             {
-                Database = $@"..\..\..\{Name}.fdb"
+                Database = Path.Combine(AppContext.BaseDirectory,@"..\..\..", $"{Name}.fdb")
             }.ConnectionString;
 
             Connection = new FbConnection(ConnectionString);

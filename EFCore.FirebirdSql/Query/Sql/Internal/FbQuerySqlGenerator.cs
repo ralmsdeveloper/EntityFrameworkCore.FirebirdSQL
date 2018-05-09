@@ -93,8 +93,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             }
             
             if (binaryExpression.NodeType == ExpressionType.And &&
-                binaryExpression.Left.Type == typeof(System.Int32) &&
-                binaryExpression.Right.Type == typeof(System.Int32))
+                binaryExpression.Left.Type == typeof(int) &&
+                binaryExpression.Right.Type == typeof(int))
             {
                 Sql.Append("(BIN_AND(");
                 Visit(binaryExpression.Left);
@@ -105,8 +105,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             }
 
             if (binaryExpression.NodeType == ExpressionType.Or &&
-                binaryExpression.Left.Type == typeof(System.Int32) &&
-                binaryExpression.Right.Type == typeof(System.Int32))
+                binaryExpression.Left.Type == typeof(int) &&
+                binaryExpression.Right.Type == typeof(int))
             {
                 Sql.Append("(BIN_OR (");
                 Visit(binaryExpression.Left);
