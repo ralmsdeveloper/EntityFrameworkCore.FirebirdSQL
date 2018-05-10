@@ -22,7 +22,7 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1-rc1</Version>
+    <Version>2.1-rc1-final</Version>
     <AssemblyVersion>2.1.0.2</AssemblyVersion>
     <FileVersion>2.1.0.2</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>

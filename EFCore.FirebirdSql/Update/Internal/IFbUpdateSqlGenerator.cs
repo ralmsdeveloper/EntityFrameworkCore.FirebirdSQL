@@ -22,25 +22,25 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
 {
     public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator
     {
-        ResultSetMapping AppendBulkInsertOperation(
-            StringBuilder commandStringBuilder,
-            StringBuilder variablesParameters,
-            StringBuilder dataReturnField,
-            IReadOnlyList<ModificationCommand> modificationCommands,
-            int commandPosition);
+        //ResultSetMapping AppendBulkInsertOperation(
+        //    StringBuilder commandStringBuilder,
+        //    StringBuilder variablesParameters,
+        //    StringBuilder dataReturnField,
+        //    IReadOnlyList<ModificationCommand> modificationCommands,
+        //    int commandPosition);
 
-        ResultSetMapping AppendBulkUpdateOperation(
-            StringBuilder commandStringBuilder,
-            StringBuilder variablesParameters,
-            StringBuilder dataReturnField,
-            IReadOnlyList<ModificationCommand> modificationCommands,
-            int commandPosition);
+        //ResultSetMapping AppendBulkUpdateOperation(
+        //    StringBuilder commandStringBuilder,
+        //    StringBuilder variablesParameters,
+        //    StringBuilder dataReturnField,
+        //    IReadOnlyList<ModificationCommand> modificationCommands,
+        //    int commandPosition);
 
-        ResultSetMapping AppendBulkDeleteOperation(
-            StringBuilder commandStringBuilder,
-            StringBuilder variablesParameters,
-            StringBuilder dataReturnField,
-            IReadOnlyList<ModificationCommand> modificationCommands,
-            int commandPosition);
+        //ResultSetMapping AppendBulkDeleteOperation(
+        //    StringBuilder commandStringBuilder,
+        //    StringBuilder variablesParameters,
+        //    StringBuilder dataReturnField,
+        //    IReadOnlyList<ModificationCommand> modificationCommands,
+        //    int commandPosition);
     }
 }

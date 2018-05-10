@@ -51,7 +51,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
             _seed = seed;
             ConnectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
             {
-                Database = Path.Combine(AppContext.BaseDirectory,@"..\..\..", $"{Name}.fdb")
+                Database = Path.Combine(new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..")).FullName , $"{Name}.fdb")
             }.ConnectionString;
 
             Connection = new FbConnection(ConnectionString);

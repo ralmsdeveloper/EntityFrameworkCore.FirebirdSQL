@@ -21,18 +21,28 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
-    public class FbSqlGenerationHelper : RelationalSqlGenerationHelper
+    public interface IFbSqlGenerationHelper : ISqlGenerationHelper
+    {
+        string ParameterName { get; set; }
+    }
+
+    public class FbSqlGenerationHelper : RelationalSqlGenerationHelper, IFbSqlGenerationHelper
     {
         private readonly IFbOptions _options;
+        public string ParameterName { get; set; }
 
         public FbSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies, IFbOptions options)
-            : base(dependencies) => _options = options;
+            : base(dependencies)
+        {
+            ParameterName = "@";
+            _options = options;
+        }
 
         public override string EscapeIdentifier(string identifier)
-            => identifier.MaxLength(_options.ObjectLengthName); 
+            => identifier.MaxLength(_options.ObjectLengthName);
 
         public override void EscapeIdentifier(StringBuilder builder, string identifier)
-            => builder.Append(identifier.MaxLength(_options.ObjectLengthName)); 
+            => builder.Append(identifier.MaxLength(_options.ObjectLengthName));
 
         public override string DelimitIdentifier(string identifier)
             => $"\"{EscapeIdentifier(identifier)}\"";
@@ -45,9 +55,9 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         }
 
         public override string GenerateParameterName(string name)
-            => $"@{name.MaxLength(_options.ObjectLengthName)}";
+            => $"{ParameterName}{name.MaxLength(_options.ObjectLengthName)}";
 
         public override void GenerateParameterName(StringBuilder builder, string name)
-            => builder.Append("@").Append(name.MaxLength(_options.ObjectLengthName)); 
+            => builder.Append(ParameterName).Append(name.MaxLength(_options.ObjectLengthName));
     }
 }

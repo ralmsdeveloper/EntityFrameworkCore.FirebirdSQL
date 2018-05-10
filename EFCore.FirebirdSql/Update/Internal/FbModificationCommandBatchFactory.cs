@@ -13,9 +13,7 @@
  * modified is included with the above copyright notice.
  *
  */
-
-using System.Linq;
-using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+ 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
@@ -40,15 +38,10 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
         }
 
         public virtual ModificationCommandBatch Create()
-        {
-            var optionsExtension = _options.Extensions.OfType<FbOptionsExtension>().FirstOrDefault();
-            return
-                new FbModificationCommandBatch(
-                    _commandBuilderFactory,
-                    _sqlGenerationHelper,
-                    _updateSqlGenerator,
-                    _valueBufferFactoryFactory,
-                    optionsExtension?.MaxBatchSize);
-        }
+            => new SingularModificationCommandBatch(
+                _commandBuilderFactory,
+                _sqlGenerationHelper,
+                _updateSqlGenerator,
+                _valueBufferFactoryFactory);
     }
 }
