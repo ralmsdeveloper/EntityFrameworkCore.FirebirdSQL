@@ -14,11 +14,12 @@
  *
  */
 
-using Microsoft.EntityFrameworkCore.Update;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EntityFrameworkCore.FirebirdSql.Update.Internal
+namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
-    public interface IFbUpdateSqlGenerator : IUpdateSqlGenerator
-    { 
+    public interface IFbSqlGenerationHelper : ISqlGenerationHelper
+    {
+        string ParameterName { get; set; }
     }
 }

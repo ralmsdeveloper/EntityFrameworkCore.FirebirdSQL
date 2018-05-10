@@ -21,11 +21,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
-    public interface IFbSqlGenerationHelper : ISqlGenerationHelper
-    {
-        string ParameterName { get; set; }
-    }
-
     public class FbSqlGenerationHelper : RelationalSqlGenerationHelper, IFbSqlGenerationHelper
     {
         private readonly IFbOptions _options;
