@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace EFCore.FirebirdSql.FunctionalTests
@@ -25,6 +26,30 @@ namespace EFCore.FirebirdSql.FunctionalTests
     public class TestBasic
     {
         private TestContext CreateContext() => new TestContext();
+
+        [Fact]
+        public void ReproIssue28()
+        {
+            using (var ctx = new Issue28Context())
+            {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
+                ctx.People.Add(new People
+                {
+                    Givenname = "Test",
+                    Name = "Ralms"
+                });
+                ctx.SaveChanges();
+
+                var peoples = ctx
+                    .People
+                    .AsNoTracking()
+                    .Where(p => p.Id > 0)
+                    .ToList();
+
+                Assert.Single(peoples);
+            }
+        }
 
         [Fact]
         public void Insert_data()
@@ -85,7 +110,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
                 for (var i = 1; i <= 100; i++)
                 {
-                    var author = context.Author.FirstOrDefault(p=>p.AuthorId == i);
+                    var author = context.Author.FirstOrDefault(p => p.AuthorId == i);
                     author.TestString = "EFCore FirebirdSQL 2.1-rc1";
                     context.Author.Attach(author);
                 }
@@ -130,11 +155,11 @@ namespace EFCore.FirebirdSql.FunctionalTests
             {
                 for (long i = 1; i <= 100; i++)
                 {
-                    var author = context.Author.FirstOrDefault(p=>p.AuthorId == i);
+                    var author = context.Author.FirstOrDefault(p => p.AuthorId == i);
                     if (author != null)
                     {
                         context.Author.Remove(author);
-                    } 
+                    }
                     removed += context.SaveChanges();
                 }
             }

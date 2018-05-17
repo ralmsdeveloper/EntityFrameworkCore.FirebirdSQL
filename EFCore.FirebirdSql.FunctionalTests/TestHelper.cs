@@ -21,6 +21,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
+    public partial class People
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Givenname { get; set; }
+    }
+
     public class Author
     {
         [Key]

@@ -20,6 +20,43 @@ using Microsoft.Extensions.Logging;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
+    // Repro: https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/issues/28
+    public class Issue28Context : DbContext
+    {
+        public virtual DbSet<People> People { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connectionString = @"User=SYSDBA;Password=masterkey;Database=..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;";
+
+            optionsBuilder
+                .UseFirebird(connectionString)
+                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
+
+            var loggerFactory = new LoggerFactory()
+                .AddConsole()
+                .AddDebug();
+
+            optionsBuilder.UseLoggerFactory(loggerFactory);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+            => modelBuilder.Entity<People>(entity =>
+            {
+                entity.ToTable("PEOPLE");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Givenname)
+                    .HasColumnName("GIVENNAME")
+                    .HasColumnType("VARCHAR(60)");
+
+                entity.Property(e => e.Name)
+                    .HasColumnName("NAME")
+                    .HasColumnType("VARCHAR(60)");
+            });
+    }
+
     public class TestContext : DbContext
     {
         public DbSet<Author> Author { get; set; }
