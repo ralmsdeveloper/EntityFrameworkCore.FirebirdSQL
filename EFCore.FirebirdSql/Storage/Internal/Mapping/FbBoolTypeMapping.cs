@@ -26,8 +26,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
      
     public class FbBoolTypeMapping : BoolTypeMapping
     {
-        public FbBoolTypeMapping()
-            : base("BOOLEAN",System.Data.DbType.Boolean)
+        public FbBoolTypeMapping(string storeType)
+            : base(storeType, System.Data.DbType.Boolean)
         {
         }
 

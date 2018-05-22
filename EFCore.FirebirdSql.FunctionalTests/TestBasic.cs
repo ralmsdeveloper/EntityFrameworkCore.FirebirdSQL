@@ -27,7 +27,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
     {
         private TestContext CreateContext() => new TestContext();
 
-        [Fact]
         public void ReproIssue28()
         {
             using (var ctx = new Issue28Context())
@@ -102,7 +101,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                                 AuthorId= i,
                                 Title = $"Firebird 3.0.2 {i}"
                             }
-                        }
+                        },
+                        Active = true
                     });
                 }
                 var save = context.SaveChanges();

@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         public const int DefaultDecimalPrecision = 18;
         public const int DefaultDecimalScale = 2;
 
-        private readonly FbBoolTypeMapping _boolean = new FbBoolTypeMapping();
+        private readonly FbBoolTypeMapping _boolean = new FbBoolTypeMapping("BOOLEAN");
         private readonly ShortTypeMapping _smallint = new ShortTypeMapping("SMALLINT", DbType.Int16);
         private readonly IntTypeMapping _integer = new IntTypeMapping("INTEGER", DbType.Int32);
         private readonly LongTypeMapping _bigint = new LongTypeMapping("BIGINT", DbType.Int64);
@@ -119,7 +119,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             var storeTypeName = mappingInfo.StoreTypeName;
             var storeTypeNameBase = mappingInfo.StoreTypeNameBase;
 
-
             if (clrType != null
                 && _clrTypeMappings.TryGetValue(clrType, out var mapping))
             {
@@ -151,12 +150,11 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             {
                 if (clrType == typeof(string))
                 {
-                    var size = mappingInfo.Size ?? (mappingInfo.IsKeyOrIndex ? (int?)(256) : NVarcharMaxSize);
+                    var size = mappingInfo.Size ?? (mappingInfo.IsKeyOrIndex ? 256 : NVarcharMaxSize);
                     return new FbStringTypeMapping(
                         $"VARCHAR({size})",
                         FbDbType.VarChar,
                         size: size);
-
                 }
 
                 if (clrType == typeof(byte[]))
