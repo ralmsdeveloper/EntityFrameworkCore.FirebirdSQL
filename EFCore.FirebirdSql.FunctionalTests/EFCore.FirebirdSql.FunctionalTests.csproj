@@ -1,35 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' OR '$(CoreOnly)' == 'True'">netcoreapp2.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
-
+    <AssemblyName>EFCore.FirebirdSql.FunctionalTests</AssemblyName>
+    <HasRuntimeOutput>true</HasRuntimeOutput>
+    <AssemblyOriginatorKeyFile>../EFCore.FirebirdSql/EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-
-    <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
+
   <ItemGroup>
-    <None Include="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Internal.AspNetCore.Sdk" PrivateAssets="All" Version="2.2.0-preview1-17060" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-rtm-30796" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-rtm-30796" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.0-rtm-30796" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.0-rtm-30796" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0-rtm-30796" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6" />
-    <PackageReference Include="xunit.core" Version="2.3.1" />
-    <PackageReference Include="xunit.assert" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3945" />
   </ItemGroup>
 
   <ItemGroup>
