@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-
-    <IsPackable>false</IsPackable>
-
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' OR '$(CoreOnly)' == 'True'">netcoreapp2.1</TargetFrameworks>
+    <IsPackable>false</IsPackable> 
+    <AssemblyName>EFCore.FirebirdSql.FunctionalTests</AssemblyName>
+    <HasRuntimeOutput>true</HasRuntimeOutput>
+    <AssemblyOriginatorKeyFile>../EFCore.FirebirdSql/EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-
-    <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,15 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0-rtm-30765" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0-preview-20180510-03" />
-    <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0-rtm-30796" />
   </ItemGroup>
 
   <ItemGroup>
