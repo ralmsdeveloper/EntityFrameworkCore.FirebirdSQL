@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using FB = FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -27,6 +28,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
     {
         private TestContext CreateContext() => new TestContext();
 
+        [Fact]
         public void ReproIssue28()
         {
             using (var ctx = new Issue28Context())
@@ -102,7 +104,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                                 Title = $"Firebird 3.0.2 {i}"
                             }
                         },
-                        Active = true
+                        Active = i % 2 == 0
                     });
                 }
                 var save = context.SaveChanges();

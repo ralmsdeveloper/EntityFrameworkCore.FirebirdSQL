@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' OR '$(CoreOnly)' == 'True'">netcoreapp2.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>EFCore.FirebirdSql.FunctionalTests</AssemblyName>
@@ -9,6 +9,9 @@
     <AssemblyOriginatorKeyFile>../EFCore.FirebirdSql/EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <RestoreAdditionalProjectSources>
+        https://dotnetfeed.blob.core.windows.net/orchestrated-release-2-1/20180515-07/final/index.json
+    </RestoreAdditionalProjectSources>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,16 +19,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0-rtm-30796" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0-rtm-30796" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EFCore.FirebirdSql\EFCore.FirebirdSql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta2" />
   </ItemGroup>
 
 </Project>

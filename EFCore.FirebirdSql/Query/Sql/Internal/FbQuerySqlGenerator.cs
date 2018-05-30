@@ -15,8 +15,11 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -25,12 +28,42 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
     {
+        private static int _incrementLetter = 0;
+        private bool _isLegacyDialect;
+        private static readonly string _letters = "bcdfghijklmnopqrstuvwxyz";
+
         protected override string TypedTrueLiteral => "1";
         protected override string TypedFalseLiteral => "0";
+        protected override string AliasSeparator => " ";
 
-        public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, SelectExpression selectExpression)
+        public FbQuerySqlGenerator(
+            QuerySqlGeneratorDependencies dependencies,
+            SelectExpression selectExpression,
+            IFbOptions fBOptions)
             : base(dependencies, selectExpression)
-        { }
+            => _isLegacyDialect = fBOptions.IsLegacyDialect;
+
+        // HACK - Dialect 1
+        public override Expression VisitTable(TableExpression tableExpression)
+        {
+            if (_isLegacyDialect)
+            {
+                if (tableExpression.Alias.IndexOf(".", StringComparison.OrdinalIgnoreCase) > -1
+                    || _letters.IndexOf(tableExpression.Alias, StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    var letter = _letters[_incrementLetter];
+                    tableExpression.Alias = letter.ToString();
+
+                    _incrementLetter++;
+                    if (_incrementLetter >= _letters.Length)
+                    {
+                        _incrementLetter = 0;
+                    }
+                }
+            }
+
+            return base.VisitTable(tableExpression);
+        }
 
         public override Expression VisitSelect(SelectExpression selectExpression)
         {
@@ -91,7 +124,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
                 Sql.Append(")");
                 return exp;
             }
-            
+
             if (binaryExpression.NodeType == ExpressionType.And &&
                 binaryExpression.Left.Type == typeof(int) &&
                 binaryExpression.Right.Type == typeof(int))

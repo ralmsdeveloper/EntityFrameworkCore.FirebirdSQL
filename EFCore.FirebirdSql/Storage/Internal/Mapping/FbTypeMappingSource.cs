@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -25,16 +26,17 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
     public class FbTypeMappingSource : RelationalTypeMappingSource
     {
+        private readonly bool _isLegacy;
         public const int BinaryMaxSize = int.MaxValue;
         public const int VarcharMaxSize = 32764;
-        public const int NVarcharMaxSize = 4000;
+        public const int NVarcharMaxSize = 2000;
         public const int DefaultDecimalPrecision = 18;
         public const int DefaultDecimalScale = 2;
 
-        private readonly FbBoolTypeMapping _boolean = new FbBoolTypeMapping("BOOLEAN");
+        private readonly LongTypeMapping _bigint;
+        private readonly FbBoolTypeMapping _boolean;
         private readonly ShortTypeMapping _smallint = new ShortTypeMapping("SMALLINT", DbType.Int16);
         private readonly IntTypeMapping _integer = new IntTypeMapping("INTEGER", DbType.Int32);
-        private readonly LongTypeMapping _bigint = new LongTypeMapping("BIGINT", DbType.Int64);
         private readonly FbStringTypeMapping _char = new FbStringTypeMapping("CHAR", FbDbType.Char);
         private readonly FbStringTypeMapping _varchar = new FbStringTypeMapping("VARCHAR", FbDbType.VarChar);
         private readonly FbStringTypeMapping _varcharMax = new FbStringTypeMapping($"VARCHAR({VarcharMaxSize})", FbDbType.VarChar, size: VarcharMaxSize);
@@ -54,9 +56,21 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 
         public FbTypeMappingSource(
             TypeMappingSourceDependencies dependencies,
-            RelationalTypeMappingSourceDependencies relationalDependencies)
+            RelationalTypeMappingSourceDependencies relationalDependencies,
+            IFbOptions options)
             : base(dependencies, relationalDependencies)
         {
+
+            _isLegacy = options.IsLegacyDialect;
+            _bigint = new LongTypeMapping(
+                _isLegacy
+                    ? "INTEGER" : "BIGINT",
+            DbType.Int64);
+
+            _boolean =  new FbBoolTypeMapping(
+                _isLegacy
+                    ? "SMALLINT" : "BOOLEAN");
+
             _storeTypeMappings = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
             {
                 { "BOOLEAN", _boolean },
@@ -75,8 +89,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
                 { "DATE", _date },
                 { "TIME", _time },
                 { "CHAR(16) CHARACTER SET OCTETS", _guid },
-            };
-
+            }; 
+           
             _clrTypeMappings = new Dictionary<Type, RelationalTypeMapping>()
             {
                 { typeof(bool), _boolean },

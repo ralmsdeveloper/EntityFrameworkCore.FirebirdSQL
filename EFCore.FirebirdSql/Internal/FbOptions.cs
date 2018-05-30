@@ -24,9 +24,21 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
 {
     public class FbOptions : IFbOptions
     {
+        private bool IsLegacy { get; set; }
         public FbOptionsExtension Settings { get; private set; }
         public Version ServerVersion { get; private set; }
-        public bool IsLegacyDialect { get; private set; }
+        public bool IsLegacyDialect
+        {
+            get
+            {
+                if (ServerVersion == null && Settings != null)
+                {
+                    GetSettings(Settings.ConnectionString);
+                }
+                return IsLegacy;
+            }
+            set => IsLegacy = value;
+        }
         public int ObjectLengthName => (ServerVersion ?? GetSettings(Settings.ConnectionString).ServerVersion).Major == 3 ? 31 : 63;
 
         public virtual void Initialize(IDbContextOptions options) => Settings = GetOptions(options);
@@ -49,6 +61,19 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
 
             try
             {
+                IsLagacyDataBase(connectionString);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return this;
+        }
+
+        private void IsLagacyDataBase(string connectionString)
+        {
+            try
+            {
                 using (var connection = new Firebird.FbConnection(connectionString))
                 {
                     connection.Open();
@@ -56,16 +81,14 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
                     using (var cmd = connection.CreateCommand())
                     {
                         cmd.CommandText = "SELECT MON$SQL_DIALECT FROM MON$DATABASE";
-                        IsLegacyDialect = Convert.ToInt32(cmd.ExecuteScalar()) == 1;
+                        IsLegacy = Convert.ToInt32(cmd.ExecuteScalar()) == 1;
                     }
                     connection.Close();
                 }
             }
-            catch(Exception)
+            finally
             {
-                throw;
             }
-            return this;
         }
     }
 }

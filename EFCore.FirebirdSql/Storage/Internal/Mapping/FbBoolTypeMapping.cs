@@ -17,24 +17,39 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
 using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using FB = FirebirdSql.Data.FirebirdClient;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
      
     public class FbBoolTypeMapping : BoolTypeMapping
     {
+        private static readonly MethodInfo _readMethod
+           = typeof(FbDataReader).GetTypeInfo().GetDeclaredMethod(nameof(FbDataReader.GetBoolean));
+
+        private static CoreTypeMappingParameters _convert =
+            new CoreTypeMappingParameters(
+                typeof(bool),
+                new ValueConverter<bool, int>(
+                    v => v ? 1 : 0,
+                    v => v.Equals(1))); 
+
         public FbBoolTypeMapping(string storeType)
-            : base(storeType, System.Data.DbType.Boolean)
+            : base(
+                new RelationalTypeMappingParameters(
+                    _convert,
+                    storeType))
         {
         }
 
         protected override void ConfigureParameter(DbParameter parameter)
-             => ((FbParameter)parameter).FbDbType = FbDbType.Boolean;
-
+            => ((FbParameter)parameter).FbDbType = FbDbType.SmallInt;
+         
         protected override string GenerateNonNullSqlLiteral(object value)
-             => (bool)value ? "TRUE" : "FALSE";
+             => (bool)value ? "1" : "0";
     }
 }

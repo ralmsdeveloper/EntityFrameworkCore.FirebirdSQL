@@ -23,36 +23,37 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
 {
     public class FbSqlGenerationHelper : RelationalSqlGenerationHelper, IFbSqlGenerationHelper
     {
-        private readonly IFbOptions _options;
+        private readonly IFbOptions _fbOptions;
         public string ParameterName { get; set; }
+        private string Escape => (bool)_fbOptions?.IsLegacyDialect ? "" : "\"";
 
         public FbSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies, IFbOptions options)
             : base(dependencies)
         {
             ParameterName = "@";
-            _options = options;
+            _fbOptions = options;
         }
 
         public override string EscapeIdentifier(string identifier)
-            => identifier.MaxLength(_options.ObjectLengthName);
+            => identifier.MaxLength(_fbOptions.ObjectLengthName);
 
         public override void EscapeIdentifier(StringBuilder builder, string identifier)
-            => builder.Append(identifier.MaxLength(_options.ObjectLengthName));
+            => builder.Append(identifier.MaxLength(_fbOptions.ObjectLengthName));
 
         public override string DelimitIdentifier(string identifier)
-            => $"\"{EscapeIdentifier(identifier)}\"";
+            => $"{Escape}{EscapeIdentifier(identifier)}{Escape}";
 
         public override void DelimitIdentifier(StringBuilder builder, string identifier)
         {
-            builder.Append('"');
-            EscapeIdentifier(builder, identifier.MaxLength(_options.ObjectLengthName));
-            builder.Append('"');
+            builder.Append(Escape);
+            EscapeIdentifier(builder, identifier.MaxLength(_fbOptions.ObjectLengthName));
+            builder.Append(Escape);
         }
 
         public override string GenerateParameterName(string name)
-            => $"{ParameterName}{name.MaxLength(_options.ObjectLengthName)}";
+            => $"{ParameterName}{name.MaxLength(_fbOptions.ObjectLengthName)}";
 
         public override void GenerateParameterName(StringBuilder builder, string name)
-            => builder.Append(ParameterName).Append(name.MaxLength(_options.ObjectLengthName));
+            => builder.Append(ParameterName).Append(name.MaxLength(_fbOptions.ObjectLengthName));
     }
 }
