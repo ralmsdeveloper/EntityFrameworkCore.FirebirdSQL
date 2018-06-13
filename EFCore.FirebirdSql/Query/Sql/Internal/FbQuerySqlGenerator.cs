@@ -16,6 +16,7 @@
 
 using System;
 using System.Linq.Expressions;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
@@ -25,22 +26,44 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
     {
+        private static int _incrementLetter = 0;
+        private bool _isLegacyDialect;
+        private static readonly string _letters = "bcdfghijklmnopqrstuvwxyz";
+
         protected override string TypedTrueLiteral => "1";
         protected override string TypedFalseLiteral => "0";
+        protected override string AliasSeparator => " ";
 
-        public FbQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, SelectExpression selectExpression)
+        public FbQuerySqlGenerator(
+            QuerySqlGeneratorDependencies dependencies,
+            SelectExpression selectExpression,
+            IFbOptions fBOptions)
             : base(dependencies, selectExpression)
-        { }
+            => _isLegacyDialect = fBOptions.IsLegacyDialect;
 
-        public override Expression VisitSelect(SelectExpression selectExpression)
+        public override Expression VisitTable(TableExpression tableExpression)
         {
-            base.VisitSelect(selectExpression);
-            if (selectExpression.Type == typeof(bool))
+            if (_isLegacyDialect)
             {
-                Sql.Append(" FROM RDB$DATABASE");
+                if (tableExpression.Alias.IndexOf(".", StringComparison.OrdinalIgnoreCase) > -1
+                    || _letters.IndexOf(tableExpression.Alias, StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    var letter = _letters[_incrementLetter];
+                    tableExpression.Alias = letter.ToString();
+
+                    _incrementLetter++;
+                    if (_incrementLetter >= _letters.Length)
+                    {
+                        _incrementLetter = 0;
+                    }
+                }
             }
-            return selectExpression;
+
+            return base.VisitTable(tableExpression);
         }
+
+        protected override void GeneratePseudoFromClause()
+            => Sql.Append(" FROM RDB$DATABASE");
 
         protected override void GenerateTop(SelectExpression selectExpression)
         {
@@ -91,7 +114,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
                 Sql.Append(")");
                 return exp;
             }
-            
+
             if (binaryExpression.NodeType == ExpressionType.And &&
                 binaryExpression.Left.Type == typeof(int) &&
                 binaryExpression.Right.Type == typeof(int))
@@ -147,6 +170,52 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 
         protected override void GenerateLimitOffset(SelectExpression selectExpression)
         {
+        }
+
+        public override Expression VisitFromSql(FromSqlExpression fromSqlExpression)
+        {
+            Sql.AppendLine("(");
+
+            using (Sql.Indent())
+            {
+                GenerateFromSql(fromSqlExpression.Sql, fromSqlExpression.Arguments, ParameterValues);
+            }
+
+            Sql.Append(") ")
+                .Append(SqlGenerator.DelimitIdentifier(fromSqlExpression.Alias));
+
+            return fromSqlExpression;
+        }
+
+        public override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
+        {
+            switch (sqlFunctionExpression.FunctionName)
+            {
+                case "EXTRACT":
+                    {
+                        Sql.Append(sqlFunctionExpression.FunctionName);
+                        Sql.Append("(");
+                        Visit(sqlFunctionExpression.Arguments[0]);
+                        Sql.Append(" FROM ");
+                        Visit(sqlFunctionExpression.Arguments[1]);
+                        Sql.Append(")");
+
+                        return sqlFunctionExpression;
+                    }
+                case "CAST":
+                    {
+                        Sql.Append(sqlFunctionExpression.FunctionName);
+                        Sql.Append("(");
+                        Visit(sqlFunctionExpression.Arguments[0]);
+                        Sql.Append(" AS ");
+                        Visit(sqlFunctionExpression.Arguments[1]);
+                        Sql.Append(")");
+
+                        return sqlFunctionExpression;
+                    }
+            }
+
+            return base.VisitSqlFunction(sqlFunctionExpression);
         }
     }
 }

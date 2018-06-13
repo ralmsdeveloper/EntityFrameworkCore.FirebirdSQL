@@ -17,6 +17,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using FB = FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -27,7 +28,11 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = @"User=SYSDBA;Password=masterkey;Database=..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;";
+            var connectionString = new FB.FbConnectionStringBuilder(
+               @"User=SYSDBA;Password=masterkey;Database=..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;")
+                {
+                  // Dialect = 1
+                }.ConnectionString;
 
             optionsBuilder
                 .UseFirebird(connectionString)
@@ -67,7 +72,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = @"User=SYSDBA;Password=masterkey;Database=..\..\..\EFCoreSample.fdb;DataSource=localhost;Port=3050;";
+
+            var connectionString = new FB.FbConnectionStringBuilder(
+                @"User=SYSDBA;Password=masterkey;Database=..\..\..\EFCoreSample.fdb;DataSource=localhost;Port=3050;")
+                {
+                   //Dialect = 1
+                }.ConnectionString;
 
             optionsBuilder
                 .UseFirebird(connectionString)

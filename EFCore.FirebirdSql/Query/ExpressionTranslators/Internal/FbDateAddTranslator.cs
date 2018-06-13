@@ -57,12 +57,14 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
                 }
 
                 return new SqlFunctionExpression(
-                 functionName: "DATEADD",
-                 returnType: methodCallExpression.Type,
-                 arguments: new[]
-                 {
-                        new SqlFragmentExpression(dateInfo), amountToAdd, methodCallExpression.Object
-                 });
+                     functionName: "DATEADD",
+                     returnType: methodCallExpression.Type,
+                     arguments: new[]
+                     {
+                         new SqlFragmentExpression(dateInfo),
+                         amountToAdd,
+                         methodCallExpression.Object
+                     });
             }
 
             return null;

@@ -40,12 +40,6 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             _typeReturn = fbOptions.IsLegacyDialect ? "INT" : "BIGINT";
         }
 
-        protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
-            => throw new InvalidOperationException();
-
-        protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
-            => throw new InvalidOperationException();
-
         public override ResultSetMapping AppendInsertOperation(StringBuilder commandStringBuilder, ModificationCommand command, int commandPosition)
         {
             var result = ResultSetMapping.NoResultSet;
@@ -145,7 +139,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 commandStringBuilder.AppendLine("IF (ROW_COUNT > 0) THEN");
                 commandStringBuilder.AppendLine("SUSPEND;");
             }
-            commandStringBuilder.AppendLine("END");
+            commandStringBuilder.Append("END");
             commandStringBuilder.Append(SqlGenerationHelper.StatementTerminator).AppendLine();
             return ResultSetMapping.LastInResultSet;
         }
@@ -184,14 +178,24 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             {
                 sqlGenerationHelper.ParameterName = oldParameterNameMarker;
             }
-            commandStringBuilder.Append(SqlGenerationHelper.StatementTerminator).AppendLine();
+            commandStringBuilder
+                .Append(SqlGenerationHelper.StatementTerminator)
+                .AppendLine();
             commandStringBuilder.AppendLine();
             commandStringBuilder.AppendLine("RowsAffected = ROW_COUNT;");
             commandStringBuilder.AppendLine("SUSPEND;");
-            commandStringBuilder.AppendLine("END");
-            commandStringBuilder.Append(SqlGenerationHelper.StatementTerminator).AppendLine();
+            commandStringBuilder.Append("END");
+            commandStringBuilder
+                .Append(SqlGenerationHelper.StatementTerminator)
+                .AppendLine();
             return ResultSetMapping.LastInResultSet;
         }
+
+        protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, ColumnModification columnModification)
+            => throw new InvalidOperationException();
+
+        protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
+            => throw new InvalidOperationException();
 
         string GetColumnType(ColumnModification column)
             => _typeMapper.FindMapping(column.Property).StoreType;

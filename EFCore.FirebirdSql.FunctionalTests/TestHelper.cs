@@ -37,7 +37,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public string TestString { get; set; }
 
         public DateTime TestDate { get; set; }
-
+        public TimeSpan TimeSpan { get; set; }
         public Guid TestGuid { get; set; }
 
         public byte[] TestBytes { get; set; }
@@ -52,7 +52,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public double? TestdoubleNullable { get; set; }
 
-        //public bool Active { get; set; }
+        public bool Active { get; set; }
 
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }

@@ -38,24 +38,6 @@ namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
                     new LoggingOptions(),
                     new DiagnosticListener("Fake")));
 
-        //protected override IDatabaseModelFactory CreateDatabaseModelFactory(ILoggerFactory loggerFactory)
-        //{
-        //    // NOTE: You may need to update AddEntityFrameworkDesignTimeServices() too
-        //    var services = new ServiceCollection()
-        //        .AddSingleton<ValueConverterSelectorDependencies>()
-        //        .AddSingleton<DiagnosticSource>(new DiagnosticListener(DbLoggerCategory.Name))
-        //        .AddSingleton<ILoggingOptions, LoggingOptions>()
-        //        .AddSingleton(typeof(IDiagnosticsLogger<>), typeof(DiagnosticsLogger<>))
-        //        .AddSingleton<IValueConverterSelector, ValueConverterSelector>()
-        //        .AddLogging();
-
-        //    new FbDesignTimeServices().ConfigureDesignTimeServices(services);
-
-        //    return services
-        //        .BuildServiceProvider()
-        //        .GetRequiredService<IDatabaseModelFactory>();
-        //}
-
         protected override bool AcceptIndex(DatabaseIndex index)
             => false;
 
