@@ -17,7 +17,6 @@
 using System.Data;
 using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -30,25 +29,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         public FbStringTypeMapping(string storeType, FbDbType fbDbType, int? size = null)
             : base(storeType, unicode: true, size: size)
             => _fbDbType = fbDbType;
-
-        public FbStringTypeMapping(
-            string storeType,
-            DbType? dbType,
-            bool unicode = false,
-            int? size = null,
-            bool fixedLength = false)
-            : this(
-                new RelationalTypeMappingParameters(
-                    new CoreTypeMappingParameters(typeof(string)),
-                    storeType,
-                   StoreTypePostfix.None,
-                    dbType,
-                    unicode,
-                    size,
-                    fixedLength))
-        {
-        }
-
 
         protected override void ConfigureParameter(DbParameter parameter)
             => ((FbParameter)parameter).FbDbType = _fbDbType;
@@ -63,7 +43,6 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 
         public override RelationalTypeMapping Clone(string storeType, int? size)
            => new FbStringTypeMapping(Parameters.WithStoreTypeAndSize(storeType, size));
-         
 
         protected override string GenerateNonNullSqlLiteral(object value)
             => IsUnicode

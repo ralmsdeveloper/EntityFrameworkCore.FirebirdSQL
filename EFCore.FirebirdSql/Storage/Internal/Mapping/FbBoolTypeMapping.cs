@@ -14,27 +14,40 @@
  *
  */
 
-using System;
-using System.Data;
 using System.Data.Common;
+using System.Reflection;
 using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
-     
     public class FbBoolTypeMapping : BoolTypeMapping
     {
-        public FbBoolTypeMapping()
-            : base("BOOLEAN",System.Data.DbType.Boolean)
+        private static readonly MethodInfo _readMethod
+           = typeof(FbDataReader).GetTypeInfo().GetDeclaredMethod(nameof(FbDataReader.GetBoolean));
+
+        private static CoreTypeMappingParameters _convert =
+            new CoreTypeMappingParameters(
+                typeof(bool),
+                new ValueConverter<bool, int>(
+                    v => v ? 1 : 0,
+                    v => v.Equals(1))); 
+
+        public FbBoolTypeMapping(string storeType)
+            : base(
+                new RelationalTypeMappingParameters(
+                    _convert,
+                    storeType))
         {
         }
 
         protected override void ConfigureParameter(DbParameter parameter)
-             => ((FbParameter)parameter).FbDbType = FbDbType.Boolean;
-
+            => ((FbParameter)parameter).FbDbType = FbDbType.SmallInt;
+         
         protected override string GenerateNonNullSqlLiteral(object value)
-             => (bool)value ? "TRUE" : "FALSE";
+            => ((value is int)
+                ? (int)value == 1
+                : (bool)value) ? "1" : "0";             
     }
 }

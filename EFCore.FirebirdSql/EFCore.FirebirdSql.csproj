@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,7 +7,6 @@
     <RootNamespace>EntityFrameworkCore.FirebirdSql</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>EntityFramework.FIrebirdSQL.snk</AssemblyOriginatorKeyFile>
     <Copyright>Copyright © 2017-2018 Rafael Almeida</Copyright>
     <Company>Ralms.net - ralms@ralms.net</Company>
     <Authors>Rafael Almeida</Authors>
@@ -22,10 +21,11 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1-rc1-final</Version>
-    <AssemblyVersion>2.1.0.2</AssemblyVersion>
-    <FileVersion>2.1.0.2</FileVersion>
+    <Version>2.1</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,10 +35,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-rtm-30765" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0-rtm-30765" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.0-rtm-30765" PrivateAssets="none" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.0" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>

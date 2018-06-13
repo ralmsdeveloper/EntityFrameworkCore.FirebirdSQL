@@ -300,10 +300,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var stringTypeMapping = Dependencies.TypeMappingSource.FindMapping(typeof(string));
+                var typeMapping = Dependencies.TypeMappingSource.GetMappingForValue(defaultValue);
                 builder
                     .Append(" DEFAULT ")
-                    .Append(stringTypeMapping.GenerateSqlLiteral(defaultValue));
+                    .Append(typeMapping.GenerateSqlLiteral(defaultValue));
             }
 
             if (!nullable)
@@ -322,11 +322,10 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
             }
             else if (defaultValue != null)
             {
-                var stringTypeMapping = Dependencies.TypeMappingSource.FindMapping(typeof(string));
-
+                var typeMapping = Dependencies.TypeMappingSource.GetMappingForValue(defaultValue); 
                 builder
                     .Append(" DEFAULT ")
-                    .Append(stringTypeMapping.GenerateSqlLiteral(defaultValue));
+                    .Append(typeMapping.GenerateSqlLiteral(defaultValue));
             }
         }
 

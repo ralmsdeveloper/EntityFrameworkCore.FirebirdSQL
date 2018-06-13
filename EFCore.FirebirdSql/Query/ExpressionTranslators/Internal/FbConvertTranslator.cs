@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
 {
     public class FbConvertTranslator : IMethodCallTranslator
     {
-        private static readonly Dictionary<string, string> TypeMapping = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _typeMapping = new Dictionary<string, string>
         {
             [nameof(Convert.ToByte)] = "SMALLINT",
             [nameof(Convert.ToDecimal)] = $"DECIMAL({FbTypeMappingSource.DefaultDecimalPrecision},{FbTypeMappingSource.DefaultDecimalScale})",
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
         };
 
         private static readonly IEnumerable<MethodInfo> _supportedMethods
-            = TypeMapping
+            = _typeMapping
                 .Keys
                 .SelectMany(t => typeof(Convert).GetTypeInfo()
                 .GetDeclaredMethods(t)

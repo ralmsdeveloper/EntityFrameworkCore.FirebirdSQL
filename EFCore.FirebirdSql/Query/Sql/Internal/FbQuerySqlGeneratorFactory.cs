@@ -14,6 +14,7 @@
  *
  */
 
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 
@@ -21,11 +22,13 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGeneratorFactory : QuerySqlGeneratorFactoryBase
     {
-        public FbQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies)
-            : base(dependencies)
-        { }
+        private IFbOptions _fBOptions;
+        public FbQuerySqlGeneratorFactory(
+            QuerySqlGeneratorDependencies dependencies,
+            IFbOptions fBOptions)
+            : base(dependencies) => _fBOptions = fBOptions;
 
         public override IQuerySqlGenerator CreateDefault(SelectExpression selectExpression)
-            => new FbQuerySqlGenerator(Dependencies, selectExpression);
+            => new FbQuerySqlGenerator(Dependencies, selectExpression, _fBOptions);
     }
 }
