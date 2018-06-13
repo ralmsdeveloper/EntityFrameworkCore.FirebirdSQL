@@ -85,17 +85,18 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 // Issue #21
                 context.Author.Any();
 
-                for (var i = 1; i <= 100; i++)
+                for (var i = 1; i <= 10; i++)
                 {
                     context.Author.Add(new Author
                     {
                         TestString = "EFCore FirebirdSQL 2.x",
                         TestInt = i,
-                        TestDate = DateTime.Now.AddMilliseconds(1),
+                        TestDate = DateTime.Now,
                         TestGuid = Guid.NewGuid(),
                         TestBytes = Encoding.UTF8.GetBytes("EntityFrameworkCore.FirebirdSQL"),
                         TestDecimal = i,
                         TestDouble = i,
+                        TimeSpan = DateTime.Now.TimeOfDay,
                         Books = new List<Book>
                         {
                             new Book
@@ -108,17 +109,21 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     });
                 }
                 var save = context.SaveChanges();
-                Assert.Equal(200, save);
+                Assert.Equal(20, save);
 
-                for (var i = 1; i <= 100; i++)
+                for (var i = 1; i <= 10; i++)
                 {
                     var author = context.Author.FirstOrDefault(p => p.AuthorId == i);
                     author.TestString = "EFCore FirebirdSQL 2.1-rc1";
                     context.Author.Attach(author);
                 }
                 var update = context.SaveChanges();
-                Assert.Equal(100, update);
+                Assert.Equal(10, update);
 
+                var select = context
+                    .Author
+                    .Select(x=> x.TestDate.TimeOfDay)
+                    .ToList();
             }
 
             using (var context = CreateContext())
@@ -147,25 +152,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 }
                 Assert.Equal(10, context.SaveChanges());
             }
-        }
-
-        [Fact]
-        public void Delete_data()
-        {
-            var removed = 0;
-            using (var context = CreateContext())
-            {
-                for (long i = 1; i <= 100; i++)
-                {
-                    var author = context.Author.FirstOrDefault(p => p.AuthorId == i);
-                    if (author != null)
-                    {
-                        context.Author.Remove(author);
-                    }
-                    removed += context.SaveChanges();
-                }
-            }
-            Assert.Equal(100, removed);
         }
     }
 }

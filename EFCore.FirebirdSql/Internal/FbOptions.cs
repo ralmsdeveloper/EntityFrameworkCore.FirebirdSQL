@@ -63,9 +63,8 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
             {
                 IsLagacyDataBase(connectionString);
             }
-            catch (Exception)
-            {
-                throw;
+            catch(Exception)
+            { 
             }
             return this;
         }

@@ -37,7 +37,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public string TestString { get; set; }
 
         public DateTime TestDate { get; set; }
-
+        public TimeSpan TimeSpan { get; set; }
         public Guid TestGuid { get; set; }
 
         public byte[] TestBytes { get; set; }

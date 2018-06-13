@@ -49,11 +49,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
             : base(name, shared)
         {
             _seed = seed;
-            ConnectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
-            {
-                Database = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..", $"{Name}.fdb")).FullName 
-            }.ConnectionString;
-
+            
+            ConnectionString = CreateConnectionString(name);
             Connection = new FbConnection(ConnectionString);
         }
 
@@ -106,6 +103,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
             }
 
             return command;
+        }
+
+        public static string CreateConnectionString(string database)
+        {
+            var root = Directory.GetDirectoryRoot(Directory.GetCurrentDirectory());
+            var connectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
+            {
+                Database = Path.Combine(root, $"{database}.fdb")
+            };
+
+            return connectionString.ToString();
         }
     }
 }

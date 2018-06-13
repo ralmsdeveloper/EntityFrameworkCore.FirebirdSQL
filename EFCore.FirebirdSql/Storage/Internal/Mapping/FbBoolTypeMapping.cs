@@ -14,18 +14,14 @@
  *
  */
 
-using System;
-using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using FB = FirebirdSql.Data.FirebirdClient;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
-     
     public class FbBoolTypeMapping : BoolTypeMapping
     {
         private static readonly MethodInfo _readMethod
@@ -50,6 +46,8 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             => ((FbParameter)parameter).FbDbType = FbDbType.SmallInt;
          
         protected override string GenerateNonNullSqlLiteral(object value)
-             => (bool)value ? "1" : "0";
+            => ((value is int)
+                ? (int)value == 1
+                : (bool)value) ? "1" : "0";             
     }
 }

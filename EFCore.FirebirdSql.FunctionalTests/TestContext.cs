@@ -76,7 +76,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
             var connectionString = new FB.FbConnectionStringBuilder(
                 @"User=SYSDBA;Password=masterkey;Database=..\..\..\EFCoreSample.fdb;DataSource=localhost;Port=3050;")
                 {
-                    //Dialect = 1
+                   //Dialect = 1
                 }.ConnectionString;
 
             optionsBuilder

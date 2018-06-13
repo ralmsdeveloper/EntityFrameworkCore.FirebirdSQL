@@ -32,7 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FirebirdSql.Data.FirebirdClient" Version="6.0.0-beta2" />
+    <PackageReference Update="FirebirdSql.Data.FirebirdClient" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Query\" />
   </ItemGroup>
 
 </Project>
