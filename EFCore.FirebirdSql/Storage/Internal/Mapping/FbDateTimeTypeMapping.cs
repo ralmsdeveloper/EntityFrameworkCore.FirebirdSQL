@@ -16,16 +16,11 @@
 
 using System;
 using FirebirdSql.Data.FirebirdClient;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Storage;
-using JetBrains.Annotations;
-using System.Data;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
 {
-
-
     public class FbTimestampTypeMapping : FbTypeMapping
     {
         public FbTimestampTypeMapping()
@@ -85,42 +80,4 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
         protected override string GenerateNonNullSqlLiteral(object value)
             => $"TIME '{(TimeSpan)value:HH:mm:ss.fff}'";
     }
-    //public class FbDateTimeTypeMapping : DateTimeTypeMapping
-    //{
-    //    public FbDbType FbDbType { get; }
-
-    //    public FbDateTimeTypeMapping(string storeType, FbDbType fbDbType)
-    //        : base(storeType, dbType: (DbType)fbDbType)
-    //        => FbDbType = fbDbType;
-
-
-    //    protected override void ConfigureParameter(DbParameter parameter)
-    //    {
-    //        base.ConfigureParameter(parameter);
-    //        ((FbParameter)parameter).FbDbType = FbDbType; 
-    //    }
-
-    //    protected FbDateTimeTypeMapping(RelationalTypeMappingParameters parameters)
-    //       : base(parameters)
-    //    {
-    //    }
-
-    //    protected override string SqlLiteralFormatString
-    //    {
-    //        get
-    //        {
-    //            switch (FbDbType)
-    //            {
-    //                case FbDbType.TimeStamp:
-    //                    return "'{0:yyyy-MM-dd HH:mm:ss.fffk}'";
-    //                case FbDbType.Date:
-    //                    return "'{0:yyyy-MM-dd}'";
-    //                case FbDbType.Time:
-    //                    return "'{0:HH:mm:ss.fffk}'";
-    //                default:
-    //                    throw new ArgumentOutOfRangeException();
-    //            }
-    //        }
-    //    }
-    //}
 }
