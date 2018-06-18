@@ -39,6 +39,7 @@ namespace EntityFrameworkCore.FirebirdSql.Internal
             }
             set => IsLegacy = value;
         }
+        
         public int ObjectLengthName
             => (ServerVersion ?? GetSettings(Settings.ConnectionString).ServerVersion).Major == 3
             ? 31
