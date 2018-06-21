@@ -260,3 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 *.FDB
+
+# EF scaffolding test result
+EFCore.FirerbirdSql.ScaffoldTest/Scaffolded/

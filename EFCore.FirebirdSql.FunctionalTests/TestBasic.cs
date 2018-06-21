@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +89,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
                 for (var i = 1; i <= 10; i++)
                 {
-                    context.Author.Add(new Author
+                    var author = new Author
                     {
                         TestString = "EFCore FirebirdSQL 2.x",
                         TestInt = i,
@@ -97,16 +99,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
                         TestDecimal = i,
                         TestDouble = i,
                         TimeSpan = DateTime.Now.TimeOfDay,
-                        Books = new List<Book>
-                        {
-                            new Book
-                            {
-                                AuthorId= i,
-                                Title = $"Firebird 3.0.2 {i}"
-                            }
-                        },
                         Active = i % 2 == 0
+                    };
+                    var book = new Book
+                    {
+                        Title = $"Firebird 3.0.2 {i}"
+                    };
+                    author.Books.Add(new BookAuthor() {
+                        Book = book,
+                        Author = author
                     });
+                    context.Author.Add(author);
                 }
                 var save = context.SaveChanges();
                 Assert.Equal(20, save);
@@ -144,14 +147,46 @@ namespace EFCore.FirebirdSql.FunctionalTests
             {
                 for (var i = 1; i <= 10; i++)
                 {
-                    context.Book.Add(new Book
+                    var book = new Book
                     {
-                        AuthorId = i,
                         Title = $"Test Insert Book {i}"
+                    };
+                    book.Authors.Add(new BookAuthor() {
+                        Author = context.Author.Find(i),
+                        Book = book
                     });
+                    context.Book.Add(book);
                 }
                 Assert.Equal(10, context.SaveChanges());
             }
+        }
+
+        [Fact]
+        public void scaffold_db() {
+            string connStr;
+            using (var context = CreateContext())
+            {
+                connStr = context.Database.GetDbConnection().ConnectionString;
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+            }
+            var cwd = Directory.GetCurrentDirectory() + @"\..\..\..\..\EFCore.FirerbirdSql.ScaffoldTest";
+            var p = new Process() {
+                StartInfo = new ProcessStartInfo("dotnet", $"ef dbcontext scaffold {connStr} \"EntityFrameworkCore.FirebirdSQL\" -o Scaffolded -c TestContext --force") {
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = cwd
+                }
+            };
+            p.Start();
+            p.WaitForExit();
+
+            var errStr = p.StandardError.ReadToEnd();
+            var outStr = p.StandardOutput.ReadToEnd(); 
+            
+            var scaffoldExitCode = p.ExitCode;
+
+            Assert.Equal(0, scaffoldExitCode);
         }
     }
 }
