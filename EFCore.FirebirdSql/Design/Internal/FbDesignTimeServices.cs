@@ -15,6 +15,8 @@
  */
 
 using EntityFrameworkCore.FirebirdSql.Design.Internal;
+using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
+using EntityFrameworkCore.FirebirdSql.Internal;
 using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
 using EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping;
 using Microsoft.EntityFrameworkCore.Design;
@@ -22,7 +24,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.EntityFrameworkCore.Firebird.Design.Internal
+namespace EntityFrameworkCore.FirebirdSql.Design.Internal
 {
     public class FbDesignTimeServices : IDesignTimeServices
     {
@@ -30,8 +32,9 @@ namespace Microsoft.EntityFrameworkCore.Firebird.Design.Internal
             => serviceCollection
                 .AddSingleton<IRelationalTypeMappingSource, FbTypeMappingSource>()
                 .AddSingleton<IDatabaseModelFactory, FbDatabaseModelFactory>()
-                .AddSingleton<ProviderCodeGenerator, FbScaffoldingCodeGenerator>()
-                .AddSingleton<IAnnotationCodeGenerator, FbAnnotationCodeGenerator>();
+                .AddSingleton<IProviderConfigurationCodeGenerator, FbScaffoldingCodeGenerator>()
+                .AddSingleton<IAnnotationCodeGenerator, FbAnnotationCodeGenerator>()
+                .AddSingleton<IFbOptions, FbOptions>();
     }
 }
 
