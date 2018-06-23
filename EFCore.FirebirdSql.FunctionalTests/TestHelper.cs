@@ -68,9 +68,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public virtual ICollection<BookAuthor> Authors { get; set; } = new List<BookAuthor>();
     }
 
-    public class BookAuthor {
-        public long BookId {get;set;}
-        public long AuthorId {get;set;}
+    public class BookAuthor
+    {
+        public long BookId { get; set; }
+        public long AuthorId { get; set; }
         public virtual Author Author { get; set; }
         public virtual Book Book { get; set; }
     }
@@ -89,6 +90,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CourseID { get; set; }
         public int Credits { get; set; }
+
         [StringLength(100)]
         public string Title { get; set; }
 

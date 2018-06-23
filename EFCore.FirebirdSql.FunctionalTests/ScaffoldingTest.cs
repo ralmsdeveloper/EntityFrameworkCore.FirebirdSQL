@@ -103,6 +103,11 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 connStr = context.Database.GetDbConnection().ConnectionString;
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
+
+                // commputed index will have NULL as RBS$FIELD_NAME
+                context.Database.ExecuteSqlCommand(@"CREATE INDEX ""IX_AUTHOR_COMPUTED"" ON ""Author"" COMPUTED BY (""AuthorId"")");
+                // tables with no primary key are valid
+                context.Database.ExecuteSqlCommand(@"CREATE TABLE CourseTemplate(Tile varchar(100))");
             }
 
             var scaffoldExitCode = RunEfScaffold(connStr);
@@ -111,7 +116,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
             Assert.True(Directory.Exists(ClassDir));
             
             GetEntityMap<BookAuthor>().ShouldContain(new Regex(@"HasKey\(e => new { (e.BookId|e.AuthorId), (e.BookId|e.AuthorId) }\)"), "BookAuthor should have composite key");
+            GetEntity<BookAuthor>().ShouldNotContain("long? BookId");
+            GetEntity<BookAuthor>().ShouldContain("public long BookId");
             GetEntity<Author>().ShouldContain("public byte[] TestBytes", "byte array should be properly mapped");
+            //GetEntity("CourseTemplate").ShouldContain("public string Title");
         }
 
         class FileContent
