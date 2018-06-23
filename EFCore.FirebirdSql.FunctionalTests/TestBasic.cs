@@ -112,7 +112,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     context.Author.Add(author);
                 }
                 var save = context.SaveChanges();
-                Assert.Equal(20, save);
+                Assert.Equal(30, save);
 
                 for (var i = 1; i <= 10; i++)
                 {
@@ -152,12 +152,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
                         Title = $"Test Insert Book {i}"
                     };
                     book.Authors.Add(new BookAuthor() {
-                        Author = context.Author.Find(i),
+                        Author = context.Author.Find((long)i),
                         Book = book
                     });
                     context.Book.Add(book);
                 }
-                Assert.Equal(10, context.SaveChanges());
+                Assert.Equal(20, context.SaveChanges());
             }
         }
 
