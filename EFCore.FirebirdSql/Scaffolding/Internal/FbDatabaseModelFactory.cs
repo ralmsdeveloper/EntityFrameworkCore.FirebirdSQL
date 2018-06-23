@@ -107,9 +107,13 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
                         if (primaryKey != null)
                         {
                             primaryKey.Table = table;
-                            if (!primaryKey.Columns.Any()) {
-                                System.Console.WriteLine($"PK '{primaryKey.Name}' on table '{table.Name}' has no columns!");
-                            } else {
+                            if (!primaryKey.Columns.Any())
+                            {
+                                // Insert in Logger - refactor - v2.2
+                                Console.WriteLine($"PK '{primaryKey.Name}' on table '{table.Name}' has no columns!");
+                            }
+                            else
+                            {
                                 table.PrimaryKey = primaryKey;
                             }
                         }
@@ -117,8 +121,10 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
                         foreach (var index in GetIndexes(connection, name, table.Columns))
                         {
                             index.Table = table;
-                            if (!index.Columns.Any()) {
-                                System.Console.WriteLine($"index '{index.Name}' on table '{table.Name}' has no columns!");
+                            if (!index.Columns.Any())
+                            {
+                                // Insert in Logger - refactor - v2.2
+                                Console.WriteLine($"index '{index.Name}' on table '{table.Name}' has no columns!");
                             }
                             table.Indexes.Add(index);  
                         }
@@ -134,7 +140,10 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
             }
         }
 
-        private bool AllowsTable(HashSet<string> tables, HashSet<string> selectedTables, string name)
+        private bool AllowsTable(
+            HashSet<string> tables,
+            HashSet<string> selectedTables,
+            string name)
         {
             if (tables.Count == 0)
             {
@@ -228,11 +237,11 @@ ORDER BY RF.RDB$FIELD_POSITION";
                             StoreType = dataType,
                             IsNullable = !notNull,
                             DefaultValueSql = string.IsNullOrWhiteSpace(defaultValue)
-                                        ? null
-                                        : defaultValue,
+                                ? null
+                                : defaultValue,
                             ValueGenerated = isIdentity
-                                        ? Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd
-                                        : default
+                                ? Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd
+                                : default
                         };
 
                         if (!string.IsNullOrWhiteSpace(description))
@@ -276,8 +285,8 @@ WHERE RC.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY' AND I.RDB$RELATION_NAME = '{table}'
                             _logger.PrimaryKeyFound(name, table);
                         }
 
-                        var column = columns.FirstOrDefault(c => c.Name == columnName)
-                                     ?? columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+                        var column = columns.FirstOrDefault(c => c.Name == columnName) ??
+                            columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
 
                         Debug.Assert(column != null, "column is null.");
 
@@ -314,8 +323,12 @@ GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME";
                         var columnName = reader["RDB$FIELD_NAME"].ToString().Trim();
                         var isUnique = reader["ISUNIQUE"].ToString().Equals("1");
 
-                        if (string.IsNullOrWhiteSpace(columnName)) {
+                        if (string.IsNullOrWhiteSpace(columnName))
+                        {
                             // ignore indices without a column specified (i.e. with COMPUTED BY)
+#pragma warning disable CS1030 // diretiva de #aviso
+#warning Analyze this for 2.2
+#pragma warning restore CS1030 // diretiva de #aviso
                             continue;
                         }
 
@@ -330,8 +343,9 @@ GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME";
                         foreach (var n in columnName.Trim().Split(','))
                         {
                             var name = n.Trim();
-                            var column = columns.FirstOrDefault(c => c.Name == name)??
-                                columns.FirstOrDefault(c => c.Name.Equals(name, StringComparison.Ordinal));
+                            var column = columns.FirstOrDefault(c => c.Name == name)
+                                ?? columns.FirstOrDefault(c => c.Name.Equals(name, StringComparison.Ordinal));
+
                             Debug.Assert(column != null, $"column '{name}' parsed for index '{indexName}' from '{columnName}' in table {table} is null.");
 
                             index.Columns.Add(column);
@@ -343,7 +357,10 @@ GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME";
             }
         }
 
-        private IEnumerable<DatabaseForeignKey> GetForeignKeys(DbConnection connection, DatabaseTable table, IList<DatabaseTable> tables)
+        private IEnumerable<DatabaseForeignKey> GetForeignKeys(
+            DbConnection connection,
+            DatabaseTable table,
+            IList<DatabaseTable> tables)
         {
             var foreignKeys = $@"
 SELECT
@@ -394,7 +411,7 @@ WHERE
                             foreignKey = new DatabaseForeignKey
                             {
                                 Name = constaintName,
-                                PrincipalTable = tables.FirstOrDefault(t => t.Name == principalTableName)??
+                                PrincipalTable = tables.FirstOrDefault(t => t.Name == principalTableName) ??
                                 tables.FirstOrDefault(t => t.Name.Equals(principalTableName, StringComparison.OrdinalIgnoreCase)),
                                 OnDelete = ConvertToReferentialAction(onDelete),
                                 Table = table
@@ -412,8 +429,9 @@ WHERE
                             {
 
                                 var columnName = pair.Split('$')[0];
-                                var column = table.Columns.FirstOrDefault(c => c.Name == columnName)??
-                                    table.Columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+                                var column = table.Columns.FirstOrDefault(c => c.Name == columnName)
+                                    ??  table.Columns.FirstOrDefault(c => c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+
                                 Debug.Assert(column != null, "column is null.");
 
                                 var principalColumnName = pair.Split('$')[1];
@@ -445,9 +463,11 @@ WHERE
                     }
                 }
             }
+
         }
 
-        private static string FieldIsIdentity => (_version.Major >= 3 ? "COALESCE(RF.RDB$IDENTITY_TYPE, 0)" : "0");
+        private static string FieldIsIdentity
+            => (_version.Major >= 3 ? "COALESCE(RF.RDB$IDENTITY_TYPE, 0)" : "0");
 
         private static string EscapeLiteral(string s) => $"N'{s}'";
 

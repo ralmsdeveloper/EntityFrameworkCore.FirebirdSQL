@@ -14,7 +14,6 @@
  *
  */
 
-using EntityFrameworkCore.FirebirdSql.Design.Internal;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Internal;
 using EntityFrameworkCore.FirebirdSql.Scaffolding.Internal;
