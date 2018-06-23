@@ -78,7 +78,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal.Mapping
             DbType.Int64);
 
             _boolean = new FbBoolTypeMapping(
-                _isLegacy
+                _isLegacy || options.ServerVersion?.Major < 3
                     ? "SMALLINT" : "BOOLEAN");
 
             _storeTypeMappings = new Dictionary<string, RelationalTypeMapping>(StringComparer.OrdinalIgnoreCase)
