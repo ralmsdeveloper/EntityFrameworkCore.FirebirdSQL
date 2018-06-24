@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +89,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
                 for (var i = 1; i <= 10; i++)
                 {
-                    context.Author.Add(new Author
+                    var author = new Author
                     {
                         TestString = "EFCore FirebirdSQL 2.x",
                         TestInt = i,
@@ -97,19 +99,20 @@ namespace EFCore.FirebirdSql.FunctionalTests
                         TestDecimal = i,
                         TestDouble = i,
                         TimeSpan = DateTime.Now.TimeOfDay,
-                        Books = new List<Book>
-                        {
-                            new Book
-                            {
-                                AuthorId= i,
-                                Title = $"Firebird 3.0.2 {i}"
-                            }
-                        },
                         Active = i % 2 == 0
+                    };
+                    var book = new Book
+                    {
+                        Title = $"Firebird 3.0.2 {i}"
+                    };
+                    author.Books.Add(new BookAuthor() {
+                        Book = book,
+                        Author = author
                     });
+                    context.Author.Add(author);
                 }
                 var save = context.SaveChanges();
-                Assert.Equal(20, save);
+                Assert.Equal(30, save);
 
                 for (var i = 1; i <= 10; i++)
                 {
@@ -144,13 +147,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
             {
                 for (var i = 1; i <= 10; i++)
                 {
-                    context.Book.Add(new Book
+                    var book = new Book
                     {
-                        AuthorId = i,
                         Title = $"Test Insert Book {i}"
+                    };
+                    book.Authors.Add(new BookAuthor() {
+                        Author = context.Author.Find((long)i),
+                        Book = book
                     });
+                    context.Book.Add(book);
                 }
-                Assert.Equal(10, context.SaveChanges());
+                Assert.Equal(20, context.SaveChanges());
             }
         }
     }

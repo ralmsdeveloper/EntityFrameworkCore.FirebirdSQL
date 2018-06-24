@@ -16,12 +16,12 @@
 
 using System;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
-using Firebird = FirebirdSql.Data.FirebirdClient;
-using Data = FirebirdSql.Data.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EntityFrameworkCore.FirebirdSql.Internal
 {
+    using Firebird = global::FirebirdSql.Data.FirebirdClient; 
+    using Data = global::FirebirdSql.Data.Services;
     public class FbOptions : IFbOptions
     {
         private bool IsLegacy { get; set; }

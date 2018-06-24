@@ -78,10 +78,10 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = $@"
-SELECT RDB$RELATION_NAME FROM
-RDB$RELATIONS t
-WHERE t.RDB$RELATION_NAME <> '{HistoryRepository.DefaultTableName}'
-AND RDB$VIEW_BLR IS NULL AND (RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0);";
+                    SELECT RDB$RELATION_NAME FROM
+                    RDB$RELATIONS t
+                    WHERE t.RDB$RELATION_NAME <> '{HistoryRepository.DefaultTableName}'
+                    AND RDB$VIEW_BLR IS NULL AND (RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0);";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -126,7 +126,7 @@ AND RDB$VIEW_BLR IS NULL AND (RDB$SYSTEM_FLAG IS NULL OR RDB$SYSTEM_FLAG = 0);";
                                 // Insert in Logger - refactor - v2.2
                                 Console.WriteLine($"index '{index.Name}' on table '{table.Name}' has no columns!");
                             }
-                            table.Indexes.Add(index);
+                            table.Indexes.Add(index);  
                         }
 
                         yield return table;
@@ -223,7 +223,7 @@ ORDER BY RF.RDB$FIELD_POSITION";
                     {
                         var columnName = reader["FIELD_NAME"].ToString().Trim();
                         var dataType = reader["FIELD_TYPE"].ToString().Trim();
-                        var notNull = reader["FIELD_NULL"].ToString().Trim().Equals("NULL", StringComparison.OrdinalIgnoreCase);
+                        var notNull = reader["FIELD_NULL"].ToString().Trim().Equals("NOT NULL", StringComparison.OrdinalIgnoreCase);
                         var defaultValue = reader["FIELD_DEFAULT"].ToString().Trim();
                         var isIdentity = int.Parse(reader["IDENTITY"].ToString()) == 1;
                         var description = reader["FIELD_DESCRIPTION"].ToString().Trim();
@@ -325,7 +325,7 @@ GROUP BY I.RDB$INDEX_NAME, ISUNIQUE, I.RDB$RELATION_NAME";
 
                         if (string.IsNullOrWhiteSpace(columnName))
                         {
-                            // ignore invalid indices (without a column specified)
+                            // ignore indices without a column specified (i.e. with COMPUTED BY)
 #pragma warning disable CS1030 // diretiva de #aviso
 #warning Analyze this for 2.2
 #pragma warning restore CS1030 // diretiva de #aviso

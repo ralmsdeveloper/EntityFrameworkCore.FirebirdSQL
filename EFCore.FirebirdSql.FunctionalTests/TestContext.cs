@@ -14,6 +14,8 @@
  *
  */
 
+using System.IO;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -29,7 +31,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = new FB.FbConnectionStringBuilder(
-               @"User=SYSDBA;Password=masterkey;Database=..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;")
+               $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;")
                 {
                   // Dialect = 1
                 }.ConnectionString;
@@ -70,13 +72,19 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public DbSet<Course> Courses { get; set; }
 
+        private string dbFileName;
+        public TestContext(string dbFileName = "EFCoreSample.fdb")
+        {
+            this.dbFileName = dbFileName;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
             var connectionString = new FB.FbConnectionStringBuilder(
-                @"User=SYSDBA;Password=masterkey;Database=..\..\..\EFCoreSample.fdb;DataSource=localhost;Port=3050;")
+                $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}\..\..\..\{dbFileName};DataSource=localhost;Port=3050;")
                 {
-                   //Dialect = 1
+                   //Dialect = 1,
                 }.ConnectionString;
 
             optionsBuilder
@@ -102,6 +110,22 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             modelo.Entity<Person>()
                 .HasKey(person => new { person.Name, person.LastName });
+
+            modelo.Entity<BookAuthor>()
+                .HasKey(ba => new { ba.BookId, ba.AuthorId } );
+
+            modelo.Entity<BookAuthor>()
+                .HasOne(ba => ba.Author)
+                .WithMany(a => a.Books)
+                .HasForeignKey(ba => ba.AuthorId);
+
+            modelo.Entity<BookAuthor>()
+                .HasOne(ba => ba.Book)
+                .WithMany(b => b.Authors)
+                .HasForeignKey(ba => ba.BookId);
+
+            modelo.Entity<BookAuthor>()
+                .HasIndex(ba => new { ba.BookId, ba.AuthorId });
         }
     }
 }
