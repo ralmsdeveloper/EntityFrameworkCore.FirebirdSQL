@@ -72,11 +72,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public DbSet<Course> Courses { get; set; }
 
+        private string dbFileName;
+        public TestContext(string dbFileName = "EFCoreSample.fdb")
+        {
+            this.dbFileName = dbFileName;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
             var connectionString = new FB.FbConnectionStringBuilder(
-                $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}\..\..\..\EFCoreSample.fdb;DataSource=localhost;Port=3050;")
+                $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}\..\..\..\{dbFileName};DataSource=localhost;Port=3050;")
                 {
                    //Dialect = 1,
                 }.ConnectionString;

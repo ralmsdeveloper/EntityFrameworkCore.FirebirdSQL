@@ -160,33 +160,5 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 Assert.Equal(20, context.SaveChanges());
             }
         }
-
-        [Fact]
-        public void scaffold_db() {
-            string connStr;
-            using (var context = CreateContext())
-            {
-                connStr = context.Database.GetDbConnection().ConnectionString;
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-            }
-            var cwd = Directory.GetCurrentDirectory() + @"\..\..\..\..\EFCore.FirerbirdSql.ScaffoldTest";
-            var p = new Process() {
-                StartInfo = new ProcessStartInfo("dotnet", $"ef dbcontext scaffold {connStr} \"EntityFrameworkCore.FirebirdSQL\" -o Scaffolded -c TestContext --force") {
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    WorkingDirectory = cwd
-                }
-            };
-            p.Start();
-            p.WaitForExit();
-
-            var errStr = p.StandardError.ReadToEnd();
-            var outStr = p.StandardOutput.ReadToEnd(); 
-            
-            var scaffoldExitCode = p.ExitCode;
-
-            Assert.Equal(0, scaffoldExitCode);
-        }
     }
 }

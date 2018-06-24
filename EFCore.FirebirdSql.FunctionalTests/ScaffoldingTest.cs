@@ -29,7 +29,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 {
     public class ScaffoldingTest
     {
-        private TestContext CreateContext() => new TestContext();
+        private TestContext CreateContext() => new TestContext("ScaffoldingSample.fdb");
         private string WorkingDir => Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "EFCore.FirerbirdSql.ScaffoldTest");
         private string ClassDir => Path.Combine(WorkingDir, "Scaffolded");
 
