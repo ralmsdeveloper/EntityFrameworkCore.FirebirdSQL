@@ -21,9 +21,9 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1</Version>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <Version>2.1.1</Version>
+    <AssemblyVersion>2.1.1.0</AssemblyVersion>
+    <FileVersion>2.1.1.0</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -36,9 +36,9 @@
 
   <ItemGroup>
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.0" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.1" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.1" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>
