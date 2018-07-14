@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations.Internal
         }
 
         protected override string ExistsSql
-        {
+        { 
             get
             {
                 var stringTypeMapping = Dependencies.TypeMappingSource.GetMapping(typeof(string));

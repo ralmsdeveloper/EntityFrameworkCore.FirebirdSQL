@@ -35,17 +35,45 @@ namespace EntityFrameworkCore.FirebirdSql.Query.ExpressionTranslators.Internal
                 { nameof(DateTime.Hour), "hour" },
                 { nameof(DateTime.Minute), "minute" },
                 { nameof(DateTime.Second), "second" },
-                { nameof(DateTime.Millisecond), "millisecond" }
+                { nameof(DateTime.Millisecond), "millisecond" },
+                { nameof(TimeSpan.TotalDays), "day" },
+                { nameof(TimeSpan.Days), "day" },
+                { nameof(TimeSpan.TotalHours), "hour" },
+                { nameof(TimeSpan.Hours), "hour" },
+                { nameof(TimeSpan.TotalMinutes), "minute" },
+                { nameof(TimeSpan.Minutes), "minute" },
+                { nameof(TimeSpan.TotalSeconds), "second" },
+                { nameof(TimeSpan.Seconds), "second" },
+                { nameof(TimeSpan.TotalMilliseconds), "millisecond" },
+                { nameof(TimeSpan.Milliseconds), "millisecond" },
           };
 
         public virtual Expression Translate(MemberExpression memberExpression)
         {
             var declaringType = memberExpression.Member.DeclaringType;
+            var memberName = memberExpression.Member.Name;
+
+            if (declaringType == typeof(TimeSpan)
+                && memberExpression.Expression.NodeType == ExpressionType.Subtract)
+            {
+                var binaryExpression = memberExpression.Expression as BinaryExpression;
+                if (_datePartMapping.TryGetValue(memberName, out var datePart))
+                {
+                    return new SqlFunctionExpression(
+                    functionName: "DATEDIFF",
+                    returnType: memberExpression.Type,
+                    arguments: new[]
+                    {
+                        new SqlFragmentExpression(datePart),
+                        binaryExpression.Left,
+                        binaryExpression.Right
+                    });
+                }
+            }
+
             if (declaringType == typeof(DateTime)
                 || declaringType == typeof(DateTimeOffset))
             {
-                var memberName = memberExpression.Member.Name;
-
                 if (_datePartMapping.TryGetValue(memberName, out var datePart))
                 {
                     return new SqlFunctionExpression(

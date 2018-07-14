@@ -43,7 +43,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     Name = "Ralms"
                 });
                 ctx.SaveChanges();
-
+    
                 var peoples = ctx
                     .People
                     .AsNoTracking()
@@ -157,6 +157,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     });
                     context.Book.Add(book);
                 }
+
                 Assert.Equal(20, context.SaveChanges());
             }
         }
