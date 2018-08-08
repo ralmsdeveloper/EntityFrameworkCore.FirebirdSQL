@@ -32,13 +32,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;DEBUG;EFCORE</DefineConstants>
     <LangVersion>7.2</LangVersion>
+    <NoWarn>1701;1702;IDE1006</NoWarn>
+    <WarningsAsErrors>NU1605</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0-preview1-34529" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0-preview1-34529" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.2.0-preview1-34529" PrivateAssets="none" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0-preview1-34866" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0-preview1-34866" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.2.0-preview1-34866" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>

@@ -43,12 +43,13 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     Name = "Ralms"
                 });
                 ctx.SaveChanges();
-    
+
                 var peoples = ctx
                     .People
                     .AsNoTracking()
+                    .WithNoLock()
                     .Where(p => p.Id > 0)
-                    .ToList();
+                    .ToSql();
 
                 Assert.Single(peoples);
             }

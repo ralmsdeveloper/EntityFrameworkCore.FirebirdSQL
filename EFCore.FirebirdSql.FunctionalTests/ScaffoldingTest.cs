@@ -18,8 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Linq; 
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -53,20 +52,22 @@ namespace EFCore.FirebirdSql.FunctionalTests
             var errStr = p.StandardError.ReadToEnd();
             var outStr = p.StandardOutput.ReadToEnd();
 
-            System.Console.WriteLine(outStr);
-            System.Console.WriteLine(errStr);
+            Console.WriteLine(outStr);
+            Console.WriteLine(errStr);
 
             return p.ExitCode;
         }
 
-        private FileContent GetEntityMap<T>()=> GetEntityMap(typeof(T).Name);
+        private FileContent GetEntityMap<T>()
+            => GetEntityMap(typeof(T).Name);
+
         private FileContent GetEntityMap(string className)
         {
             var ctxFile = File.ReadAllLines(Path.Combine(ClassDir, "TestContext.cs"));
 
             var entityMap = new List<string>();
             int? startIdx = null;
-            for (int i = 0; i < ctxFile.Length; i++)
+            for (var i = 0; i < ctxFile.Length; i++)
             {
                 var line = ctxFile[i];
 
@@ -95,7 +96,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         private FileContent GetEntity(string className) => new FileContent(File.ReadAllLines(Path.Combine(ClassDir, $"{className}.cs")));
 
         [Fact]
-        public void scaffold_db()
+        public void Scaffold_db()
         {
             string connStr;
             using(var context = CreateContext())
@@ -128,12 +129,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             public FileContent(IEnumerable<string> lines)
             {
-                this.Lines = lines;
+                Lines = lines;
             }
 
-            public void ShouldNotContain(string text, string message = null) => Assert.False(Lines.Any(l => l.Contains(text)), message);
-            public void ShouldContain(string text, string message = null) => Assert.True(Lines.Any(l => l.Contains(text)), message);
-            public void ShouldContain(Regex regex, string message = null) => Assert.True(Lines.Any(l => regex.IsMatch(l)), message);
+            public void ShouldNotContain(string text, string message = null)
+                => Assert.False(Lines.Any(l => l.Contains(text)), message);
+
+            public void ShouldContain(string text, string message = null)
+                => Assert.True(Lines.Any(l => l.Contains(text)), message);
+
+            public void ShouldContain(Regex regex, string message = null)
+                => Assert.True(Lines.Any(l => regex.IsMatch(l)), message);
         }
     }
 }

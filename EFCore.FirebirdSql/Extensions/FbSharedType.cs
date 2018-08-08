@@ -92,11 +92,13 @@ namespace System
             var typeInfo = type.GetTypeInfo();
             if (!typeInfo.IsGenericTypeDefinition)
             {
-                return (interfaceOrBaseType.GetTypeInfo().IsInterface ? typeInfo.ImplementedInterfaces : type.GetBaseTypes())
-                    .Union(new[] { type })
-                    .Where(
-                        t => t.GetTypeInfo().IsGenericType
-                             && (t.GetGenericTypeDefinition() == interfaceOrBaseType));
+                return (interfaceOrBaseType.GetTypeInfo().IsInterface
+                    ? typeInfo.ImplementedInterfaces
+                    : type.GetBaseTypes())
+                        .Union(new[] { type })
+                        .Where(
+                            t => t.GetTypeInfo().IsGenericType
+                                 && (t.GetGenericTypeDefinition() == interfaceOrBaseType));
             }
 
             return Enumerable.Empty<Type>();
@@ -108,8 +110,7 @@ namespace System
 
             while (type != null)
             {
-                yield return type;
-
+                yield return type; 
                 type = type.GetTypeInfo().BaseType;
             }
         }

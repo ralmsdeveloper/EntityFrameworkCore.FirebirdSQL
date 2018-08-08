@@ -65,11 +65,12 @@ csharp_style_var_when_type_is_apparent = true : warning
 
 # Expression-Bodied members
 csharp_style_expression_bodied_accessors = true : warning
-csharp_style_expression_bodied_constructors = true : warning
 csharp_style_expression_bodied_indexers = true : warning
-csharp_style_expression_bodied_methods = true : warning
 csharp_style_expression_bodied_operators = true : warning
 csharp_style_expression_bodied_properties = true : warning
+# Explicitly disabled due to difference in coding style between source and tests
+#csharp_style_expression_bodied_constructors = true : warning
+#csharp_style_expression_bodied_methods = true : warning
 
 # Pattern matching
 csharp_style_pattern_matching_over_as_with_null_check = true : warning
@@ -151,12 +152,12 @@ dotnet_naming_rule.interface_naming.severity = warning
 dotnet_naming_symbols.interface_symbol.applicable_kinds = interface
 dotnet_naming_symbols.interface_symbol.applicable_accessibilities = *
 
-# Classes, Structs, Enums, Properties, Methods, Events
+# Classes, Structs, Enums, Properties, Methods, Events, Namespaces
 dotnet_naming_rule.class_naming.symbols = class_symbol
 dotnet_naming_rule.class_naming.style = pascal_case_style
 dotnet_naming_rule.class_naming.severity = warning
 
-dotnet_naming_symbols.class_symbol.applicable_kinds = class, struct, enum, property, method, event
+dotnet_naming_symbols.class_symbol.applicable_kinds = class, struct, enum, property, method, event, namespace
 dotnet_naming_symbols.class_symbol.applicable_accessibilities = *
 
 # Const fields
@@ -174,7 +175,7 @@ dotnet_naming_rule.public_field_naming.style = pascal_case_style
 dotnet_naming_rule.public_field_naming.severity = warning
 
 dotnet_naming_symbols.public_field_symbol.applicable_kinds = field
-dotnet_naming_symbols.public_field_symbol.applicable_accessibilities = public
+dotnet_naming_symbols.public_field_symbol.applicable_accessibilities = public, internal, protected
 
 # Other fields
 dotnet_naming_rule.other_field_naming.symbols = other_field_symbol

@@ -14,6 +14,7 @@
  *
  */
 
+using System;
 using System.Diagnostics;
 using EntityFrameworkCore.FirebirdSql.Design.Internal;
 using EntityFrameworkCore.FirebirdSql.Migrations;
@@ -57,5 +58,8 @@ namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
             return serviceCollection.AddEntityFrameworkFirebird()
                 .AddSingleton<ILoggerFactory>(new TestSqlLoggerFactory());
         }
+
+        public ListLoggerFactory CreateListLoggerFactory(Func<string, bool> shouldLogCategory)
+            => new ListLoggerFactory(shouldLogCategory);
     }
 }
