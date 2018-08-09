@@ -15,10 +15,16 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ResultOperators;
+using Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -26,23 +32,67 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
     public class FbQuerySqlGenerator : DefaultQuerySqlGenerator, IFbExpressionVisitor
     {
+        private const string _letters = "bcdfghijklmnopqrstuvwxyz";
         private static int _incrementLetter = 0;
-        private bool _isLegacyDialect;
-        private static readonly string _letters = "bcdfghijklmnopqrstuvwxyz";
+        private readonly bool _isLegacyDialect; 
+        private readonly RelationalQueryCompilationContext _queryCompilationContext;
+        private readonly List<IQueryAnnotation> _queryAnnotations;
 
         protected override string TypedTrueLiteral => "1";
         protected override string TypedFalseLiteral => "0";
         protected override string AliasSeparator => " ";
-
+        
         public FbQuerySqlGenerator(
             QuerySqlGeneratorDependencies dependencies,
             SelectExpression selectExpression,
             IFbOptions fBOptions)
             : base(dependencies, selectExpression)
-            => _isLegacyDialect = fBOptions.IsLegacyDialect;
+        {
+            _isLegacyDialect = fBOptions.IsLegacyDialect;
+            _queryCompilationContext = CompileRQCC()(selectExpression);
+
+            _queryAnnotations = _queryCompilationContext
+               .QueryAnnotations
+               .Where(p =>
+                   p.GetType() == typeof(IncludeResultOperator)
+                   || p.GetType() == typeof(WithLockResultOperator))
+               .Distinct()
+               .ToList();
+        }
+
+        private static Func<SelectExpression, RelationalQueryCompilationContext> CompileRQCC()
+        {
+            var fieldInfo = typeof(SelectExpression)
+                .GetTypeInfo()
+                .GetRuntimeFields()
+                .Single(f => f.FieldType == typeof(RelationalQueryCompilationContext));
+
+            var parameterExpression = Expression.Parameter(
+                typeof(SelectExpression),
+                "selectExpression");
+
+            return Expression
+                .Lambda<Func<SelectExpression, RelationalQueryCompilationContext>>(
+                    Expression.Field(parameterExpression, fieldInfo),
+                    parameterExpression)
+                .Compile();
+        }
+
+        public override Expression VisitSelect(SelectExpression selectExpression)
+        {
+            var visitSelectExpression = base.VisitSelect(selectExpression); 
+
+            if (_queryAnnotations.Count == 1
+                && _queryAnnotations[0] is WithLockResultOperator annotation)
+            {
+                Sql.Append(annotation.Hint);
+            }
+
+            return visitSelectExpression;
+        }
 
         public override Expression VisitTable(TableExpression tableExpression)
-        {
+        { 
             if (_isLegacyDialect)
             {
                 if (tableExpression.Alias.IndexOf(".", StringComparison.OrdinalIgnoreCase) > -1

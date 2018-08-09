@@ -47,7 +47,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 var peoples = ctx
                     .People
                     .AsNoTracking()
-                    .WithNoLock()
                     .Where(p => p.Id > 0)
                     .ToSql();
 

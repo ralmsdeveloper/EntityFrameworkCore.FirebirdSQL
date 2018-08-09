@@ -89,7 +89,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
             optionsBuilder
                 .UseFirebird(connectionString)
-                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
+                .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning))
+                .EnableSensitiveDataLogging();
 
             var loggerFactory = new LoggerFactory()
                 .AddConsole()
