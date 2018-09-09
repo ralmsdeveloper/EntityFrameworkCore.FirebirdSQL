@@ -33,6 +33,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
         private readonly DbTransaction _dbTransaction;
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Transaction> _logger;
         private readonly bool _transactionOwned;
+        private bool _connectionClosed;
 
         public FbRelationalTransaction(
             IRelationalConnection connection,
@@ -66,6 +67,7 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
                     .TransactionError(_relationalConnection, _dbTransaction, TransactionId, nameof(CommitAsync), e, startTime, stopwatch.Elapsed);
                 throw;
             }
+           
             ClearTransaction();
         }
 
@@ -88,6 +90,18 @@ namespace EntityFrameworkCore.FirebirdSql.Storage.Internal
             }
 
             ClearTransaction();
+        }
+
+        private void ClearTransaction()
+        {
+            _relationalConnection.UseTransaction(null);
+            if (_connectionClosed)
+            {
+                return;
+            }
+
+            _connectionClosed = true;
+            _relationalConnection.Close();
         }
     }
 }

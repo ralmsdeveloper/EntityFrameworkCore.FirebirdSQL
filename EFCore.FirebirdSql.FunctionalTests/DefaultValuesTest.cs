@@ -99,7 +99,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
         private class KettleChips
         {
             public int Id { get; set; }
-            [StringLength(100)]
             public string Name { get; set; }
             public string ChipperId { get; set; }
             public DateTime BestBuyDate { get; set; }

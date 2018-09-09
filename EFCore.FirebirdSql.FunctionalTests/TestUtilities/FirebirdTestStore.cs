@@ -107,10 +107,10 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         public static string CreateConnectionString(string database)
         {
-            var root = Directory.GetCurrentDirectory();
+            var directory = Path.Combine(Variables.PathAsssembly, $"{database}.fdb");
             var connectionString = new FbConnectionStringBuilder(@"User=SYSDBA;Password=masterkey;DataSource=localhost;Port=3050;")
             {
-                Database = Path.Combine(root, $"{database}.fdb")
+                Database = directory
             };
 
             return connectionString.ToString();

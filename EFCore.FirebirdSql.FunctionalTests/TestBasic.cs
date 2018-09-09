@@ -15,14 +15,9 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
-using FB = FirebirdSql.Data.FirebirdClient;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
@@ -44,13 +39,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 });
                 ctx.SaveChanges();
 
-                var peoples = ctx
+                var people = ctx
                     .People
-                    .AsNoTracking()
                     .Where(p => p.Id > 0)
-                    .ToSql();
+                    .ToList();
 
-                Assert.Single(peoples);
+                Assert.Single(people);
             }
         }
 

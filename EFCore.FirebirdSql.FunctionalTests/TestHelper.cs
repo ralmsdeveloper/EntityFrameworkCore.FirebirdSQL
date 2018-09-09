@@ -26,6 +26,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
         public int Id { get; set; }
         public string Name { get; set; }
         public string Givenname { get; set; }
+        public int? Age { get; set; }
+        public DateTime? AgeDate { get; set; }
     }
 
     public class Author
@@ -90,8 +92,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CourseID { get; set; }
         public int Credits { get; set; }
-
-        [StringLength(100)]
         public string Title { get; set; }
 
         public ICollection<Person> Enrollments { get; set; }

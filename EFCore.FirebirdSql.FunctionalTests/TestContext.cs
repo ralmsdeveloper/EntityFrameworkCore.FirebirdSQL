@@ -15,6 +15,7 @@
  */
 
 using System.IO;
+using EFCore.FirebirdSql.FunctionalTests.TestUtilities;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -30,8 +31,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var directory = Path.Combine(Variables.PathAsssembly, "Issue28.fdb");
             var connectionString = new FB.FbConnectionStringBuilder(
-               $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}..\..\..\Issue28.fdb;DataSource=localhost;Port=3050;")
+               $@"User=SYSDBA;Password=masterkey;Database={directory};DataSource=localhost;Port=3050;")
                 {
                   // Dialect = 1
                 }.ConnectionString;
@@ -80,9 +82,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
+            var directory = Path.Combine(Variables.PathAsssembly, dbFileName);
             var connectionString = new FB.FbConnectionStringBuilder(
-                $@"User=SYSDBA;Password=masterkey;Database={Directory.GetCurrentDirectory()}\..\..\..\{dbFileName};DataSource=localhost;Port=3050;")
+                $@"User=SYSDBA;Password=masterkey;Database={directory};DataSource=localhost;Port=3050;")
                 {
                    //Dialect = 1,
                 }.ConnectionString;

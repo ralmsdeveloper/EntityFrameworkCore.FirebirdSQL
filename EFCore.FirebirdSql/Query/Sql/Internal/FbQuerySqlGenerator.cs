@@ -15,18 +15,23 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
+using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.ResultOperators;
 using Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
+using Remotion.Linq.Parsing;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
@@ -38,8 +43,8 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         private readonly RelationalQueryCompilationContext _queryCompilationContext;
         private readonly List<IQueryAnnotation> _queryAnnotations;
 
-        protected override string TypedTrueLiteral => "1";
-        protected override string TypedFalseLiteral => "0";
+        protected override string TypedTrueLiteral { get; } ="1";
+        protected override string TypedFalseLiteral { get; } = "0";
         protected override string AliasSeparator => " ";
         
         public FbQuerySqlGenerator(
@@ -80,7 +85,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 
         public override Expression VisitSelect(SelectExpression selectExpression)
         {
-            var visitSelectExpression = base.VisitSelect(selectExpression); 
+            var visitSelectExpression = base.VisitSelect(selectExpression);
 
             if (_queryAnnotations.Count == 1
                 && _queryAnnotations[0] is WithLockResultOperator annotation)
@@ -146,50 +151,50 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         }
 
         private Expression ExplicitCastToBool(Expression expression)
-            => (expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce
-                   && expression.Type.UnwrapNullableType() == typeof(bool)
+            => ((expression as BinaryExpression)?.NodeType == ExpressionType.Coalesce || expression.NodeType == ExpressionType.Constant)
+                && expression.Type.UnwrapNullableType() == typeof(bool)
                 ? new ExplicitCastExpression(expression, expression.Type)
                 : expression;
 
-        protected override Expression VisitBinary(BinaryExpression binaryExpression)
+        protected override Expression VisitBinary(BinaryExpression expression)
         {
-            if (binaryExpression.NodeType == ExpressionType.Add &&
-                binaryExpression.Left.Type == typeof(string) &&
-                binaryExpression.Right.Type == typeof(string))
+            if (expression.NodeType == ExpressionType.Add &&
+                expression.Left.Type == typeof(string) &&
+                expression.Right.Type == typeof(string))
             {
                 Sql.Append("(");
-                Visit(binaryExpression.Left);
+                Visit(expression.Left);
                 Sql.Append("||");
-                var exp = Visit(binaryExpression.Right);
+                var exp = Visit(expression.Right);
                 Sql.Append(")");
                 return exp;
             }
 
-            if (binaryExpression.NodeType == ExpressionType.And &&
-                binaryExpression.Left.Type == typeof(int) &&
-                binaryExpression.Right.Type == typeof(int))
+            if (expression.NodeType == ExpressionType.And &&
+                expression.Left.Type == typeof(int) &&
+                expression.Right.Type == typeof(int))
             {
                 Sql.Append("(BIN_AND(");
-                Visit(binaryExpression.Left);
+                Visit(expression.Left);
                 Sql.Append(",");
-                var exp = Visit(binaryExpression.Right);
+                var exp = Visit(expression.Right);
                 Sql.Append("))");
                 return exp;
             }
 
-            if (binaryExpression.NodeType == ExpressionType.Or &&
-                binaryExpression.Left.Type == typeof(int) &&
-                binaryExpression.Right.Type == typeof(int))
+            if (expression.NodeType == ExpressionType.Or &&
+                expression.Left.Type == typeof(int) &&
+                expression.Right.Type == typeof(int))
             {
                 Sql.Append("(BIN_OR (");
-                Visit(binaryExpression.Left);
+                Visit(expression.Left);
                 Sql.Append(",");
-                var exp = Visit(binaryExpression.Right);
+                var exp = Visit(expression.Right);
                 Sql.Append("))");
                 return exp;
             }
 
-            var expr = base.VisitBinary(binaryExpression);
+            var expr = base.VisitBinary(expression);
             return expr;
         }
 
@@ -217,7 +222,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             Sql.Append(")");
             return extractExpression;
         }
-
+     
         protected override void GenerateLimitOffset(SelectExpression selectExpression)
         {
         }

@@ -59,7 +59,7 @@ namespace EFCore.FirebirdSql.FunctionalTests.TestUtilities
                 .AddSingleton<ILoggerFactory>(new TestSqlLoggerFactory());
         }
 
-        public ListLoggerFactory CreateListLoggerFactory(Func<string, bool> shouldLogCategory)
-            => new ListLoggerFactory(shouldLogCategory);
+        //public ListLoggerFactory CreateListLoggerFactory(Func<string, bool> shouldLogCategory)
+        //    => new ListLoggerFactory(shouldLogCategory);
     }
 }
