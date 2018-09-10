@@ -21,6 +21,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFCore.FirebirdSql.FunctionalTests
 {
+    public partial class Repro41
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public int Code { get; set; }
+        public int State { get; set; }
+    }
+
     public partial class People
     {
         public int Id { get; set; }

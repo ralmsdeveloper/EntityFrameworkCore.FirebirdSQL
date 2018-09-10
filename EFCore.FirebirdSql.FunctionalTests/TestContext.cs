@@ -25,45 +25,60 @@ using FB = FirebirdSql.Data.FirebirdClient;
 namespace EFCore.FirebirdSql.FunctionalTests
 {
     // Repro: https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL/issues/28
-    public class Issue28Context : DbContext
+    public class FirebirdContext : DbContext
     {
+        private static readonly ILoggerFactory loggerFactory = new LoggerFactory()
+            .AddConsole((s, l) => l == LogLevel.Debug && !s.EndsWith("Query"));
+
         public virtual DbSet<People> People { get; set; }
+        public virtual DbSet<Repro41> Repro41 { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var directory = Path.Combine(Variables.PathAsssembly, "Issue28.fdb");
             var connectionString = new FB.FbConnectionStringBuilder(
                $@"User=SYSDBA;Password=masterkey;Database={directory};DataSource=localhost;Port=3050;")
-                {
-                  // Dialect = 1
-                }.ConnectionString;
+            {
+                // Dialect = 1
+            }.ConnectionString;
 
             optionsBuilder
                 .UseFirebird(connectionString)
                 .ConfigureWarnings(c => c.Log(CoreEventId.IncludeIgnoredWarning));
 
-            var loggerFactory = new LoggerFactory()
-                .AddConsole()
-                .AddDebug();
+            //var loggerFactory = new LoggerFactory()
+            //    .AddConsole()
+            //    .AddDebug();
 
             optionsBuilder.UseLoggerFactory(loggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.Entity<People>(entity =>
+        {
+            modelBuilder.Entity<People>(entity =>
+               {
+                   entity.ToTable("PEOPLE");
+
+                   entity.Property(e => e.Id).HasColumnName("ID");
+
+                   entity.Property(e => e.Givenname)
+                       .HasColumnName("GIVENNAME")
+                       .HasColumnType("VARCHAR(60)");
+
+                   entity.Property(e => e.Name)
+                       .HasColumnName("NAME")
+                       .HasColumnType("VARCHAR(60)");
+               });
+
+            modelBuilder.Entity<Repro41>(entity =>
             {
-                entity.ToTable("PEOPLE");
+                entity.ToTable("Repro41");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.Givenname)
-                    .HasColumnName("GIVENNAME")
-                    .HasColumnType("VARCHAR(60)");
-
-                entity.Property(e => e.Name)
-                    .HasColumnName("NAME")
-                    .HasColumnType("VARCHAR(60)");
+                entity.Property(e => e.Code).ValueGeneratedOnAddOrUpdate().UseFirebirdIdentityColumn();
+                entity.Property(e => e.State).ValueGeneratedOnAddOrUpdate().UseFirebirdIdentityColumn();
             });
+        }
+
     }
 
     public class TestContext : DbContext
@@ -85,9 +100,9 @@ namespace EFCore.FirebirdSql.FunctionalTests
             var directory = Path.Combine(Variables.PathAsssembly, dbFileName);
             var connectionString = new FB.FbConnectionStringBuilder(
                 $@"User=SYSDBA;Password=masterkey;Database={directory};DataSource=localhost;Port=3050;")
-                {
-                   //Dialect = 1,
-                }.ConnectionString;
+            {
+                //Dialect = 1,
+            }.ConnectionString;
 
             optionsBuilder
                 .UseFirebird(connectionString)
@@ -115,7 +130,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
                 .HasKey(person => new { person.Name, person.LastName });
 
             modelo.Entity<BookAuthor>()
-                .HasKey(ba => new { ba.BookId, ba.AuthorId } );
+                .HasKey(ba => new { ba.BookId, ba.AuthorId });
 
             modelo.Entity<BookAuthor>()
                 .HasOne(ba => ba.Author)

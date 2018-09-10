@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -26,9 +27,31 @@ namespace EFCore.FirebirdSql.FunctionalTests
         private TestContext CreateContext() => new TestContext();
 
         [Fact]
+        public void ReproIssue41()
+        {
+            using (var ctx = new FirebirdContext())
+            {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
+                var row = new Repro41
+                {
+                    Description = "Test"
+                };
+                ctx.Repro41.Add(row);
+                ctx.SaveChanges();
+
+                row.Code = 4;
+                row.State = 3;
+                ctx.Update(row);
+
+                Assert.Equal(ctx.SaveChanges(), 1);
+            }
+        }
+
+        [Fact]
         public void ReproIssue28()
         {
-            using (var ctx = new Issue28Context())
+            using (var ctx = new FirebirdContext())
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
@@ -38,11 +61,12 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     Name = "Ralms"
                 });
                 ctx.SaveChanges();
+                var parts = new List<int>();
 
                 var people = ctx
                     .People
                     .Where(p => p.Id > 0)
-                    .ToList();
+                    .ToArray();
 
                 Assert.Single(people);
             }
@@ -99,7 +123,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     {
                         Title = $"Firebird 3.0.2 {i}"
                     };
-                    author.Books.Add(new BookAuthor() {
+                    author.Books.Add(new BookAuthor()
+                    {
                         Book = book,
                         Author = author
                     });
@@ -119,7 +144,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
 
                 var select = context
                     .Author
-                    .Select(x=> x.TestDate.TimeOfDay)
+                    .Select(x => x.TestDate.TimeOfDay)
                     .ToList();
             }
 
@@ -145,7 +170,8 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     {
                         Title = $"Test Insert Book {i}"
                     };
-                    book.Authors.Add(new BookAuthor() {
+                    book.Authors.Add(new BookAuthor()
+                    {
                         Author = context.Author.Find((long)i),
                         Book = book
                     });

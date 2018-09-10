@@ -118,10 +118,15 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
             {
                 commandStringBuilder.AppendLine();
                 commandStringBuilder.Append("RETURNING ");
+
                 commandStringBuilder.AppendJoin(readOperations, (b, e) =>
                 {
                     b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
-                    b.Append(" INTO :");
+                }, ", ");
+                commandStringBuilder.Append(" INTO ");
+                commandStringBuilder.AppendJoin(readOperations, (b, e) =>
+                {
+                    b.Append(" :");
                     b.Append(SqlGenerationHelper.DelimitIdentifier(e.ColumnName));
                 }, ", ");
             }
@@ -205,7 +210,7 @@ namespace EntityFrameworkCore.FirebirdSql.Update.Internal
                 }
                 if (item.UseOriginalValueParameter)
                 {
-                    parameters.Add(item.ParameterName, type);
+                    parameters.Add(item.OriginalParameterName, type);
                 }
             }
             return parameters;
