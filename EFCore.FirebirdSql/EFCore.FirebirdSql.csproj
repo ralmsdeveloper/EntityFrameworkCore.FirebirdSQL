@@ -21,9 +21,9 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1.2.1</Version>
-    <AssemblyVersion>2.1.2.1</AssemblyVersion>
-    <FileVersion>2.1.2.1</FileVersion>
+    <Version>2.1.2.2</Version>
+    <AssemblyVersion>2.1.2.2</AssemblyVersion>
+    <FileVersion>2.1.2.2</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -41,12 +41,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" PrivateAssets="none" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.2" PrivateAssets="none" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.2" PrivateAssets="none" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Interactive.Async">
-      <HintPath>..\..\EntityFrameworkCore\src\EFCore.Specification.Tests\bin\Debug\net461\System.Interactive.Async.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
