@@ -15,7 +15,6 @@
  */
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 

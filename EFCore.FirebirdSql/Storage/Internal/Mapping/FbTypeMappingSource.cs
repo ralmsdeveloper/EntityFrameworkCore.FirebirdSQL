@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Data;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using FirebirdSql.Data.FirebirdClient;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 

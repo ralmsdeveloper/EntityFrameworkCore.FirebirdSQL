@@ -15,23 +15,19 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using EntityFrameworkCore.FirebirdSql.Query.Expressions.Internal;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
-using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 using Microsoft.EntityFrameworkCore.Query.ResultOperators;
 using Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Storage;
-using Remotion.Linq.Parsing;
 
 namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
 {
@@ -39,14 +35,14 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
     {
         private const string _letters = "bcdfghijklmnopqrstuvwxyz";
         private static int _incrementLetter = 0;
-        private readonly bool _isLegacyDialect; 
+        private readonly bool _isLegacyDialect;
         private readonly RelationalQueryCompilationContext _queryCompilationContext;
         private readonly List<IQueryAnnotation> _queryAnnotations;
 
-        protected override string TypedTrueLiteral { get; } ="1";
-        protected override string TypedFalseLiteral { get; } = "0";
+        protected override string TypedTrueLiteral { get; } = "TRUE";
+        protected override string TypedFalseLiteral { get; } = "FALSE";
         protected override string AliasSeparator => " ";
-        
+
         public FbQuerySqlGenerator(
             QuerySqlGeneratorDependencies dependencies,
             SelectExpression selectExpression,
@@ -56,13 +52,16 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             _isLegacyDialect = fBOptions.IsLegacyDialect;
             _queryCompilationContext = CompileRQCC()(selectExpression);
 
-            _queryAnnotations = _queryCompilationContext
-               .QueryAnnotations
-               .Where(p =>
-                   p.GetType() == typeof(IncludeResultOperator)
-                   || p.GetType() == typeof(WithLockResultOperator))
-               .Distinct()
-               .ToList();
+            if (_queryCompilationContext != null)
+            {
+                _queryAnnotations = _queryCompilationContext
+                   .QueryAnnotations
+                   .Where(p =>
+                       p.GetType() == typeof(IncludeResultOperator)
+                       || p.GetType() == typeof(WithLockResultOperator))
+                   .Distinct()
+                   .ToList();
+            }
         }
 
         private static Func<SelectExpression, RelationalQueryCompilationContext> CompileRQCC()
@@ -87,7 +86,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         {
             var visitSelectExpression = base.VisitSelect(selectExpression);
 
-            if (_queryAnnotations.Count == 1
+            if (_queryAnnotations?.Count == 1
                 && _queryAnnotations[0] is WithLockResultOperator annotation)
             {
                 Sql.Append(annotation.Hint);
@@ -97,7 +96,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
         }
 
         public override Expression VisitTable(TableExpression tableExpression)
-        { 
+        {
             if (_isLegacyDialect)
             {
                 if (tableExpression.Alias.IndexOf(".", StringComparison.OrdinalIgnoreCase) > -1
@@ -222,7 +221,7 @@ namespace EntityFrameworkCore.FirebirdSql.Query.Sql.Internal
             Sql.Append(")");
             return extractExpression;
         }
-     
+
         protected override void GenerateLimitOffset(SelectExpression selectExpression)
         {
         }

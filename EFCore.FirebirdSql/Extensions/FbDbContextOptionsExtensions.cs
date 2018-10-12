@@ -20,7 +20,6 @@ using EntityFrameworkCore.FirebirdSql.Infrastructure;
 using EntityFrameworkCore.FirebirdSql.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.EntityFrameworkCore
 {

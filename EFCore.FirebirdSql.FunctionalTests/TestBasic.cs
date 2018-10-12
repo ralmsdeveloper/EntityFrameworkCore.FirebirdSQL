@@ -27,6 +27,17 @@ namespace EFCore.FirebirdSql.FunctionalTests
         private TestContext CreateContext() => new TestContext();
 
         [Fact]
+        public void ReproIssue42()
+        {
+            using (var ctx = new FirebirdContext())
+            {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
+                var count = ctx.People.Count();
+            }
+        }
+
+        [Fact]
         public void ReproIssue41()
         {
             using (var ctx = new FirebirdContext())
@@ -49,6 +60,30 @@ namespace EFCore.FirebirdSql.FunctionalTests
         }
 
         [Fact]
+        public void ReproIssue37()
+        {
+            using (var ctx = new FirebirdContext())
+            {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
+                ctx.People.Add(new People
+                {
+                    Givenname = "Test",
+                    Name = "Ralms"
+                });
+                ctx.SaveChanges();
+
+                var parts = new List<int>();
+                var people = ctx
+                    .People
+                    .Where(p => p.Age.HasValue && parts.Contains(p.Age.Value))
+                    .ToArray();
+
+                Assert.Single(people);
+            }
+        }
+
+        [Fact]
         public void ReproIssue28()
         {
             using (var ctx = new FirebirdContext())
@@ -61,8 +96,6 @@ namespace EFCore.FirebirdSql.FunctionalTests
                     Name = "Ralms"
                 });
                 ctx.SaveChanges();
-                var parts = new List<int>();
-
                 var people = ctx
                     .People
                     .Where(p => p.Id > 0)

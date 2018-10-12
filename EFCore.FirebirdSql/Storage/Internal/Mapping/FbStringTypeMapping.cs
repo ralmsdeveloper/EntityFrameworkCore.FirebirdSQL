@@ -14,7 +14,6 @@
  *
  */
 
-using System.Data;
 using System.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Storage;

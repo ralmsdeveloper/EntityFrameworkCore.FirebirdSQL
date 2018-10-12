@@ -13,7 +13,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <PackageTags>EntityFrameworkCore.FirebirdSQL; FirebirdSQL; EntityFrameworkCore; Entity Framework Core;entity-framework-core;EF;Data;O/RM</PackageTags>
-    <Description>EntityFrameworkCore.FirebirdSql is an ORM, created at the top of the Firebird ADO.NET (FirebirdSql.Data.FirebirdClient) Data Provider. It allows you to use Entity Framework Core 2.0 as an extension, to access Firebird (2.x, 3.x, 4.x)</Description>
+    <Description>EntityFrameworkCore.FirebirdSql is an ORM, created at the top of the Firebird ADO.NET (FirebirdSql.Data.FirebirdClient) Data Provider. It allows you to use Entity Framework Core 2.0/2.X as an extension, to access Firebird (2.x, 3.x, 4.x)</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>EntityFrameworkCore.FirebirdSql</PackageId>
     <Product>EntityFrameworkCore.FirebirdSQL</Product>
@@ -21,9 +21,9 @@
     <PackageIconUrl>https://www.firebirdsql.org/file/about/firebird-logo-48.png</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSQL</RepositoryUrl>
-    <Version>2.1.2.2</Version>
-    <AssemblyVersion>2.1.2.2</AssemblyVersion>
-    <FileVersion>2.1.2.2</FileVersion>
+    <Version>2.1.4</Version>
+    <AssemblyVersion>2.1.4.0</AssemblyVersion>
+    <FileVersion>2.1.4.0</FileVersion>
     <PackageReleaseNotes></PackageReleaseNotes>
     <AssemblyOriginatorKeyFile>EntityFramework.FirebirdSQL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -38,9 +38,8 @@
 
   <ItemGroup>
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.2" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.1.2" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.4" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.4" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>
