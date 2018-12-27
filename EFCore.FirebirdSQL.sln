@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AEDA8CF6-103
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8017995F-8C52-472B-99AA-38052452DAF7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.FirerbirdSql.ScaffoldTest", "EFCore.FirerbirdSql.ScaffoldTest\EFCore.FirerbirdSql.ScaffoldTest.csproj", "{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,10 +31,6 @@ Global
 		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61B6B2E6-80B0-4916-8EE4-91D059CB204F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,7 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C725AC99-64C8-4CBF-B01F-094D5837BC58} = {AEDA8CF6-1035-4556-B8D2-5822B04DA4D4}
 		{61B6B2E6-80B0-4916-8EE4-91D059CB204F} = {8017995F-8C52-472B-99AA-38052452DAF7}
-		{BCDCB2EA-299B-4B11-BBC9-1A4B9CC7F63F} = {8017995F-8C52-472B-99AA-38052452DAF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCB461D4-B163-4511-8434-CE0C357FDC74}

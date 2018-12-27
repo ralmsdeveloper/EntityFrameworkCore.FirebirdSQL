@@ -29,6 +29,7 @@ using EntityFrameworkCore.FirebirdSql.ValueGeneration.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors;
 using Microsoft.EntityFrameworkCore.Query.Sql;
@@ -63,7 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAdd<IQuerySqlGeneratorFactory, FbQuerySqlGeneratorFactory>()
                 .TryAdd<ISingletonOptions, IFbOptions>(p => p.GetService<IFbOptions>())
                 .TryAdd<ISqlTranslatingExpressionVisitorFactory, FbSqlTranslatingExpressionVisitorFactory>()
-                //.TryAdd<IQueryCompilationContextFactory, FbCompilationQueryableFactory>()
+                .TryAdd<IQueryCompilationContextFactory, FbCompilationQueryableFactory>()
                 .TryAddProviderSpecificServices(b => b
                     .TryAddSingleton<IFbOptions, FbOptions>()
                     .TryAddScoped<IFbUpdateSqlGenerator, FbUpdateSqlGenerator>()

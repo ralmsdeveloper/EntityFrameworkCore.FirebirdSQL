@@ -27,7 +27,19 @@ namespace EntityFrameworkCore.FirebirdSql.Scaffolding.Internal
         {
         }
 
-        public override MethodCallCodeFragment GenerateUseProvider(string connectionString)
-            => new MethodCallCodeFragment(nameof(FbDbContextOptionsExtensions.UseFirebird), connectionString);
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override MethodCallCodeFragment GenerateUseProvider(
+            string connectionString,
+            MethodCallCodeFragment providerOptions)
+        {
+            return new MethodCallCodeFragment(
+                           nameof(FbDbContextOptionsExtensions.UseFirebird),
+                           providerOptions == null
+                           ? new object[] { connectionString }
+                           : new object[] { connectionString, new NestedClosureCodeFragment("x", providerOptions) });
+        } 
     }
 }

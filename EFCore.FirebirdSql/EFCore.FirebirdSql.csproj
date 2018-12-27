@@ -37,9 +37,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.4" PrivateAssets="none" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.4" PrivateAssets="none" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" PrivateAssets="none" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" PrivateAssets="none" />
   </ItemGroup>
 
   <ItemGroup>
