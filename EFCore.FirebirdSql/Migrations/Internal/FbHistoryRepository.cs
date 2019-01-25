@@ -50,7 +50,7 @@ WHERE
     AND
     rdb$view_blr IS NULL
     AND
-    rdb$relation_name = '{stringTypeMapping.GenerateSqlLiteral(TableName)}'";
+    rdb$relation_name = {stringTypeMapping.GenerateSqlLiteral(TableName)}";
             }
         }
 
