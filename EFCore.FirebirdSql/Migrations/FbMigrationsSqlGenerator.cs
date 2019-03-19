@@ -240,9 +240,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             builder
-                .Append("ALTER TABLE ")
-                .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Table, operation.Schema))
-                .Append(" DROP CONSTRAINT ")
+                .Append("DROP ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
