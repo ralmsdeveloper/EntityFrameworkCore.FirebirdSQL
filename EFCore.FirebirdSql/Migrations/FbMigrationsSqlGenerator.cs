@@ -240,7 +240,7 @@ namespace EntityFrameworkCore.FirebirdSql.Migrations
         protected override void Generate(DropIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
         {
             builder
-                .Append("DROP ")
+                .Append("DROP INDEX ")
                 .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
                 .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator);
 
