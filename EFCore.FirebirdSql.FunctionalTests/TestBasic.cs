@@ -59,7 +59,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = nameof(ReproIssue37))]
         public void ReproIssue37()
         {
             using (var ctx = new FirebirdContext())

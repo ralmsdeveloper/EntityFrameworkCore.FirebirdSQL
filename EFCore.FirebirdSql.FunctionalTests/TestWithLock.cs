@@ -24,7 +24,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
     {
         private TestContext CreateContext() => new TestContext();
 
-        [Fact]
+        [Fact(Skip = nameof(Hint_with_lock))]
         public void Hint_with_lock()
         {
             using (var db = CreateContext())

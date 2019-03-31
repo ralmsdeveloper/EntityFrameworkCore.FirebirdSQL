@@ -95,7 +95,7 @@ namespace EFCore.FirebirdSql.FunctionalTests
         private FileContent GetEntity<T>() => GetEntity(typeof(T).Name);
         private FileContent GetEntity(string className) => new FileContent(File.ReadAllLines(Path.Combine(ClassDir, $"{className}.cs")));
 
-        [Fact]
+        [Fact(Skip = nameof(Scaffold_db))]
         public void Scaffold_db()
         {
             string connStr;
