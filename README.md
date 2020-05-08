@@ -1,4 +1,7 @@
 
+# Efforts should be redirected to: 
+https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient
+
 EntityFrameworkCore.FirebirdSql for Firebird Server
 =====================
 [![label](https://img.shields.io/github/issues-raw/badges/shields/website.svg?style=plastic)](https://github.com/ralmsdeveloper/EntityFrameworkCore.FirebirdSql)
